@@ -66,10 +66,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if ($user) {
+        $_SESSION['admin_logged'] = false;
+        $_SESSION['user_logged'] = false;
+        
         if (password_verify($password, $user['password'])) {
-            // $_SESSION['user_id'] = $user['member_id'];
             $_SESSION['role'] = $source;
             
+            if($source == 'User') {
+                $_SESSION['user_logged'] = true;
+                $_SESSION['member_id'] = $user['member_id'];
+                $_SESSION['first_name'] = $user['first_name'];
+                $_SESSION['middle_name'] = $user['middle_name'];
+                $_SESSION['last_name'] = $user['last_name'];
+                $_SESSION['email'] = $user['email'];
+                $_SESSION['phone'] = $user['phone'];
+                $_SESSION['rsbsa_number'] = $user['rsbsa_number'];
+                $_SESSION['address'] = $user['address'];
+                $_SESSION['farm_location'] = $user['farm_location'];
+                $_SESSION['role'] = $user['role'];
+            } else {
+                $_SESSION['admin_logged'] = true;
+            }
+
             echo json_encode([
                 'status' => 'success',
                 'role' => $source

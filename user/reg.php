@@ -69,7 +69,7 @@
 
                 <div class="input-group">
                     <label for="middleName" class="required-field">Middle Name</label>
-                    <input type="text" id="middleName" name="middleName" placeholder="Middle name" required>
+                    <input type="text" id="middleName" name="middleName" placeholder="Middle name">
                     <div class="error-message" id="middleName">Please enter your middle name</div>
                 </div>
 
@@ -162,6 +162,17 @@
             const passwordInput = document.getElementById('password');
             const confirmPasswordInput = document.getElementById('confirmPassword');
             
+            const firstName = document.getElementById("firstName");
+            const middleName = document.getElementById("middleName");
+            const lastName = document.getElementById("lastName");
+            const email = document.getElementById("email");
+            const phone = document.getElementById("phone");
+            const rsbsaNumber = document.getElementById("rsbsaNumber");
+            const address = document.getElementById("address");
+            const farmLocation = document.getElementById("farmLocation");
+            const password = document.getElementById("password");
+            const confirmPassword = document.getElementById("confirmPassword");
+
             togglePassword.addEventListener('click', function() {
                 const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
                 passwordInput.setAttribute('type', type);
@@ -276,12 +287,48 @@
                     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
                     submitBtn.disabled = true;
                     
-                    // Simulate form submission (replace with actual AJAX call)
                     setTimeout(() => {
-                        alert('Registration submitted successfully!');
-                        submitBtn.innerHTML = originalText;
-                        submitBtn.disabled = false;
-                        form.reset();
+                        const registerData = new FormData();
+                        registerData.append('firstName', firstName.value);
+                        registerData.append('middleName', middleName.value);
+                        registerData.append('lastName', lastName.value);
+                        registerData.append('email', email.value);
+                        registerData.append('phone', phone.value);
+                        registerData.append('rsbsaNumber', rsbsaNumber.value);
+                        registerData.append('address', address.value);
+                        registerData.append('farmLocation', farmLocation.value);
+                        registerData.append('password', password.value);
+                        registerData.append('confirmPassword', confirmPassword.value);
+
+                        fetch('../auth/register.php', {
+                                method: 'POST',
+                                body: registerData
+                            })
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Network response was not ok');
+                                }
+                                return response.json();
+                            })
+                            .then(data => { 
+                                if (data.status == "success") {
+                                    submitBtn.innerHTML = originalText;
+                                    submitBtn.disabled = false;
+                                    document.querySelectorAll('.requirement').forEach(req => {
+                                        req.classList.remove('valid');
+                                    });
+                                    document.getElementById('passwordStrength').style.width = '0%';
+                                    document.getElementById('passwordStrength').style.backgroundColor = 'red';
+                                    form.reset();
+                                    return;
+                                } else {
+                                    submitBtn.innerHTML = originalText;
+                                    submitBtn.disabled = false;
+                                    document.getElementById('passwordError').textContent = data.message || 'Invalid credentials';
+                                    document.getElementById('passwordError').style.display = 'block';
+                                    return;
+                                }
+                            })
                     }, 1500);
                 }
             });

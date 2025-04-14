@@ -1,3 +1,4 @@
+<?php include "../auth/session.php"; ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -312,7 +313,7 @@
     </style>
 </head>
 <body>
-    <section id="sidebar">
+    <!-- <section id="sidebar">
         <a href="#" class="brand">
             <img src="../img/logo.png" alt="Logo" class="logo">
             <div class="text">
@@ -327,8 +328,9 @@
         <ul class="side-menu">
             <li><a href="logout.php" class="logout"><i class="bx bxs-log-out-circle"></i><span class="text">Logout</span></a></li>
         </ul>
-    </section>
+    </section> -->
 
+    <?php include "user_components/user_sidebar.php"; ?>
     <section id="content">
         <nav>
             <i class="bx bx-menu"></i>
@@ -344,7 +346,7 @@
                      
                     </div>
                     
-                    <h1>Maria Santos</h1>
+                    <h1><?php echo $firstname . ' ' . $lastname; ?></h1>
                     
                     <div class="profile-actions">
                         <button class="action-btn" onclick="toggleEditMode()">
@@ -358,90 +360,91 @@
                         <div class="form-grid">
                             <div class="detail-group">
                                 <div class="detail-label">First Name</div>
-                                <div class="detail-value">Maria</div>
+                                <div class="detail-value"><?php echo $firstname; ?></div>
                             </div>
                             
                             <div class="detail-group">
                                 <div class="detail-label">Middle Name</div>
-                                <div class="detail-value">Reyes</div>
+                                <div class="detail-value"><?php echo $middlename; ?></div>
                             </div>
                             
                             <div class="detail-group">
                                 <div class="detail-label">Last Name</div>
-                                <div class="detail-value">Santos</div>
+                                <div class="detail-value"><?php echo $lastname; ?></div>
                             </div>
                             
                             <div class="detail-group">
                                 <div class="detail-label">Email</div>
-                                <div class="detail-value">maria.santos@example.com</div>
+                                <div class="detail-value"><?php echo $email; ?></div>
                             </div>
                             
                             <div class="detail-group">
                                 <div class="detail-label">Phone</div>
-                                <div class="detail-value">0912 345 6789</div>
+                                <div class="detail-value"><?php echo $phone; ?></div>
                             </div>
                             
                             <div class="detail-group">
                                 <div class="detail-label">RSBSA Number</div>
-                                <div class="detail-value">RSB-2021-12345</div>
+                                <div class="detail-value"><?php echo $rsbsa_number; ?></div>
                             </div>
                         </div>
                         
                         <div class="detail-group">
                             <div class="detail-label">Home Address</div>
-                            <div class="detail-value">123 Farm Street, Barangay Maligaya, San Jose City, Nueva Ecija</div>
+                            <div class="detail-value"><?php echo $address; ?></div>
                         </div>
                         
                         <div class="detail-group">
                             <div class="detail-label">Farm Location</div>
-                            <div class="detail-value">Lot 45, Block 7, San Jose Agricultural Area, Nueva Ecija</div>
+                            <div class="detail-value"><?php echo $farm_location; ?></div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Edit Mode -->
                 <div class="edit-mode" id="editMode">
-                    <form id="profileForm" action="/update-profile" method="POST">
+                    <form id="profileForm" method="POST">
                         <div class="form-grid">
+                            <input type="hidden" id="memberId" name="firstName" value="<?php echo $member_id; ?>" >
                             <div class="input-group">
                                 <label for="editFirstName">First Name</label>
-                                <input type="text" id="editFirstName" name="firstName" value="Maria" required>
+                                <input type="text" id="editFirstName" name="firstName" value="<?php echo $firstname; ?>" required>
                             </div>
 
                             <div class="input-group">
                                 <label for="editMiddleName">Middle Name</label>
-                                <input type="text" id="editMiddleName" name="middleName" value="Reyes">
+                                <input type="text" id="editMiddleName" name="middleName" value="<?php echo $middlename; ?>">
                             </div>
 
                             <div class="input-group">
                                 <label for="editLastName">Last Name</label>
-                                <input type="text" id="editLastName" name="lastName" value="Santos" required>
+                                <input type="text" id="editLastName" name="lastName" value="<?php echo $lastname; ?>" required>
                             </div>
 
                             <div class="input-group">
                                 <label for="editEmail">Email</label>
-                                <input type="email" id="editEmail" name="email" value="maria.santos@example.com" required>
+                                <input type="email" id="editEmail" name="email" value="<?php echo $email; ?>" required>
                             </div>
 
                             <div class="input-group">
                                 <label for="editPhone">Phone</label>
-                                <input type="tel" id="editPhone" name="phone" value="09123456789" required>
+                                <input type="tel" id="editPhone" name="phone" value="<?php echo $phone; ?>" required>
                             </div>
 
                             <div class="input-group">
                                 <label for="editRsbsaNumber">RSBSA Number</label>
-                                <input type="text" id="editRsbsaNumber" name="rsbsaNumber" value="RSB-2021-12345">
+                                <input type="text" id="editRsbsaNumber" name="rsbsaNumber" value="<?php echo $rsbsa_number; ?>">
                             </div>
                         </div>
 
                         <div class="input-group">
                             <label for="editAddress">Home Address</label>
-                            <textarea id="editAddress" name="address" required>123 Farm Street, Barangay Maligaya, San Jose City, Nueva Ecija</textarea>
+                            <textarea id="editAddress" name="address" required><?php echo $address; ?></textarea>
                         </div>
 
                         <div class="input-group">
                             <label for="editFarmLocation">Farm Location</label>
-                            <textarea id="editFarmLocation" name="farmLocation" required>Lot 45, Block 7, San Jose Agricultural Area, Nueva Ecija</textarea>
+                            <textarea id="editFarmLocation" name="farmLocation" required><?php echo $farm_location; ?></textarea>
                         </div>
 
                         <div class="form-actions">
@@ -477,42 +480,60 @@
             }
         }
         
-        // Form submission
+        const memberId = document.getElementById('memberId');
+        const editFirstName = document.getElementById("editFirstName");
+        const editMiddleName = document.getElementById("editMiddleName");
+        const editLastName = document.getElementById("editLastName");
+        const editEmail = document.getElementById("editEmail");
+        const editPhone = document.getElementById("editPhone");
+        const editRsbsaNumber = document.getElementById("editRsbsaNumber");
+        const editAddress = document.getElementById("editAddress");
+        const editFarmLocation = document.getElementById("editFarmLocation");
+        
         document.getElementById('profileForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            
-            // Show loading state
+
             const submitBtn = this.querySelector('button[type="submit"]');
             const originalText = submitBtn.innerHTML;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
             submitBtn.disabled = true;
-            
-            // Simulate form submission (replace with actual AJAX call)
-            setTimeout(() => {
-                alert('Profile updated successfully!');
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
-                toggleEditMode();
+
+            const profileData = new FormData();
+            profileData.append('memberId', memberId.value);
+            profileData.append('firstName', editFirstName.value);
+            profileData.append('middleName', editMiddleName.value);
+            profileData.append('lastName', editLastName.value);
+            profileData.append('email', editEmail.value);
+            profileData.append('phone', editPhone.value);
+            profileData.append('rsbsaNumber', editRsbsaNumber.value);
+            profileData.append('address', editAddress.value);
+            profileData.append('farmLocation', editFarmLocation.value);
+
+            fetch('../api/post/update-profile.php', {
+                method: 'POST',
+                body: profileData
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.json();
+            })
+            .then(data => { 
+                console.log(data);
                 
-                // Update the view mode with new values
-                document.querySelectorAll('.view-mode .detail-group')[0].querySelector('.detail-value').textContent = 
-                    document.getElementById('editFirstName').value;
-                document.querySelectorAll('.view-mode .detail-group')[1].querySelector('.detail-value').textContent = 
-                    document.getElementById('editMiddleName').value;
-                document.querySelectorAll('.view-mode .detail-group')[2].querySelector('.detail-value').textContent = 
-                    document.getElementById('editLastName').value;
-                document.querySelectorAll('.view-mode .detail-group')[3].querySelector('.detail-value').textContent = 
-                    document.getElementById('editEmail').value;
-                document.querySelectorAll('.view-mode .detail-group')[4].querySelector('.detail-value').textContent = 
-                    document.getElementById('editPhone').value;
-                document.querySelectorAll('.view-mode .detail-group')[5].querySelector('.detail-value').textContent = 
-                    document.getElementById('editRsbsaNumber').value;
-                document.querySelectorAll('.view-mode .detail-group')[6].querySelector('.detail-value').textContent = 
-                    document.getElementById('editAddress').value;
-                document.querySelectorAll('.view-mode .detail-group')[7].querySelector('.detail-value').textContent = 
-                    document.getElementById('editFarmLocation').value;
-            }, 1500);
+                if (data.status === "success") {
+                    setTimeout(() => {
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = false;
+                        toggleEditMode();
+                    }, 1500);
+                } else {
+                    alert(data.message || 'Update failed.');
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }
+            })
         });
+
         
         // Improve mobile form navigation
         const formInputs = document.querySelectorAll('#editMode input, #editMode textarea');

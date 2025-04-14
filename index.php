@@ -40,7 +40,7 @@
         </form>
 
             <div class="footer-links">
-              <a href="user/reg.html" class="footer-link">Create New Account</a>
+              <a href="user/reg.php" class="footer-link">Create New Account</a>
           </div>
         <div class="footer">
             &copy; 2025 BFAC Management System. All rights reserved.
@@ -105,9 +105,9 @@
                         .then(data => {
                             if (data.status = "success") {
                                 if(data.role == 'Admin' || data.role == 'Treasurer') {
-                                    window.location.href = 'bfac/admin/admin.php';
+                                    window.location.href = 'admin/admin.php';
                                 } else {
-                                    window.location.href = '../bfac/user/home.php';
+                                    window.location.href = '    user/home.php';
                                 }
                             } else {
                                 submitBtn.innerHTML = originalText;

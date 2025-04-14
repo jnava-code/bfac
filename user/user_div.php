@@ -13,7 +13,7 @@
 <body>
 
 
-	<section id="sidebar">
+	<!-- <section id="sidebar">
 		<a href="#" class="brand">
 			<img src="../img/logo.png" alt="Logo" class="logo">
 			<div class="text">
@@ -31,9 +31,9 @@
 		<ul class="side-menu">
 			<li><a href="logout.php" class="logout"><i class="bx bxs-log-out-circle"></i><span class="text">Logout</span></a></li>
 		</ul>
-	</section>
+	</section> -->
 
-
+	<?php include "user_components/user_sidebar.php"; ?>
 
 	<section id="content">
         <nav>
