@@ -1,7 +1,3 @@
-<?php
-
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -38,15 +34,14 @@
             <div class="input-group">
                 <a href="forgot.html" class="forgot-password">Forgot Password?</a>
             </div>
-            <button type="submit" class="btn-login">
+            <button type="submit" class="btn-login" name="login">
                 <i class="fas fa-sign-in-alt"></i> Sign In
             </button>
+        </form>
 
             <div class="footer-links">
               <a href="user/reg.html" class="footer-link">Create New Account</a>
           </div>
-        </form>
-
         <div class="footer">
             &copy; 2025 BFAC Management System. All rights reserved.
         </div>
@@ -56,6 +51,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             const loginForm = document.getElementById('loginForm');
             const togglePassword = document.getElementById('togglePassword');
+            const usernameInput = document.getElementById('username');
             const passwordInput = document.getElementById('password');
             
             // Toggle password visibility
@@ -66,46 +62,60 @@
                 this.classList.toggle('fa-eye');
             });
             
-            // Form validation
             loginForm.addEventListener('submit', function(event) {
                 event.preventDefault();
                 
-                // Reset error messages
                 document.querySelectorAll('.error-message').forEach(el => {
                     el.style.display = 'none';
                 });
                 
                 let isValid = true;
                 
-                // Validate username/email
                 if (!document.getElementById('username').value.trim()) {
                     document.getElementById('usernameError').style.display = 'block';
                     isValid = false;
                 }
                 
-                // Validate password
                 if (!passwordInput.value.trim()) {
                     document.getElementById('passwordError').style.display = 'block';
                     isValid = false;
                 }
                 
                 if (isValid) {
-                    // Show loading state
                     const submitBtn = loginForm.querySelector('button[type="submit"]');
                     const originalText = submitBtn.innerHTML;
                     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing In...';
                     submitBtn.disabled = true;
                     
-                    // Simulate form submission (replace with actual AJAX call)
+                    const loginData = new FormData();
+                    loginData.append('username', usernameInput.value);
+                    loginData.append('password', passwordInput.value);
+
                     setTimeout(() => {
-                        // On successful login, redirect to dashboard
-                        window.location.href = '/dashboard';
-                        
-                        // On error (for demo purposes)
-                        // submitBtn.innerHTML = originalText;
-                        // submitBtn.disabled = false;
-                        // document.getElementById('passwordError').textContent = 'Invalid credentials';
-                        // document.getElementById('passwordError').style.display = 'block';
+                        fetch('auth/login.php', {
+                            method: 'POST',
+                            body: loginData
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            if (data.status = "success") {
+                                if(data.role == 'Admin' || data.role == 'Treasurer') {
+                                    window.location.href = 'bfac/admin/admin.php';
+                                } else {
+                                    window.location.href = '../bfac/user/home.php';
+                                }
+                            } else {
+                                submitBtn.innerHTML = originalText;
+                                submitBtn.disabled = false;
+                                document.getElementById('passwordError').textContent = data.message || 'Invalid credentials';
+                                document.getElementById('passwordError').style.display = 'block';
+                            }
+                        })
                     }, 1500);
                 }
             });
