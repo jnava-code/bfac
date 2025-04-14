@@ -1,21 +1,26 @@
+<?php
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <!-- <favicon href="img/favicon.ico" type="image/x-icon"> -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="../css/reg.css">
+    <link rel="stylesheet" href="css/reg.css">
     <title>Sign In</title>
    
 </head>
 <body>
     <div class="login-container">
         <div class="logo">
-            <img src="../img/logo.png" alt="Cooperative Logo">
+            <img src="img/logo.png" alt="Cooperative Logo">
         </div>
 
-        <h1>BFAC Management System<br>Member Sign In</h1>
+        <h1>BFAC Management System</h1>
 
         <form id="loginForm" action="/login" method="POST">
             <div class="input-group">
@@ -30,13 +35,15 @@
                 <i class="fas fa-eye password-toggle" id="togglePassword"></i>
                 <div class="error-message" id="passwordError">Please enter your password</div>
             </div>
-
+            <div class="input-group">
+                <a href="forgot.html" class="forgot-password">Forgot Password?</a>
+            </div>
             <button type="submit" class="btn-login">
                 <i class="fas fa-sign-in-alt"></i> Sign In
             </button>
 
             <div class="footer-links">
-              <a href="../user/reg.html" class="footer-link">Create New Account</a>
+              <a href="user/reg.html" class="footer-link">Create New Account</a>
           </div>
         </form>
 
