@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../css/reg.css">
+    <title>Sign In</title>
+   
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <img src="../img/logo.png" alt="Cooperative Logo">
+        </div>
+
+        <h1>BFAC Management System<br>Member Sign In</h1>
+
+        <form id="loginForm" action="/login" method="POST">
+            <div class="input-group">
+                <label for="username">Email or Username</label>
+                <input type="text" id="username" name="username" placeholder="Enter your email or username" required>
+                <div class="error-message" id="usernameError">Please enter your username or email</div>
+            </div>
+
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                <i class="fas fa-eye password-toggle" id="togglePassword"></i>
+                <div class="error-message" id="passwordError">Please enter your password</div>
+            </div>
+
+            <button type="submit" class="btn-login">
+                <i class="fas fa-sign-in-alt"></i> Sign In
+            </button>
+
+            <div class="footer-links">
+              <a href="../user/reg.html" class="footer-link">Create New Account</a>
+          </div>
+        </form>
+
+        <div class="footer">
+            &copy; 2025 BFAC Management System. All rights reserved.
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.getElementById('loginForm');
+            const togglePassword = document.getElementById('togglePassword');
+            const passwordInput = document.getElementById('password');
+            
+            // Toggle password visibility
+            togglePassword.addEventListener('click', function() {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                this.classList.toggle('fa-eye-slash');
+                this.classList.toggle('fa-eye');
+            });
+            
+            // Form validation
+            loginForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                
+                // Reset error messages
+                document.querySelectorAll('.error-message').forEach(el => {
+                    el.style.display = 'none';
+                });
+                
+                let isValid = true;
+                
+                // Validate username/email
+                if (!document.getElementById('username').value.trim()) {
+                    document.getElementById('usernameError').style.display = 'block';
+                    isValid = false;
+                }
+                
+                // Validate password
+                if (!passwordInput.value.trim()) {
+                    document.getElementById('passwordError').style.display = 'block';
+                    isValid = false;
+                }
+                
+                if (isValid) {
+                    // Show loading state
+                    const submitBtn = loginForm.querySelector('button[type="submit"]');
+                    const originalText = submitBtn.innerHTML;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing In...';
+                    submitBtn.disabled = true;
+                    
+                    // Simulate form submission (replace with actual AJAX call)
+                    setTimeout(() => {
+                        // On successful login, redirect to dashboard
+                        window.location.href = '/dashboard';
+                        
+                        // On error (for demo purposes)
+                        // submitBtn.innerHTML = originalText;
+                        // submitBtn.disabled = false;
+                        // document.getElementById('passwordError').textContent = 'Invalid credentials';
+                        // document.getElementById('passwordError').style.display = 'block';
+                    }, 1500);
+                }
+            });
+            
+            // Improve mobile form navigation
+            document.getElementById('username').addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    document.getElementById('password').focus();
+                }
+            });
+            
+            document.getElementById('password').addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    document.querySelector('.btn-login').click();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

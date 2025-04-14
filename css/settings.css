@@ -1,0 +1,153 @@
+/* Professional Modal Styles */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1050;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  transition: opacity 0.3s ease;
+}
+
+.modal.show {
+  display: block;
+  opacity: 1;
+}
+
+/* Modal Dialog for centering */
+.modal-dialog {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  margin: 2rem auto;
+  transition: transform 0.3s ease-out;
+  transform: translateY(-50px); /* Initial position before show */
+}
+
+.modal.show .modal-dialog {
+  transform: translateY(0); /* Animation for smooth entry */
+}
+
+/* Modal Content Styling */
+.modal-admin {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  pointer-events: auto;
+  background-color: var(--white);
+  background-clip: padding-box;
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  outline: 0;
+  overflow: hidden;
+}
+
+/* Modal Header Styling */
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--secondary);
+}
+
+/* Modal Title Styling */
+.modal-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--dark);
+}
+
+/* Close Button Styling */
+.close-btn {
+  padding: 0.5rem;
+  margin: -0.5rem -0.5rem -0.5rem auto;
+  background-color: transparent;
+  border: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--gray);
+  opacity: 0.75;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.close-btn:hover {
+  color: var(--dark);
+  opacity: 1;
+}
+
+/* Modal Body Styling */
+.modal-body {
+  position: relative;
+  flex: 1 1 auto;
+  padding: 1.5rem;
+}
+
+/* Adjusting Form Layout */
+.modal-body form {
+  display: grid;
+  grid-template-columns: 1fr; /* Default to 1 column on smaller screens */
+  gap: 15px;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .modal-body form {
+      grid-template-columns: 1fr 1fr; /* 2 columns for larger screens */
+  }
+}
+
+/* Form Group Styling */
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-size: 1rem;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.form-group input,
+.form-group select,
+.form-group button {
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-top: 5px;
+}
+
+/* Button Styling */
+.form-group button {
+  background-color: var(--green);
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: fit-content;
+}
+
+.form-group button:hover {
+  background-color: var(--dark-green);
+}
+
+/* Responsiveness for smaller screens */
+@media (max-width: 767px) {
+  .modal-dialog {
+      max-width: 90%; /* Modal should take up more space on mobile */
+  }
+
+  .modal-body form {
+      grid-template-columns: 1fr; /* 1 column on mobile */
+  }
+}

@@ -1,0 +1,88 @@
+:root {
+    --green: #3b6934;
+    --dark-green: #31572b;
+    --yellow: #FD7238;
+    --light-yellow: #ffe6c6;
+    --poppins: 'Poppins', sans-serif;
+    --lato: 'Lato', sans-serif;     
+    --background: #f4f4f4;
+    --text: #333;
+    --card-bg: #fff;
+      }
+
+
+
+
+.card {
+    background-color: #f9f9f9;
+    border-radius: 20px;
+    padding: 10px;
+}
+
+.profile-header {
+text-align: center;
+margin-bottom: 30px;
+}
+
+.profile-header img {
+width: 120px;
+height: 120px;
+border-radius: 50%;
+object-fit: cover;
+margin-bottom: 15px;
+}
+
+
+form {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 20px;
+}
+
+.form-group {
+display: flex;
+flex-direction: column;
+}
+
+label {
+margin-bottom: 6px;
+font-weight: 600;
+}
+
+input, select {
+padding: 10px;
+font-size: 1rem;
+border-radius: 8px;
+border: 1px solid #ccc;
+}
+
+.form-group.full {
+grid-column: 1 / -1;
+}
+
+.buttons {
+margin-top: 20px;
+text-align: center;
+grid-column: 1 / -1;
+}
+
+button {
+padding: 10px 20px;
+font-size: 1rem;
+border-radius: 8px;
+border: none;
+cursor: pointer;
+color: #fff;
+background-color: var(--green);
+transition: background-color 0.3s ease;
+}
+
+button:hover {
+background-color: var(--dark-green);
+}
+
+@media (max-width: 600px) {
+form {
+grid-template-columns: 1fr;
+}
+}

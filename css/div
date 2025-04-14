@@ -1,0 +1,140 @@
+:root {
+    --poppins: 'Poppins', sans-serif;
+    --lato: 'Lato', sans-serif;
+
+    --light: #F9F9F9;
+    --blue: #3C91E6;
+    --light-blue: #CFE8FF;
+    --grey: #eee;
+    --dark-grey: #AAAAAA;
+    --dark: #342E37;
+    --yellow: #FD7238;
+    --light-yellow: #ffe6c6;
+    --orange: #FD7238;
+    --light-red: #ffd3d3;
+    --light-green: #3b693459;
+    --green: #3b6934;
+    --dark-green: #31572b;
+    --red: #bd0000;
+    --dark-red: #9a0101;
+}
+
+.modal1 {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;  /* Centers modal horizontally */
+    align-items: center;      /* Centers modal vertically */
+    padding: 10px;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    visibility: hidden; /* Initially hidden */
+    opacity: 0;
+}
+
+/* Modal Content */
+.modal-livestock {
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    width: 50%;
+    max-width: 600px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    overflow-y: auto;
+    transition: transform 0.3s ease-in-out;
+}
+
+/* Close Button */
+.close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 16px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #333;
+}
+
+/* Form Grid */
+#withdrawForm {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.form-group input, .form-group button {
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    margin-top: 5px;
+}
+
+.form-group button {
+    background-color: var(--green);
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: fit-content;
+}
+
+.form-group button:hover {
+    background-color: var(--dark-green);
+}
+
+.btn-danger {
+    background-color: var(--red);
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: fit-content;
+}
+
+.btn-danger:hover {
+    background-color: var(--dark-red);
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+    .modal-livestock {
+        width: 90%;
+        padding: 15px;
+    }
+}
+
+/* Modal visible state */
+.modal1.show {
+    visibility: visible;
+    opacity: 1;
+}
+
+.modal-livestock.show {
+    transform: scale(1);
+}

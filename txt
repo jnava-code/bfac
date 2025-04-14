@@ -1,0 +1,56 @@
+update
+
+transaction div
+div 
+livestock
+services
+
+DASHBOARD- PHP PAGE IN UL
+
+Term	Meaning
+Share Capital	The total value of shares subscribed and paid for by a member.
+Paid-up Share Capital	The actual amount that members have already paid.
+Total Share Capital	The sum of all paid-up shares of all members — this is what you’re referring to.
+Authorized Share Capital	The maximum share capital a cooperative can issue (as per their by-laws).
+
+Total Share Capital = Total amount of money received from members in exchange for their shares.
+
+Shares refer to the individual units of ownership that a person can buy in the cooperative.
+
+Share Capital refers to the total value of all the shares combined, which is the total financial contribution from all members (or shareholders) to the cooperative or company.
+
+
+
+
+
+<!-- icon -->
+<i class="bx bx-search"></i>
+<i class="bx bx-filter"></i>
+
+
+Given:
+Gross income = ₱905,520
+
+Expenses = ₱700,000
+
+Statutory Funds:
+
+Reserve Fund = 10%
+
+Education & Training Fund = 10%
+
+Community & Development Fund = 3%
+
+Optional Fund = 7%
+
+Total Statutory Funds = 30%
+
+Number of members = 25
+
+Total share capital = ₱12,000
+
+Par value per share = ₱100
+
+
+                                <button class="btn small" onclick="openModal('Juan Dela Cruz', '₱3,000')"><i class="bx bx-wallet"></i>Withdraw</button>                                
+                                <button class="btn small danger" onclick="openSendToSharesModal('Pedro Ramirez', '₱6,000')"><i class='bx bxs-send'></i>Allocate</button>                              </td>

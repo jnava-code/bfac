@@ -1,0 +1,134 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Poppins:wght@400;500;600;700&display=swap');
+@import url(../icons/font-awesome/css/font-awesome.min.css);
+
+:root {
+    --green: #3b6934;
+    --dark-green: #31572b;
+    --yellow: #FD7238;
+    --light-yellow: #ffe6c6;
+    --poppins: 'Poppins', sans-serif;
+    --lato: 'Lato', sans-serif;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    background-color: var(--green);
+    font-family: var(--lato);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .login-container {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    width: 450px;
+    padding: 40px;
+    text-align: center;
+    animation: fadeIn 0.5s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .logo {
+    width: 180px;
+    height: 180px;
+    margin: 0 auto 25px;
+    border-radius: 50%;
+    background-color: #fff;
+    padding: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .logo img {
+    max-width: 100%;
+    max-height: 100%;
+  }
+
+  h1 {
+    font-family: var(--poppins);
+    color: var(--dark-green);
+    margin-bottom: 30px;
+    font-size: 26px;
+  }
+
+  .input-group {
+    margin-bottom: 20px;
+    text-align: left;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--dark-green);
+    font-weight: 600;
+  }
+
+  input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: border-color 0.3s;
+    font-family: var(--lato);
+  }
+
+  input:focus {
+    border-color: var(--green);
+    outline: none;
+  }
+
+  button {
+    background-color: var(--green);
+    color: #fff;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    font-family: var(--poppins);
+    width: 100%;
+    transition: background-color 0.3s;
+    margin-top: 10px;
+  }
+
+  button:hover {
+    background-color: var(--dark-green);
+  }
+
+  .forgot-password {
+    margin-top: 20px;
+    text-align: center;
+  }
+
+  .forgot-password a {
+    color: var(--dark-green);
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.3s;
+  }
+
+  .forgot-password a:hover {
+    color: var(--yellow);
+  }
+
+  .footer {
+    margin-top: 30px;
+    color: #666;
+    font-size: 12px;
+  }
