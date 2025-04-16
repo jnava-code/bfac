@@ -2,6 +2,22 @@
 	include "../config/db.php";
 	include "../auth/session.php";
 
+	if (isset($_POST['approve']) || isset($_POST['reject'])) {
+		$action = isset($_POST['approve']) ? 'Approved' : 'Rejected';
+		$member_id = $_POST['member_id'];
+
+		$action = "'" . mysqli_real_escape_string($conn, $action) . "'";
+
+		$sql = "UPDATE user_members SET status = $action WHERE member_id = '$member_id'";
+
+		if (mysqli_query($conn, $sql)) {
+			header("Location: users.php");
+			exit();
+		} else {
+			echo "Error updating record: " . mysqli_error($conn);
+		}
+	}
+
 	function selectUsers($conn, $status) {
 		$sql = "SELECT * FROM user_members WHERE is_archived = 0 AND status = '$status'";
 		$result = mysqli_query($conn, $sql);
@@ -86,7 +102,6 @@
 						<thead>
 							<tr>
 								<th>Username</th>
-								<th>User Profile</th>
 								<th>First Name</th>
 								<th>Middle Name</th>
 								<th>Last Name</th>
@@ -102,7 +117,6 @@
 									while($row = mysqli_fetch_assoc($result_pending)) {
 										echo "<tr>";
 										echo "<td>" . htmlspecialchars($row['username']) . "</td>";
-										echo '<td><img src="'. '../'. $row["profile_image"] . '" width="40"></td>';
 										echo "<td>" . htmlspecialchars($row['first_name']) . "</td>";
 										echo "<td>" . htmlspecialchars($row['middle_name']) . "</td>";
 										echo "<td>" . htmlspecialchars($row['last_name']) . "</td>";
