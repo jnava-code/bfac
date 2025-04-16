@@ -1,37 +1,49 @@
+<?php
+	include "../config/db.php";
+	include "../auth/session.php";
+
+	function selectUsers($conn, $status) {
+		$sql = "SELECT * FROM user_members WHERE is_archived = 0 AND status = '$status'";
+		$result = mysqli_query($conn, $sql);
+		return $result;
+	}
+
+	$result_pending = selectUsers($conn, 'Pending');
+	$result_approved = selectUsers($conn, 'Approved');
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
-	<link rel="stylesheet" href="css/style.css">
-	<link rel="stylesheet" href="css/livestock.css">
+	<link rel="stylesheet" href="../css/style.css">
+	<link rel="stylesheet" href="../css/livestock.css">
+	<style>
+		.buttons_column {
+			padding: 5px;
+		}
 
+		.buttons {
+			display: flex;
+			gap: 5px;
+			justify-content: center;
+			align-items: center;
+		}
+
+		button {
+			background-color: transparent;
+			border: none;
+			cursor: pointer;
+		}
+	</style>
 	<title>Users</title>
 
 </head>
 <body>
 
-	<section id="sidebar">
-		<a href="#" class="brand">
-			<img src="img/logo.png" alt="Logo" class="logo">
-			<div class="text">
-				<span class="title">BFAC Hub</span>
-				<span class="subtitle">Management System</span>
-			</div>
-		</a>
-		<ul class="side-menu top">
-			<li><a href="users.html"><i class="bx bxs-user"></i><span class="text">Users</span></a></li>
-			<li><a href="shares.html"><i class="bx bxs-coin-stack"></i><span class="text">Shares</span></a></li>
-			<li><a href="div.html"><i class="bx bx-line-chart-down"></i><span class="text">Dividends</span></a></li>
-			<li><a href="sales.html"><i class='bx bxs-credit-card-alt'></i><span class="text">Sales </span></a></li>
-			<li><a href="expenses.html"><i class='bx bxs-coin-stack' ></i><span class="text">Expenses </span></a></li>
-			</ul>
-    <ul class="side-menu">
-        <li><a href="settings.html"><i class="bx bxs-cog"></i><span class="text">Settings</span></a></li>
-        <li><a href="logout.html" class="logout"><i class="bx bxs-log-out-circle"></i><span class="text">Logout</span></a></li>
-      </ul>
-	</section>
+	<?php include "admin_components/admin_sidebar.php"; ?>
 
 	<section id="content">
         <nav>
@@ -78,7 +90,6 @@
 								<th>First Name</th>
 								<th>Middle Name</th>
 								<th>Last Name</th>
-								<th>Email</th>
 								<th>Phone</th>
 								<th>Address</th>
 								<th>Date</th>
@@ -86,36 +97,36 @@
 							</tr>
 						</thead>
 						<tbody>
-							 <tr>
-								<td>johndoe123</td>
-								<td><img src="img/people.png" width="40"></td>
-								<td>John</td>
-								<td>A.</td>
-								<td>Doe</td>
-								<td>john@example.com</td>
-								<td>09171234567</td>
-								<td>Makati City</td>
-								<td>2024-06-12</td>
-								<td>
-									<i class="bx bx-check icon-accept"></i>
-									<i class="bx bx-x icon-reject"></i>
-								</td>
-							</tr>
-							<!--<tr> 
-								 <td>janedoe456</td>
-								<td><img src="img/people.png" width="40"></td>
-								<td>Jane</td>
-								<td>B.</td>
-								<td>Doe</td>
-								<td>jane@example.com</td>
-								<td>09179876543</td>
-								<td>Quezon City</td>
-								<td>2024-07-01</td>
-								<td>
-									<i class="bx bx-check icon-accept"></i>
-									<i class="bx bx-x icon-reject"></i>
-								</td> 
-							</tr>-->
+							<?php 						
+								if($result_pending && mysqli_num_rows($result_pending) > 0) {
+									while($row = mysqli_fetch_assoc($result_pending)) {
+										echo "<tr>";
+										echo "<td>" . htmlspecialchars($row['username']) . "</td>";
+										echo '<td><img src="'. '../'. $row["profile_image"] . '" width="40"></td>';
+										echo "<td>" . htmlspecialchars($row['first_name']) . "</td>";
+										echo "<td>" . htmlspecialchars($row['middle_name']) . "</td>";
+										echo "<td>" . htmlspecialchars($row['last_name']) . "</td>";
+										echo "<td>" . htmlspecialchars($row['phone']) . "</td>";
+										echo "<td>" . htmlspecialchars($row['address']) . "</td>";
+										echo "<td>" . htmlspecialchars($row['date_registered']) . "</td>";
+										echo "<td class='buttons_column'>
+											<div class='buttons'>
+												<form method='POST'>
+													<input type='hidden' name='member_id' value='" . $row['member_id'] . "'>
+													<button type='submit' name='approve' class='btn btn-success'><i class='bx bx-check icon-accept'></i></button>
+												</form>
+												<form method='POST'>
+													<input type='hidden' name='member_id' value='" . $row['member_id'] . "'>
+													<button type='submit' name='reject' class='btn btn-success'><i class='bx bx-x icon-reject'></i></button>
+												</form>
+											</div>
+										</td>";
+										echo "</tr>";
+									}
+								} else {
+									echo "<tr><td colspan='10'>No pending users found.</td></tr>";
+								}							
+							?>
 						</tbody>
 					</table>
 				</div>
@@ -149,26 +160,25 @@
 							</tr>
 						</thead>
 						<tbody>
-							<tr>
-								<td></td>
-								<td></td>
-
-								<td></td>
-
-								<td></td>
-								<td></td>
-								<td></td>
-								<td></td>
-								<td></td>
-								<td>
-									<i class="bx bxs-edit icon-edit"></i>
-									<i class="bx bxs-archive icon-archive"></i>
-								</td>
-							</tr>
-							<tr>
-								
-								
-							</tr> 
+							<?php 						
+								if($result_approved && mysqli_num_rows($result_approved) > 0) {
+									while($row = mysqli_fetch_assoc($result_approved)) {
+										echo "<tr>";
+										echo "<td>" . $row['username'] . "</td>";
+										echo '<td><img src="'. '../'. $row["profile_image"] . '" width="40"></td>';
+										echo "<td>" . $row['first_name'] . "</td>";
+										echo "<td>" . $row['middle_name'] . "</td>";
+										echo "<td>" . $row['last_name'] . "</td>";
+										echo "<td>" . $row['email'] . "</td>";
+										echo "<td>" . $row['phone'] . "</td>";
+										echo "<td>" . $row['address'] . "</td>";
+										echo "<td>" . $row['date_registered'] . "</td>";
+										echo "</tr>";
+									}
+								} else {
+									echo "<tr><td colspan='9'>No approved users found.</td></tr>";
+								}
+							?>
 						</tbody>
 					</table>
 				</div>

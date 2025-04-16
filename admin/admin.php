@@ -1,3 +1,12 @@
+<?php 
+  include "../config/db.php";
+  include "../auth/session.php"; 
+
+  $sql_user = "SELECT * FROM user_members WHERE is_archived = 0 AND status = 'Approved'";
+  $result_user = mysqli_query($conn, $sql_user);
+  
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -68,8 +77,8 @@
           <table>
             <thead>
               <tr>
-                <th>ID</th>
-                <th>Profile</th>
+                <!-- <th>ID</th>
+                <th>Profile</th> -->
                 <th>Full Name</th>
                 <th>Username</th>
                 <th>Email</th>
@@ -78,17 +87,26 @@
               </tr>
             </thead>
             <tbody>
-                <tr data-id="1">
+                <!-- <tr data-id="1">
                     <td>1</td>
-                <td><img src="img/profile1.jpg" alt="Profile" class="profile-img"></td>
-                <td>John Doee</td>
-                <td>johndoe</td>
-                <td>johndoe@example.com</td>
-                <td>Admin</td>
-                <td>
-                    <button class="bx bxs-edit icon-edit" onclick="openEditModal(1, 'John Doe', 'johndoe', 'johndoe@example.com', 'Admin')"></button>
-                    <button class="bx bxs-archive icon-archive" onclick="archiveUser(1)"></button>
-                </td>
+                <td><img src="img/profile1.jpg" alt="Profile" class="profile-img"></td> -->
+                <?php 
+                  if(mysqli_num_rows($result_user) > 0) {
+                    while($row = mysqli_fetch_assoc($result_user)) {
+                      echo "<td>{$row['first_name']} {$row['middle_name']} {$row['last_name']}</td>";
+                      echo "<td>{$row['username']}</td>";
+                      echo "<td>{$row['email']}</td>";
+                      echo "<td>{$row['role']}</td>";
+                      echo "<td>
+                              <button class='bx bxs-edit icon-edit' onclick=\"openEditModal({$row['member_id']}, '{$row['first_name']} {$row['middle_name']} {$row['last_name']}', '{$row['username']}', '{$row['email']}', '{$row['role']}')\"></button>
+                              <button class='bx bxs-archive icon-archive' onclick=\"archiveUser({$row['member_id']})\"></button>
+                            </td>";
+                      echo "</tr>";
+                    }
+                  } else {
+                    echo "<tr><td colspan='6'>No users found.</td></tr>";
+                  }
+                ?>
               </tr>
               
             </tbody>

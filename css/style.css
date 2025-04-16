@@ -1049,12 +1049,11 @@ button.view-btn {
 .icon-accept, .icon-reject, .icon-edit, .icon-archive {
 	cursor: pointer;
 	font-size: 20px;
-	margin-right: 10px;
+	/* margin-right: 10px; */
 }
+
 .icon-accept { color: var(--green); }
 .icon-reject { color: var(--red); }
-
-
 
 .table-data .table table {
     width: 100%;

@@ -13,6 +13,6 @@
         <li><a href="user_share.php"><i class='bx bx-history'></i><span class="text">Your Shares History </span></a></li>
     </ul>
     <ul class="side-menu">
-        <li><a href="logout.php" class="logout"><i class="bx bxs-log-out-circle"></i><span class="text">Logout</span></a></li>
+        <li><a href="../auth/logout.php" class="logout"><i class="bx bxs-log-out-circle"></i><span class="text">Logout</span></a></li>
     </ul>
 </section>

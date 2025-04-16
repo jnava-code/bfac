@@ -102,12 +102,14 @@
                             }
                             return response.json();
                         })
-                        .then(data => {
-                            if (data.status = "success") {
+                        .then(data => {      
+                            console.log(data);
+                                                  
+                            if (data.status == "success") {
                                 if(data.role == 'Admin' || data.role == 'Treasurer') {
                                     window.location.href = 'admin/admin.php';
                                 } else {
-                                    window.location.href = '    user/home.php';
+                                    window.location.href = 'user/home.php';
                                 }
                             } else {
                                 submitBtn.innerHTML = originalText;

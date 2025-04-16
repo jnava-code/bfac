@@ -335,15 +335,14 @@
         <nav>
             <i class="bx bx-menu"></i>
             <h4 style="color: var(--green);">Your Profile</h4>
-            <a href="#" class="profile"><img src="../img/admin.png" alt="Profile" /></a>
+            <a href="#" class="profile"><img src="../<?php echo $profile_image ?>"" alt="Profile" /></a>
         </nav>
 
         <main>
             <div class="profile-container">
                 <div class="profile-header">
                     <div class="profile-avatar">
-                        <img src="../img/admin.png" alt="Profile Picture">
-                     
+                        <img src="../<?php echo $profile_image ?>" alt="Profile Picture">  
                     </div>
                     
                     <h1><?php echo $firstname . ' ' . $lastname; ?></h1>
@@ -360,43 +359,43 @@
                         <div class="form-grid">
                             <div class="detail-group">
                                 <div class="detail-label">First Name</div>
-                                <div class="detail-value"><?php echo $firstname; ?></div>
+                                <input type="text" class="detail-value" value="<?php echo $firstname; ?>" readonly>
                             </div>
                             
                             <div class="detail-group">
                                 <div class="detail-label">Middle Name</div>
-                                <div class="detail-value"><?php echo $middlename; ?></div>
+                                <input type="text" class="detail-value" value="<?php echo $middlename; ?>" readonly>
                             </div>
                             
                             <div class="detail-group">
                                 <div class="detail-label">Last Name</div>
-                                <div class="detail-value"><?php echo $lastname; ?></div>
+                                <input type="text" class="detail-value" value="<?php echo $lastname; ?>" readonly>
                             </div>
                             
                             <div class="detail-group">
                                 <div class="detail-label">Email</div>
-                                <div class="detail-value"><?php echo $email; ?></div>
+                                <input type="text" class="detail-value" value="<?php echo $email; ?>" readonly>
                             </div>
                             
                             <div class="detail-group">
                                 <div class="detail-label">Phone</div>
-                                <div class="detail-value"><?php echo $phone; ?></div>
+                                <input type="text" class="detail-value" value="<?php echo $phone; ?>" readonly>
                             </div>
                             
                             <div class="detail-group">
                                 <div class="detail-label">RSBSA Number</div>
-                                <div class="detail-value"><?php echo $rsbsa_number; ?></div>
+                                <input type="text" class="detail-value" value="<?php echo $rsbsa_number; ?>" readonly>
                             </div>
                         </div>
                         
                         <div class="detail-group">
                             <div class="detail-label">Home Address</div>
-                            <div class="detail-value"><?php echo $address; ?></div>
+                            <input type="text" class="detail-value" value="<?php echo $address; ?>" readonly>
                         </div>
                         
                         <div class="detail-group">
                             <div class="detail-label">Farm Location</div>
-                            <div class="detail-value"><?php echo $farm_location; ?></div>
+                            <input type="text" class="detail-value" value="<?php echo $farm_location; ?>" readonly>
                         </div>
                     </div>
                 </div>
@@ -518,13 +517,12 @@
                 return response.json();
             })
             .then(data => { 
-                console.log(data);
-                
                 if (data.status === "success") {
                     setTimeout(() => {
                         submitBtn.innerHTML = originalText;
                         submitBtn.disabled = false;
                         toggleEditMode();
+                        window.location.href = '../user/profile.php';
                     }, 1500);
                 } else {
                     alert(data.message || 'Update failed.');

@@ -1,8 +1,12 @@
 <?php
+session_start();
 include "../../config/db.php";
 
+header('Content-Type: application/json');
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $member_id = mysqli_real_escape_string($conn, $_POST['memberId']); // 👈 Get from POST
+
+    $member_id = mysqli_real_escape_string($conn, $_POST['memberId']);
 
     $firstName = mysqli_real_escape_string($conn, $_POST['firstName']);
     $middleName = mysqli_real_escape_string($conn, $_POST['middleName']);
@@ -13,17 +17,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $address = mysqli_real_escape_string($conn, $_POST['address']);
     $farmLocation = mysqli_real_escape_string($conn, $_POST['farmLocation']);
 
-    $query = "UPDATE user_members 
-              SET first_name='$firstName', middle_name='$middleName', last_name='$lastName', 
-                  email='$email', phone='$phone', rsbsa_number='$rsbsaNumber', 
-                  address='$address', farm_location='$farmLocation' 
-              WHERE member_id='$member_id'";
+    $query = "UPDATE `user_members` 
+              SET `first_name`='$firstName', 
+                  `middle_name`='$middleName', 
+                  `last_name`='$lastName', 
+                  `email`='$email', 
+                  `phone`='$phone', 
+                  `rsbsa_number`='$rsbsaNumber', 
+                  `address`='$address', 
+                  `farm_location`='$farmLocation' 
+              WHERE `member_id`='$member_id'";
 
     if (mysqli_query($conn, $query)) {
-        echo json_encode(['status' => 'success']);
+
+        $_SESSION['first_name'] = $firstName;
+        $_SESSION['middle_name'] = $middleName;
+        $_SESSION['last_name'] = $lastName;
+        $_SESSION['email'] = $email;
+        $_SESSION['phone'] = $phone;
+        $_SESSION['rsbsa_number'] = $rsbsaNumber;
+        $_SESSION['address'] = $address;
+        $_SESSION['farm_location'] = $farmLocation;
+
+        echo json_encode(['status' => 'success', 'message' => 'Successfully updated profile.']);
+        exit;
     } else {
-        echo json_encode(['status' => 'error', 'message' => 'Failed to update profile.']);
+        echo json_encode(['status' => 'error', 'message' => 'Failed to update profile. Error: ' . mysqli_error($conn)]);
+        exit;
     }
+
 } else {
     echo json_encode(['status' => 'error', 'message' => 'Invalid request method.']);
+    exit;
 }
+
+?>

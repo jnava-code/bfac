@@ -148,4 +148,8 @@ h2 {
     width: 100%;
     box-sizing: border-box;
   }
+
+.modal-livestock h2 {
+    grid-column: span 2;
+}
   
