@@ -14,11 +14,7 @@
 	<?php include "user_components/user_sidebar.php"; ?>
 
 	<section id="content">
-		<nav>
-			<i class="bx bx-menu"></i>
-			<h4 style="color: var(--green);">Home</h4>
-			<a href="#" class="profile"><img src="../img/admin.png" alt="Profile" /></a>
-		</nav>
+		<?php include "user_components/user_navbar.php"; ?>
 
 		<main>
 			<div class="head-title">

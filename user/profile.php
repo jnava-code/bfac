@@ -332,12 +332,7 @@
 
     <?php include "user_components/user_sidebar.php"; ?>
     <section id="content">
-        <nav>
-            <i class="bx bx-menu"></i>
-            <h4 style="color: var(--green);">Your Profile</h4>
-            <a href="#" class="profile"><img src="../<?php echo $profile_image ?>"" alt="Profile" /></a>
-        </nav>
-
+        <?php include "user_components/user_navbar.php"; ?>
         <main>
             <div class="profile-container">
                 <div class="profile-header">

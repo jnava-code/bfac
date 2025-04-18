@@ -1,3 +1,4 @@
+<?php include "../auth/session.php"; ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,21 +12,11 @@
     <title> Transaction History</title>
 
 <body>
-
-
 	<!-- SIDEBAR -->
 	<?php include "user_components/user_sidebar.php"; ?>
 
-
 	<section id="content">
-        <nav>
-			<i class="bx bx-menu"></i>
-			
-			
-			<div class="profile-dropdown">
-			  <a href="#" class="profile"><img src="../img/admin.png" alt="Profile" /></a>
-			</div>
-		  </nav>
+		<?php include "user_components/user_navbar.php"; ?>
 		<main>
 			<div class="head-title">
 			<div class="left">

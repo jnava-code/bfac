@@ -233,34 +233,33 @@
   const form = document.getElementById("editUserStatusForm");
 	const emails = document.querySelectorAll(".email");
 	const phones = document.querySelectorAll(".phone");
+	
+	function maskEmail(email) {
+		const [user, domain] = email.split('@');
+		if (user.length <= 2) return email; 
 
-	// Mask Email
-function maskEmail(email) {
-    const [user, domain] = email.split('@');
-    if (user.length <= 2) return email; // too short to mask
+		const first = user[0];
+		const last = user[user.length - 1];
+		const masked = first + '*'.repeat(user.length - 2) + last;
+		return masked + '@' + domain;
+	}
 
-    const first = user[0];
-    const last = user[user.length - 1];
-    const masked = first + '*'.repeat(user.length - 2) + last;
-    return masked + '@' + domain;
-}
+	function maskPhone(phone) {
+		const digits = phone.replace(/\D/g, '');
+		if (digits.length < 7) return phone;
 
-function maskPhone(phone) {
-    const digits = phone.replace(/\D/g, '');
-    if (digits.length < 7) return phone;
+		const start = digits.slice(0, 3);
+		const end = digits.slice(-2);
+		return start + '*****' + end;
+	}
 
-    const start = digits.slice(0, 3);
-    const end = digits.slice(-2);
-    return start + '*****' + end;
-}
+	emails.forEach(el => {
+		el.textContent = maskEmail(el.textContent.trim());
+	});
 
-document.querySelectorAll('.email').forEach(el => {
-    el.textContent = maskEmail(el.textContent.trim());
-});
-
-document.querySelectorAll('.phone').forEach(el => {
-    el.textContent = maskPhone(el.textContent.trim());
-});
+	phones.forEach(el => {
+		el.textContent = maskPhone(el.textContent.trim());
+	});
 
   // Open modal on edit icon click
   document.querySelectorAll(".icon-edit").forEach(icon => {
