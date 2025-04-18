@@ -19,7 +19,7 @@
 	}
 
 	function selectUsers($conn, $status) {
-		$sql = "SELECT * FROM user_members WHERE is_archived = 0 AND status = '$status'";
+		$sql = "SELECT * FROM user_members WHERE is_archived = 0 AND status = '$status' AND is_verified = 1";
 		$result = mysqli_query($conn, $sql);
 		return $result;
 	}
@@ -101,10 +101,10 @@
 					<table>
 						<thead>
 							<tr>
-								<th>Username</th>
 								<th>First Name</th>
 								<th>Middle Name</th>
 								<th>Last Name</th>
+								<th>Email</th>
 								<th>Phone</th>
 								<th>Address</th>
 								<th>Date</th>
@@ -116,11 +116,11 @@
 								if($result_pending && mysqli_num_rows($result_pending) > 0) {
 									while($row = mysqli_fetch_assoc($result_pending)) {
 										echo "<tr>";
-										echo "<td>" . htmlspecialchars($row['username']) . "</td>";
 										echo "<td>" . htmlspecialchars($row['first_name']) . "</td>";
 										echo "<td>" . htmlspecialchars($row['middle_name']) . "</td>";
 										echo "<td>" . htmlspecialchars($row['last_name']) . "</td>";
-										echo "<td>" . htmlspecialchars($row['phone']) . "</td>";
+										echo "<td class='email'>" . htmlspecialchars($row['email']) . "</td>";
+										echo "<td class='phone'>" . htmlspecialchars($row['phone']) . "</td>";
 										echo "<td>" . htmlspecialchars($row['address']) . "</td>";
 										echo "<td>" . htmlspecialchars($row['date_registered']) . "</td>";
 										echo "<td class='buttons_column'>
@@ -162,15 +162,13 @@
 					<table>
 						<thead>
 							<tr>
-								<th>Username</th>
-								<th>User Profile</th>
 								<th>First Name</th>
 								<th>Middle Name</th>
 								<th>Last Name</th>
 								<th>Email</th>
 								<th>Phone</th>
 								<th>Address</th>
-								<th>Date</th>
+								<th>Date Registered</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -178,13 +176,11 @@
 								if($result_approved && mysqli_num_rows($result_approved) > 0) {
 									while($row = mysqli_fetch_assoc($result_approved)) {
 										echo "<tr>";
-										echo "<td>" . $row['username'] . "</td>";
-										echo '<td><img src="'. '../'. $row["profile_image"] . '" width="40"></td>';
 										echo "<td>" . $row['first_name'] . "</td>";
 										echo "<td>" . $row['middle_name'] . "</td>";
 										echo "<td>" . $row['last_name'] . "</td>";
-										echo "<td>" . $row['email'] . "</td>";
-										echo "<td>" . $row['phone'] . "</td>";
+										echo "<td class='email'>" . $row['email'] . "</td>";
+										echo "<td class='phone'>" . $row['phone'] . "</td>";
 										echo "<td>" . $row['address'] . "</td>";
 										echo "<td>" . $row['date_registered'] . "</td>";
 										echo "</tr>";
@@ -235,6 +231,36 @@
   const modal = document.getElementById("editStatusModal");
   const closeModal = document.getElementById("closeStatusModal");
   const form = document.getElementById("editUserStatusForm");
+	const emails = document.querySelectorAll(".email");
+	const phones = document.querySelectorAll(".phone");
+
+	// Mask Email
+function maskEmail(email) {
+    const [user, domain] = email.split('@');
+    if (user.length <= 2) return email; // too short to mask
+
+    const first = user[0];
+    const last = user[user.length - 1];
+    const masked = first + '*'.repeat(user.length - 2) + last;
+    return masked + '@' + domain;
+}
+
+function maskPhone(phone) {
+    const digits = phone.replace(/\D/g, '');
+    if (digits.length < 7) return phone;
+
+    const start = digits.slice(0, 3);
+    const end = digits.slice(-2);
+    return start + '*****' + end;
+}
+
+document.querySelectorAll('.email').forEach(el => {
+    el.textContent = maskEmail(el.textContent.trim());
+});
+
+document.querySelectorAll('.phone').forEach(el => {
+    el.textContent = maskPhone(el.textContent.trim());
+});
 
   // Open modal on edit icon click
   document.querySelectorAll(".icon-edit").forEach(icon => {

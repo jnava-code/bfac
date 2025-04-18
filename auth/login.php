@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user = null;
     $source = null;
 
-    $queryUser = "SELECT * FROM user_members WHERE (username = '$username' OR email = '$username') AND status = 'Approved' AND is_archived = 0";
+    $queryUser = "SELECT * FROM user_members WHERE (username = '$username' OR email = '$username') AND status = 'Approved' AND is_archived = 0 AND is_verified = 1";
     $resultUser = mysqli_query($conn, $queryUser);
 
     if ($resultUser && mysqli_num_rows($resultUser) > 0) {
