@@ -1,4 +1,10 @@
-<?php include "../auth/session.php"; ?>
+<?php 
+	include "../config/db.php";
+	include "../auth/session.php"; 
+
+	$sales_query = "SELECT * FROM admin_shares_list WHERE member_id = '$member_id'";
+	$sales_result = mysqli_query($conn, $sales_query);
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -36,14 +42,28 @@
 					<table>
 						<thead>
 							<tr>
-								<th>Member Name</th>
 								<th>Shares Added</th>
 								<th>Purchace Amount (₱)</th>
 								<th>Receipt Control Number</th>
 								<th>Date and Time</th>
 						</thead>
 						<tbody>
-
+							<?php
+								if (mysqli_num_rows($sales_result) > 0) {
+									while ($sales_row = mysqli_fetch_assoc($sales_result)) {
+										$share_capital = number_format($sales_row['share_capital']);
+										$paid_up_share_capital = number_format($sales_row['paid_up_share_capital']);
+										echo "<tr>
+											<td>{$share_capital}</td>
+											<td>₱{$paid_up_share_capital}.00</td>
+											<td>{$sales_row['receipt_number']}</td>
+											<td>{$sales_row['created_at']}</td>
+										</tr>";		
+									}
+								} else {
+									echo "<tr><td colspan='4'>No transaction history available.</td></tr>";
+								}
+							?>
 						</tbody>
 					</table>
 				</div>
