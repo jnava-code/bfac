@@ -53,7 +53,7 @@
 			<div class="head-title">
 				<div class="left">
 					<h1>Welcome back, <?php echo $firstname . ' ' . $lastname; ?>!</h1>
-					<?php echo number_format($total_sales); ?>
+					<!-- <?php echo number_format($total_sales); ?> -->
 					<ul class="breadcrumb">
 						<li style="font-size: small;">Here's your current share capital and dividend overview</li>
 					</ul>
