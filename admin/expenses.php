@@ -41,6 +41,43 @@
           </a>
         </li>
       </ul>
+      <!-- add expense -->
+      <div class="table-data">
+        <div class="order">
+          <div class="head">
+            <h3>Add Expense</h3>
+          </div> 
+
+		   <div class="form-group">
+          <label for="expenseCategory">Category</label>
+          <select id="expenseCategory" required>
+            <option value="">Select Category</option>
+            <option value="Feeding">Feeding</option>
+		<option value="Payroll">Payroll</option>
+            <option value="Others">Others</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="expenseAmount">Amount (₱)</label>
+          <input type="number" id="expenseAmount" placeholder="Enter amount" required>
+        </div>
+        <div class="form-group">
+          <label for="expenseDate">Date</label>
+          <input type="date" id="expenseDate" required>
+        </div>
+        <div class="form-group">
+          <label for="expenseDescription">Description</label>
+          <textarea id="expenseDescription" placeholder="Enter description" required></textarea>
+        </div>
+        <div class="form-group">
+          <label for="expenseYear">Year</label>
+          <input type="number" id="expenseYear" placeholder="e.g. 2025" required>
+        </div>
+        <div class="form-group">
+          <button type="submit">Submit</button>
+        </div>
+      </div> 
+    </div>
 
       <div class="table-data">
         <div class="order">
@@ -56,7 +93,6 @@
                 <option value="2020">2020</option>
               </select>
             </div>
-            <button class="view-btn-add" id="openExpenseModal2"><i class="bx bx-plus"></i></button>
           </div>
           <table>
             <thead>
@@ -90,44 +126,7 @@
     </main>
   </section>
 
-  <!-- Expense Modal -->
-  <div class="modal1" id="expenseModal">
-    <div class="modal-livestock">
-      <button class="close" id="closeExpenseModal">&times;</button>
-      <h2>Add Expense</h2>
-      <form id="expenseForm">
-        <div class="form-group">
-          <label for="expenseCategory">Category</label>
-          <select id="expenseCategory" required>
-            <option value="">Select Category</option>
-            <option value="Feed">Feed</option>
-            <option value="Medicine">Medicine</option>
-            <option value="Utilities">Utilities</option>
-            <option value="Others">Others</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="expenseAmount">Amount (₱)</label>
-          <input type="number" id="expenseAmount" placeholder="Enter amount" required>
-        </div>
-        <div class="form-group">
-          <label for="expenseDate">Date</label>
-          <input type="date" id="expenseDate" required>
-        </div>
-        <div class="form-group">
-          <label for="expenseDescription">Description</label>
-          <textarea id="expenseDescription" placeholder="Enter description" required></textarea>
-        </div>
-        <div class="form-group">
-          <label for="expenseYear">Year</label>
-          <input type="number" id="expenseYear" placeholder="e.g. 2025" required>
-        </div>
-        <div class="form-group">
-          <button type="submit">Submit</button>
-        </div>
-      </form>
-    </div>
-  </div>
+ 
 
   <script>
     // Open modal

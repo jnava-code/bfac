@@ -1,4 +1,5 @@
 <!-- 360 limit share capital  -->
+<?php include "../config/db.php"; ?>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -80,7 +81,19 @@
             <form id="sharesForm">
                 <div class="form-group">
                     <label for="memberSelect">Select Member</label>
-                    <select id="memberSelect" required></select>
+                    <?php 
+                        $sql_member = "SELECT * FROM user_members WHERE status = 'Approved' AND is_archived = 0 AND is_verified = 1";
+                        $result_member = mysqli_query($conn, $sql_member);
+                        if ($result_member && mysqli_num_rows($result_member) > 0) {
+                            echo '<select id="memberSelect" required>';
+                            echo '<option value="" disabled selected>Select a member</option>';
+                            while ($row = mysqli_fetch_assoc($result_member)) {
+                                echo '<option value="' . $row['member_id'] . '">' . $row['first_name'] . ' ' . $row['last_name'] . '</option>';
+                            }
+                            echo '</select>';
+                        } 
+                    ?>
+                    <!-- <select id="memberSelect" required></select> -->
                 </div>
     
                 <div class="form-group">
@@ -351,21 +364,6 @@ window.onclick = function (event) {
 
 const sharePrice = 100;  // Par value for each share
 const members = {};
-
-// Initialize with 50 fake members
-for (let i = 1; i <= 2; i++) {
-    const name = `Member ${i}`;
-    members[name] = {
-        name,
-        totalContribution: 0,
-    };
-
-    // Add to dropdown
-    const option = document.createElement("option");
-    option.value = name;
-    option.textContent = name;
-    document.getElementById("memberSelect").appendChild(option);
-}
 
 // Update the purchase price field based on the shares input
 function updatePurchasePrice() {
