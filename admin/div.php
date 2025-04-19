@@ -203,7 +203,7 @@
                       <tr><td>Total Expenses</td><td>₱<?php echo number_format($total_expenses); ?></td></tr>
                       <tr><td><strong>Net Income</strong></td><td><strong>₱<?php echo number_format($total_sales - $total_expenses)?></strong></td></tr>
                       <tr><td>Statutory Funds (30%)</td><td>₱<?php echo number_format(($total_sales - $total_expenses) * 0.30); ?>                      </td></tr>
-                      <tr><td><strong>Net Surplus (Dividends Available)</strong></td><td><strong>₱<?php echo number_format(($total_sales - $total_expenses) / $total_share_capital)?></strong></td></tr>
+                      <tr><td><strong>Net Surplus (Dividends Available)</strong></td><td><strong>₱<?php echo number_format(($total_sales - $total_expenses) - (($total_sales - $total_expenses) * 0.30))?></strong></td></tr>
                       <tr><td>Total Share Capital</td><td>₱<?php echo number_format($total_share_capital * 100); ?></td></tr>
                       <tr><td>Total Number of Shares</td><td><?php echo number_format($total_share_capital); ?></td></tr>
                     </tbody>
@@ -304,35 +304,45 @@
               
               <!-- JavaScript -->
               <script>
-                const netSurplus = 143864;
-                const totalShares = 120;
-                const dividendPerShare = netSurplus / totalShares;
+                // const netSurplus = 143864;
+                // const totalShares = 120;
+                // const dividendPerShare = netSurplus / totalShares;
               
-                const members = [
-                  { name: 'Pedro Ramirez', contribution: 50000, memberShares: 12 },
-                  { name: 'Juan Dela Cruz', contribution: 100000, memberShares: 10 },
-                ];
+                // const members = [
+                //   { name: 'Pedro Ramirez', contribution: 50000, memberShares: 12 },
+                //   { name: 'Juan Dela Cruz', contribution: 100000, memberShares: 10 },
+                // ];
               
                 function updateDividendTable() {
                   const tbody = document.getElementById('dividend-table-body');
                   tbody.innerHTML = '';
+                  
+                  fetch('../api/get/read_share.php')
+                    .then(response => response.json())
+                    .then(data => {
+                      const totalShares = data.reduce((acc, member) => acc + member.total_paid_up_share_capital, 0);
+                      const netSurplus = <?php echo ($total_sales - $total_expenses) - (($total_sales - $total_expenses) * 0.30); ?>;
+                      const dividendPerShare = netSurplus / totalShares;
               
-                  members.forEach(member => {
-                    const dividendPerMember = member.memberShares * dividendPerShare;
+                      data.forEach(member => {
+                        console.log(member);
+                        
+                        const dividendPerMember = member.total_paid_up_share_capital * dividendPerShare;
               
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                      <td>${member.name}</td>
-                      <td>₱${member.contribution.toLocaleString()}</td>
-                      <td>₱${dividendPerMember.toLocaleString()}</td>
-                      <td>₱${dividendPerMember.toLocaleString()}</td>
-                      <td>
-
-                        <button class="btn small" onclick="openModal('${member.name}', '${dividendPerMember}')">Withdraw</button>
-                      </td>
-                    `;
-                    tbody.appendChild(row);
-                  });
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                          <td>${member.first_name} ${member.middle_name} ${member.last_name}</td>
+                          <td>₱${member.total_paid_up_share_capital.toLocaleString()}</td>
+                          <td>₱${dividendPerMember.toLocaleString()}</td>
+                          <td>₱${dividendPerMember.toLocaleString()}</td>
+                          <td>
+                            <button class="btn small" onclick="openModal('${member.first_name} ${member.middle_name} ${member.last_name}', '${dividendPerMember}')">Withdraw</button>
+                            <button class="btn small" onclick="openSendToSharesModal('${member.first_name} ${member.middle_name} ${member.last_name}', '${dividendPerMember}')">Allocate to Shares</button>
+                          </td>
+                        `;
+                        tbody.appendChild(row);
+                      });
+                    })
                 }
               
                 function openModal(memberName, amountLeft) {
