@@ -28,17 +28,7 @@
                     </ul>
                 </div>
             </div>
-            <!-- <ul class="box-info">
-				<li style="width: fit-content;">
-                        <a href="" style="text-decoration: none; color: inherit;">
-                        <i class='bx bxs-coin-stack'></i>
-                        <span class="text">
-                            <h3>₱100</h3>
-                            <p>Par value</p>
-                        </span>
-                        </a>
-                    </li>
-                </ul> -->
+
             <div id="message" class="success" style="display: none;"></div>
             <div class="table-data">
                 <div class="order">
@@ -62,11 +52,10 @@
                                 <th>Member Name</th>
                                 <th>Paid-up Share Capital</th>
                                 <th>Share Capital</th>
-                                <th>Action</th>  <!--archive button only -->
-
+                                <th>Action</th> 
                             </tr>
                         </thead>
-                        <!-- <tbody id="membersTableBody"></tbody> -->
+                        <tbody id="membersTableBody"></tbody>
                     </table>
                 </div>
             </div>
@@ -93,21 +82,20 @@
                             echo '</select>';
                         } 
                     ?>
-                    <!-- <select id="memberSelect" required></select> -->
                 </div>
     
                 <div class="form-group">
                     <label for="sharesInput">Number of Shares</label>
-                    <input type="number" id="sharesInput" placeholder="Enter number of shares" required oninput="updatePurchasePrice()">
+                    <input type="number" id="sharesInput" name="number_of_shares" placeholder="Enter number of shares" required oninput="updatePurchasePrice()">
                 </div>
                 <div class="form-group">
                     <label for="purchaseInput">Purchase Amount</label>
-                    <input type="text" id="purchasePrice" placeholder="Auto-calculated" readonly>
+                    <input type="text" id="purchasePrice" name="purchase_amount" placeholder="Auto-calculated" readonly>
                 </div>
                 
                 <div class="form-group">
                     <label for="receiptInput">Receipt Control Number</label>
-                    <input type="number" id="receiptNumber" placeholder="Enter control number" required>
+                    <input type="number" id="receiptNumber" name="receipt_control_number" placeholder="Enter control number">
                 </div>
                 
     
@@ -334,112 +322,149 @@
     </style>
   
    <script>
-    // Fix the modal references
-const modal = document.getElementById("addSharesModal");
-const openModalButton = document.getElementById("openSharesModal");
-const closeModalButton = document.getElementById("closeSharesModal");
+        // Fix the modal references
+        const modal = document.getElementById("addSharesModal");
+        const openModalButton = document.getElementById("openSharesModal");
+        const closeModalButton = document.getElementById("closeSharesModal");
 
-// Initially, hide the modal
-modal.style.display = "none";
-
-// Show the modal with a smooth transition when the "Add Shares" button is clicked
-openModalButton.onclick = function () {
-    modal.classList.add("show");
-    setTimeout(() => { modal.style.display = "flex"; }, 300);
-};
-
-// Hide the modal with a smooth transition when the close button is clicked
-closeModalButton.onclick = function () {
-    modal.classList.remove("show");
-    setTimeout(() => { modal.style.display = "none"; }, 300);
-};
-
-// Close the modal if the user clicks outside of it
-window.onclick = function (event) {
-    if (event.target === modal) {
-        modal.classList.remove("show");
-        setTimeout(() => { modal.style.display = "none"; }, 300);
-    }
-};
-
-const sharePrice = 100;  // Par value for each share
-const members = {};
-
-// Update the purchase price field based on the shares input
-function updatePurchasePrice() {
-    const shares = parseFloat(document.getElementById("sharesInput").value);
-    if (!isNaN(shares) && shares > 0) {
-        const purchasePrice = shares * sharePrice;
-        document.getElementById("purchasePrice").value = `₱${purchasePrice.toFixed(2)}`;
-    } else {
-        document.getElementById("purchasePrice").value = '';
-    }
-}
-
-// Add the transaction when the button is clicked
-function addTransaction() {
-    const memberName = document.getElementById("memberSelect").value;
-    const shares = parseFloat(document.getElementById("sharesInput").value);
-    const purchasePrice = shares * sharePrice;
-    const receiptNumber = document.getElementById("receiptNumber").value;
-    const contractAmount = document.getElementById("contractAmount").value;
-
-    // Validate the input fields
-    if (isNaN(shares) || shares <= 0) {
-        alert("Please enter a valid number of shares.");
-        return;
-    }
-
-    if (!receiptNumber) {
-        alert("Please enter a valid receipt control number.");
-        return;
-    }
-    if (!contractAmount) {
-        alert("Please enter a valid contract amount.");
-        return;
-    }
-
-    const confirmAdd = confirm(`You are about to add ${shares} shares to ${memberName}.\nPurchase Price: ₱${purchasePrice.toFixed(2)}\nReceipt Control Number: ${receiptNumber}\nAre you sure?`);
-    if (confirmAdd) {
-        // Calculate the contribution based on the purchase price entered
-        const contribution = shares * sharePrice;
-        members[memberName].totalContribution += contribution;
-
-        alert(`${memberName} added ${shares} shares (₱${contribution.toFixed(2)}). Updated successfully.`);
-
-        // Close the modal after the success message
+        // Initially, hide the modal
         modal.style.display = "none";
 
-        // Reset the form fields
-        document.getElementById("sharesInput").value = "";
-        document.getElementById("purchasePrice").value = "";
-        document.getElementById("receiptNumber").value = "";
-        document.getElementById("contractAmount").value = "";
+        // Show the modal with a smooth transition when the "Add Shares" button is clicked
+        openModalButton.onclick = function () {
+            modal.classList.add("show");
+            setTimeout(() => { modal.style.display = "flex"; }, 300);
+        };
 
+        // Hide the modal with a smooth transition when the close button is clicked
+        closeModalButton.onclick = function () {
+            modal.classList.remove("show");
+            setTimeout(() => { modal.style.display = "none"; }, 300);
+        };
+
+        // Close the modal if the user clicks outside of it
+        window.onclick = function (event) {
+            if (event.target === modal) {
+                modal.classList.remove("show");
+                setTimeout(() => { modal.style.display = "none"; }, 300);
+            }
+        };
+
+        const sharePrice = 100;  // Par value for each share
+        const members = {};
+
+        // Update the purchase price field based on the shares input
+        function updatePurchasePrice() {
+            const shares = parseFloat(document.getElementById("sharesInput").value);
+            if (!isNaN(shares) && shares > 0) {
+                const purchasePrice = shares * sharePrice;
+                document.getElementById("purchasePrice").value = `₱${purchasePrice.toFixed(2)}`;
+            } else {
+                document.getElementById("purchasePrice").value = '';
+            }
+        }
+
+        // Add the transaction when the button is clicked
+        function addTransaction() {
+            const memberName = document.getElementById("memberSelect").value;
+            const shares = parseFloat(document.getElementById("sharesInput").value);
+            const purchasePrice = shares * sharePrice;
+            const receiptNumber = document.getElementById("receiptNumber").value;
+            // const contractAmount = document.getElementById("contractAmount").value;
+
+            // Validate the input fields
+            if (isNaN(shares) || shares <= 0) {
+                alert("Please enter a valid number of shares.");
+                return;
+            }
+
+            if (!receiptNumber) {
+                alert("Please enter a valid receipt control number.");
+                return;
+            }
+            // if (!contractAmount) {
+            //     alert("Please enter a valid contract amount.");
+            //     return;
+            // }
+
+            const confirmAdd = confirm(`You are about to add ${shares} shares to ${memberName}.\nPurchase Price: ₱${purchasePrice.toFixed(2)}\nReceipt Control Number: ${receiptNumber}\nAre you sure?`);
+            if (confirmAdd) {
+                const memberSelect = document.getElementById("memberSelect");
+                const sharesInput = document.getElementById("sharesInput");
+                const purchasePrice = document.getElementById("purchasePrice");
+                const receiptNumber = document.getElementById("receiptNumber");
+
+                const sharesData = new FormData();
+                sharesData.append("memberSelect", memberSelect.value);
+                sharesData.append("sharesInput", sharesInput.value);
+                sharesData.append("purchasePrice", purchasePrice.value);
+                sharesData.append("receiptNumber", receiptNumber.value);
+
+                fetch("../api/post/add_share.php", {
+                    method: 'POST',
+                    body: sharesData
+                }).then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                }).then(data => {
+                    if(data.status == "success") {
+                        // Close the modal after the success message
+                        modal.style.display = "none";
+
+                        // Reset the form fields
+                        document.getElementById("sharesInput").value = "";
+                        document.getElementById("purchasePrice").value = "";
+                        document.getElementById("receiptNumber").value = "";
+                        // document.getElementById("contractAmount").value = "";
+
+                        updateTable();
+                    }
+                })
+                // // Calculate the contribution based on the purchase price entered
+                // const contribution = shares * sharePrice;
+                // console.log("contribution", contribution);       
+                // // members[memberName].totalContribution += contribution;
+
+                // alert(`${memberName} added ${shares} shares (₱${contribution.toFixed(2)}). Updated successfully.`);
+                // console.log("memberName", memberName);  
+                
+            } else {
+                alert("Cancelled. No changes were made.");
+            }
+        }
+
+        // Function to update the table
+        function updateTable() {
+            const tbody = document.getElementById("membersTableBody");
+            if(tbody) tbody.innerHTML = "";
+
+            fetch("../api/get/read_share.php").then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                }).then(data => {
+                    console.log(data);
+                    
+                    // if(data && data.length > 0) {
+                    //     data.forEach(share => {
+                    //         const shareHTML = `<tr>
+                    //             <td>${share.}</td>
+                    //             <td>${share.}</td>
+                    //             <td>${share.}</td>
+                    //             <td>${share.}</td>
+                    //         </tr>`;
+
+                    //         if(tbody) tbody.insertAdjacentHTML("before", shareHTML);
+                    //     });
+                    // }
+                })
+        }
+
+        // Initial table population
         updateTable();
-    } else {
-        alert("Cancelled. No changes were made.");
-    }
-}
-
-// Function to update the table
-function updateTable() {
-    const tbody = document.getElementById("membersTableBody");
-    if(tbody) tbody.innerHTML = "";
-
-    Object.values(members).forEach(member => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-            <td>${member.name}</td>
-            <td>₱${member.totalContribution.toFixed(2)}</td>
-            <td>${(member.totalContribution / sharePrice).toFixed(2)}</td>
-        `;
-        if(tbody) tbody.appendChild(tr);
-    });
-}
-
-// Initial table population
-updateTable();
 
    </script>
     <script src="../js/kebab.js"></script>
