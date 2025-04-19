@@ -1,4 +1,37 @@
-<?php include "../auth/session.php"; ?>
+<?php 
+	include "../config/db.php";
+	include "../auth/session.php"; 
+
+	$sales_query = "
+		SELECT SUM(asales.amount) AS total_sales
+		FROM admin_sales AS asales
+		LEFT JOIN user_members um ON um.member_id = asales.member_id
+		WHERE um.is_archived = 0 AND um.is_verified = 1 AND um.member_id = '$member_id'
+	";
+
+	$sales_result = mysqli_query($conn, $sales_query);
+	$sales_row = mysqli_fetch_assoc($sales_result);	
+	$total_sales = $sales_row['total_sales'] ?? 0;
+
+	$expenses_query = "SELECT SUM(amount) AS total_amount FROM admin_expenses";
+	$expenses_query = mysqli_query($conn, $expenses_query);
+	$expenses_row = mysqli_fetch_assoc($expenses_query);
+
+	$total_expenses = $expenses_row['total_amount'] ?? 0;
+
+	$sql_share = "
+        SELECT 
+            SUM(asl.paid_up_share_capital) AS total_paid_up_share_capital,
+            SUM(asl.share_capital) AS total_share_capital
+        FROM admin_shares AS ashares
+        LEFT JOIN admin_shares_list asl ON asl.member_id = ashares.member_id
+		WHERE ashares.member_id = '$member_id'
+	";
+	$result_share = mysqli_query($conn, $sql_share);
+	$row_share = mysqli_fetch_assoc($result_share);
+	$total_paid_up_share_capital = $row_share['total_paid_up_share_capital'] ? $row_share['total_paid_up_share_capital'] : 0;
+	$total_share_capital = $row_share['total_share_capital'] ? $row_share['total_share_capital'] : 0;
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,6 +53,7 @@
 			<div class="head-title">
 				<div class="left">
 					<h1>Welcome back, <?php echo $firstname . ' ' . $lastname; ?>!</h1>
+					<?php echo number_format($total_sales); ?>
 					<ul class="breadcrumb">
 						<li style="font-size: small;">Here's your current share capital and dividend overview</li>
 					</ul>
@@ -46,12 +80,12 @@
 							<span>Shares Capital</span>
 							<div class="share-capital">
 								<span style="font-size: 28px;">₱</span>
-								<strong>12000.00</strong>
+								<strong><?php echo $total_paid_up_share_capital; ?></strong>
 							</div>
 						</div>
 						<div class="detail-item">
 							<span>Share</span>
-							<strong>120</strong>
+							<strong><?php echo number_format($total_share_capital); ?></strong>
 						</div>
 					</div>
 				</a>
