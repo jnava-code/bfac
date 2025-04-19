@@ -1,3 +1,8 @@
+<?php 
+    include "../config/db.php"; 
+    include "../auth/session.php";
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,7 +20,7 @@
 <?php include "admin_components/admin_sidebar.php"; ?>
 
   <section id="content">
-    <?php include "admin_components/admin_sidebar.php"; ?>
+    <?php include "admin_components/admin_navbar.php"; ?>
 
     <main>
       <div class="head-title">
@@ -40,8 +45,6 @@
         </li>
       </ul>
 
-
-    
       <div class="table-data">
         <div class="order">
           <div class="head">
@@ -74,7 +77,7 @@
                 <th>Action</th>
               </tr>
             </thead>
-            <!-- <tbody id="incomeTableBody"></tbody> -->
+            <tbody id="incomeTableBody"></tbody>
           </table>
         </div>
       </div>
@@ -92,7 +95,24 @@
       </div>
       <div class="form-group">
         <label for="customerName">Customer Name</label>
-        <input type="text" id="customerName" placeholder="Enter customer name" required />
+        <!-- <input type="text" id="customerName" placeholder="Enter customer name" required /> -->
+        <select id="customerName" required>
+          <option value="" selected disabled>Select Customer</option>
+          <?php
+            // Fetch customer names from the database
+            $query = "SELECT * FROM user_members WHERE is_archived = 0 AND is_verified = 1";
+            $result = mysqli_query($conn, $query);
+
+            if (mysqli_num_rows($result) > 0) {
+              while ($row = mysqli_fetch_assoc($result)) {
+                $fullname = $row['middle_name'] == "" ? $row['first_name'] . " " . $row['last_name'] : $row['first_name'] . " " . $row['middle_name'] . " " . $row['last_name'];
+                echo "<option value='" . $row['member_id'] . "'>" . $fullname . "</option>";
+              }
+            } else {
+              echo "<option value=''>No customers found</option>";
+            }
+          ?>
+        </select>
       </div>
       <div class="form-group">
         <label for="productName">Product Name</label>
@@ -102,10 +122,10 @@
         <label for="quantity">Quantity</label>
         <input type="number" id="quantity" placeholder="Enter quantity" required />
       </div>
-      <div class="form-group">
+      <!-- <div class="form-group">
         <label for="address">Address</label>
         <input type="text" id="address" placeholder="Enter address" required />
-      </div>
+      </div> -->
       <div class="form-group">
         <label for="price">Price (₱)</label>
         <input type="number" id="price" placeholder="Enter price" required />
@@ -118,6 +138,10 @@
       <div class="form-group">
         <label for="purchaseDate">Purchase Date</label>
         <input type="date" id="purchaseDate" required />
+      </div>
+      <div class="form-group">
+        <!-- <label for="address">Address</label> -->
+        <input type="hidden"/>
       </div>
       <div class="form-group">
         <button type="submit">Submit</button>
@@ -161,32 +185,63 @@
     const customerName = document.getElementById("customerName").value;
     const productName = document.getElementById("productName").value;
     const quantity = document.getElementById("quantity").value;
-    const address = document.getElementById("address").value;
+    // const address = document.getElementById("address").value;
     const price = document.getElementById("price").value;
     const receiptNo = document.getElementById("receiptNo").value;
     const purchaseDate = document.getElementById("purchaseDate").value;
 
-    const tableBody = document.querySelector(".table-data table tbody") || document.createElement("tbody");
-    const newRow = document.createElement("tr");
-    newRow.innerHTML = `
-      <td>${orderNo}</td>
-      <td>${customerName}</td>
-      <td>${productName}</td>
-      <td>${quantity}</td>
-      <td>${address}</td>
-      <td>₱${parseFloat(price).toFixed(2)}</td>
-      <td>${receiptNo}</td>
-      <td>${purchaseDate}</td>
-      <td><button class="action-btn">Edit</button></td>
-    `;
-    tableBody.appendChild(newRow);
+    const salesData = new FormData();
+    salesData.append("orderNo", orderNo);
+    salesData.append("customerNId", customerName);
+    salesData.append("productName", productName);
+    salesData.append("quantity", quantity);
+    salesData.append("price", price);
+    salesData.append("receiptNo", receiptNo);
+    salesData.append("purchaseDate", purchaseDate);
 
-    // If <tbody> was missing, append it to the table
-    if (!document.querySelector(".table-data table tbody")) {
-      document.querySelector(".table-data table").appendChild(tableBody);
-    }
-
-    document.getElementById("salesModal").classList.remove("show");
-    this.reset();
+    fetch("../api/post/create_sales.php", {
+      method: "POST",
+      body: salesData,
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          alert("Sale added successfully!");
+          salesData(); // Refresh the sales data
+          document.getElementById("salesForm").reset(); // Reset the form
+        }
+      })
   });
+
+  const incomeTableBody = document.getElementById("incomeTableBody");
+
+  function salesData() {
+    fetch(`../api/get/read_sales.php`)
+      .then((response) => response.json())
+      .then((data) => {
+        incomeTableBody.innerHTML = ""; // Clear existing rows
+
+        if(data && data.length > 0) {
+          data.forEach((item) => {
+            const salesHTML = `<tr>
+                <td>${item.order_no}</td>
+                <td>${item.customer_name}</td>
+                <td>${item.product_name}</td>
+                <td>${item.quantity}</td>
+                <td>${item.address}</td>
+                <td>₱${parseFloat(item.price).toFixed(2)}</td>
+                <td>${item.receipt_control_number}</td>
+                <td>${item.purchase_date}</td>
+                <td><button class="action-btn">Edit</button></td>
+              </tr>
+            `;
+            incomeTableBody.insertAdjacentHTML("beforeend", salesHTML);
+          });
+        } else {
+          incomeTableBody.innerHTML = "<tr><td colspan='9'>No sales data available</td></tr>";
+        }
+      })
+  }
+
+  salesData();
 </script>

@@ -1,5 +1,8 @@
 <!-- 360 limit share capital  -->
-<?php include "../config/db.php"; ?>
+<?php 
+    include "../config/db.php"; 
+    include "../auth/session.php";
+?>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -41,7 +44,7 @@
                             <i class="bx bx-dots-vertical" id="kebabMenu"></i>
                             <div class="dropdown-menu" id="dropdownMenu">
                                 <ul>
-                                    <li><a href="archive_share.html">Archive</a></li>
+                                    <li><a href="archive_share.php">Archive</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -51,7 +54,7 @@
                             <tr>
                                 <th>Member Name</th>
                                 <th>Paid-up Share Capital</th>
-                                <th>Share Capital</th>
+                                <th>Shares</th>
                                 <th>Action</th> 
                             </tr>
                         </thead>
@@ -393,11 +396,14 @@
                 const sharesInput = document.getElementById("sharesInput");
                 const purchasePrice = document.getElementById("purchasePrice");
                 const receiptNumber = document.getElementById("receiptNumber");
-
+                let rawValue = purchasePrice.value;
+                let numeric = parseFloat(rawValue.replace(/[^\d.]/g, ''));
+                let wholeNumber = Math.floor(numeric);
+                
                 const sharesData = new FormData();
                 sharesData.append("memberSelect", memberSelect.value);
                 sharesData.append("sharesInput", sharesInput.value);
-                sharesData.append("purchasePrice", purchasePrice.value);
+                sharesData.append("purchasePrice", wholeNumber);
                 sharesData.append("receiptNumber", receiptNumber.value);
 
                 fetch("../api/post/add_share.php", {
@@ -435,35 +441,79 @@
             }
         }
 
-        // Function to update the table
         function updateTable() {
             const tbody = document.getElementById("membersTableBody");
-            if(tbody) tbody.innerHTML = "";
+            if (tbody) tbody.innerHTML = "";
 
-            fetch("../api/get/read_share.php").then(response => {
+            fetch("../api/get/read_share.php")
+                .then(response => {
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
                     }
                     return response.json();
-                }).then(data => {
-                    console.log(data);
-                    
-                    // if(data && data.length > 0) {
-                    //     data.forEach(share => {
-                    //         const shareHTML = `<tr>
-                    //             <td>${share.}</td>
-                    //             <td>${share.}</td>
-                    //             <td>${share.}</td>
-                    //             <td>${share.}</td>
-                    //         </tr>`;
-
-                    //         if(tbody) tbody.insertAdjacentHTML("before", shareHTML);
-                    //     });
-                    // }
                 })
+                .then(data => {
+                    if (data && data.length > 0) {
+                        let shareHTML = '';
+
+                        data.forEach(share => {
+                            const fullName = share.middle_name === ""
+                                ? `${share.first_name} ${share.last_name}`
+                                : `${share.first_name} ${share.middle_name} ${share.last_name}`;
+
+                            shareHTML += `
+                                <tr>
+                                    <td>${fullName}</td>
+                                    <td>₱${share.total_paid_up_share_capital}</td>
+                                    <td>${share.total_share_capital}</td>
+                                    <td><button class="bx bxs-archive icon-archive" id="archive_share_${share.id}"></button></td>
+                                </tr>`;
+                        });
+
+                        if (tbody) tbody.innerHTML = shareHTML;
+
+                        archiveShares();
+                    } else {
+                        const noDataHTML = `<tr><td colspan="4" style="text-align: center;">No Shares Available</td></tr>`;
+                        if (tbody) tbody.innerHTML = noDataHTML;
+                    }
+                });
         }
 
-        // Initial table population
+
+        function archiveShares() {
+            const archiveButtons = document.querySelectorAll("[id^='archive_share_']");
+            
+            if(archiveButtons) {
+                archiveButtons.forEach(button => {
+                    button.addEventListener("click", function(e) {
+                        e.preventDefault();
+                        const shareId = this.id.split("_")[2];
+                        
+                        const confirmArchive = confirm("Are you sure you want to archive this share?");
+                        if(confirmArchive) {
+                            const archiveData = new FormData();
+                            archiveData.append("id", shareId);
+                            fetch("../api/post/archive_share.php", {
+                                method: 'POST',
+                                body: archiveData
+                            }).then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Network response was not ok');
+                                }
+                                return response.json();
+                            }).then(data => {
+                                if(data.status == "success") {
+                                    updateTable();
+                                    return;
+                                }
+                            })
+                        }
+                    });
+                });
+            }
+        }
+        
         updateTable();
 
    </script>
