@@ -15,24 +15,7 @@
     <?php include "admin_components/admin_sidebar.php"; ?>
 
     <section id="content">
-        <nav>
-            <i class="bx bx-menu"></i>
-            <form action="#">
-              <div class="form-input">
-                <input type="search" placeholder="Search..." />
-                <button type="submit" class="search-btn"><i class="bx bx-search"></i></button>
-              </div>
-            </form>
-            <input type="checkbox" id="switch-mode" hidden />
-            <label for="switch-mode" class="switch-mode"></label>
-            <a href="notif.html" class="notification">
-              <i class="bx bxs-bell"></i>
-              <span class="num">8</span>
-            </a>
-            <div class="profile-dropdown">
-              <a href="#" class="profile"><img src="img/admin.png" alt="Profile" /></a>
-            </div>
-          </nav>
+        <?php include "admin_components/admin_navbar.php"; ?>
         <main>
             <div class="head-title">
                 <div class="left">
@@ -444,7 +427,7 @@ function addTransaction() {
 // Function to update the table
 function updateTable() {
     const tbody = document.getElementById("membersTableBody");
-    tbody.innerHTML = "";
+    if(tbody) tbody.innerHTML = "";
 
     Object.values(members).forEach(member => {
         const tr = document.createElement("tr");
@@ -453,7 +436,7 @@ function updateTable() {
             <td>₱${member.totalContribution.toFixed(2)}</td>
             <td>${(member.totalContribution / sharePrice).toFixed(2)}</td>
         `;
-        tbody.appendChild(tr);
+        if(tbody) tbody.appendChild(tr);
     });
 }
 
@@ -461,10 +444,9 @@ function updateTable() {
 updateTable();
 
    </script>
-       <script src="js/kebab.js"></script>
-
-<script src="js/script.js"></script>
-<script src="js/dropdown_profile.js"></script>
+    <script src="../js/kebab.js"></script>
+    <script src="../js/script.js"></script>
+    <script src="../js/dropdown_profile.js"></script>
 </body>
 
 </html>

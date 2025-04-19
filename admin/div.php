@@ -145,28 +145,7 @@
     <?php include "admin_components/admin_sidebar.php"; ?>
 
     <section id="content">
-        <nav>
-            <i class='bx bx-menu'></i>
-            <form action="#">
-                <div class="form-input">
-                    <input type="search" placeholder="Search...">
-                    <button type="submit" class="search-btn"><i class='bx bx-search'></i></button>
-                </div>
-            </form>
-            <input type="checkbox" id="switch-mode" hidden>
-            <label for="switch-mode" class="switch-mode"></label>
-            <a href="notif.html" class="notification">
-                <i class='bx bxs-bell'></i><span class="num">8</span>
-            </a>
-            <div class="profile-dropdown">
-                <a href="#" class="profile"><img src="img/admin.png" alt="Profile"></a>
-                <ul class="dropdown-menu">
-                    <li><a href="AccountSettings.php">Edit Profile</a></li>
-                    <li><a href="add_account.php">Add Account</a></li>
-                    <li><a href="logout.php">Logout</a></li>
-                </ul>
-            </div>
-        </nav>
+      <?php include "admin_components/admin_navbar.php"; ?>
         <main>
             <div class="head-title">
                 <div class="left">
@@ -394,7 +373,7 @@
                 };
               </script>
               
-              <script src="js/script.js"></script>
-              <script src="js/dropdown_profile.js"></script>
+              <script src="../js/script.js"></script>
+              <script src="../js/dropdown_profile.js"></script>
 </body>
 </html>

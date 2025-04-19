@@ -16,27 +16,7 @@
   <?php include "admin_components/admin_sidebar.php"; ?>
 
   <section id="content">
-    <nav>
-      <i class="bx bx-menu"></i>
-      <form action="#">
-        <div class="form-input">
-          <input type="search" placeholder="Search...">
-          <button type="submit" class="search-btn"><i class="bx bx-search"></i></button>
-        </div>
-      </form>
-      <input type="checkbox" id="switch-mode" hidden>
-      <label for="switch-mode" class="switch-mode"></label>
-      <a href="notif.html" class="notification">
-        <i class="bx bxs-bell"></i><span class="num">8</span>
-      </a>
-      <div class="profile-dropdown">
-        <a href="#" class="profile"><img src="img/admin.png" alt="Profile"></a>
-        <ul class="dropdown-menu">
-          <li><a href="admin.html">Admin Accounts</a></li>
-         
-        </ul>
-      </div>
-    </nav>
+    <?php include "admin_components/admin_navbar.php"; ?>
 
     <main>
       <div class="head-title">
@@ -151,47 +131,53 @@
 
   <script>
     // Open modal
-    document.getElementById("openExpenseModal").addEventListener("click", function () {
-      document.getElementById("expenseModal").classList.add("show");
-    });
+    if(document.getElementById("openExpenseModal")) {
+      document.getElementById("openExpenseModal").addEventListener("click", function () {
+        document.getElementById("expenseModal").classList.add("show");
+      });
+    }
 
     // Close modal
-    document.getElementById("closeExpenseModal").addEventListener("click", function () {
-      document.getElementById("expenseModal").classList.remove("show");
-    });
+    if(document.getElementById("closeExpenseModal")) {
+      document.getElementById("closeExpenseModal").addEventListener("click", function () {
+        document.getElementById("expenseModal").classList.remove("show");
+      });
+    }
 
     // Handle form submission
-    document.getElementById("expenseForm").addEventListener("submit", function (e) {
-      e.preventDefault();
-
-      const category = document.getElementById("expenseCategory").value;
-      const amount = document.getElementById("expenseAmount").value;
-      const date = document.getElementById("expenseDate").value;
-      const description = document.getElementById("expenseDescription").value;
-      const year = document.getElementById("expenseYear").value;
-
-      // Add to table (you can replace this logic with AJAX/fetch)
-      const tableBody = document.querySelector(".table-data tbody");
-      const newRow = document.createElement("tr");
-      newRow.innerHTML = `
-        <td>${category}</td>
-        <td>₱${parseFloat(amount).toFixed(2)}</td>
-        <td>${date}</td>
-        <td>${description}</td>
-        <td>${year}</td>
-      `;
-      tableBody.appendChild(newRow);
-
-      // Close modal
-      document.getElementById("expenseModal").classList.remove("show");
-
-      // Optional: Clear form
-      this.reset();
-    });
+    if(document.getElementById("expenseForm")) {
+      document.getElementById("expenseForm").addEventListener("submit", function (e) {
+        e.preventDefault();
+  
+        const category = document.getElementById("expenseCategory").value;
+        const amount = document.getElementById("expenseAmount").value;
+        const date = document.getElementById("expenseDate").value;
+        const description = document.getElementById("expenseDescription").value;
+        const year = document.getElementById("expenseYear").value;
+  
+        // Add to table (you can replace this logic with AJAX/fetch)
+        const tableBody = document.querySelector(".table-data tbody");
+        const newRow = document.createElement("tr");
+        newRow.innerHTML = `
+          <td>${category}</td>
+          <td>₱${parseFloat(amount).toFixed(2)}</td>
+          <td>${date}</td>
+          <td>${description}</td>
+          <td>${year}</td>
+        `;
+        tableBody.appendChild(newRow);
+  
+        // Close modal
+        document.getElementById("expenseModal").classList.remove("show");
+  
+        // Optional: Clear form
+        this.reset();
+      });
+    }
   </script>
 
-  <script src="js/script.js"></script>
-  <script src="js/dropdown_profile.js"></script>
+  <script src="../js/script.js"></script>
+  <script src="../js/dropdown_profile.js"></script>
 
 
   <script>
