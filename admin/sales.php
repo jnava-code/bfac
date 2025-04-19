@@ -1,6 +1,13 @@
 <?php 
     include "../config/db.php"; 
     include "../auth/session.php";
+
+    $sql = "SELECT SUM(amount) AS total_gross FROM admin_sales";
+    $result = mysqli_query($conn, $sql);
+    $row = mysqli_fetch_assoc($result);
+    $total_gross = $row['total_gross'] ? $row['total_gross'] : 0;
+    $total_gross = number_format($total_gross, 2, '.', ',');
+    $total_gross = "₱" . $total_gross;
 ?>
 
 <!DOCTYPE html>
@@ -38,7 +45,7 @@
           <a href="" style="text-decoration: none; color: inherit;">
             <i class="fa-solid fa-peso-sign"></i>
             <span class="text">
-              <h3>₱905,520</h3>
+              <h3 id="total_sales"></h3>
               <p>Gross Income</p>
             </span>
           </a>
@@ -192,45 +199,48 @@
 
     const salesData = new FormData();
     salesData.append("orderNo", orderNo);
-    salesData.append("customerNId", customerName);
+    salesData.append("customerId", customerName);
     salesData.append("productName", productName);
     salesData.append("quantity", quantity);
     salesData.append("price", price);
     salesData.append("receiptNo", receiptNo);
     salesData.append("purchaseDate", purchaseDate);
 
-    fetch("../api/post/create_sales.php", {
+    fetch("../api/post/add_sales.php", {
       method: "POST",
       body: salesData,
     })
       .then((response) => response.json())
       .then((data) => {
-        if (data.success) {
-          alert("Sale added successfully!");
-          salesData(); // Refresh the sales data
-          document.getElementById("salesForm").reset(); // Reset the form
+        if (data.status == "success") {
+          fetchSalesData();
+          document.getElementById("salesForm").reset();
         }
       })
   });
 
   const incomeTableBody = document.getElementById("incomeTableBody");
 
-  function salesData() {
+  function fetchSalesData() {
     fetch(`../api/get/read_sales.php`)
       .then((response) => response.json())
       .then((data) => {
         incomeTableBody.innerHTML = ""; // Clear existing rows
+        document.getElementById('total_sales').innerText = '₱' + parseFloat(data.total_sales).toLocaleString('en-US', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        });
 
-        if(data && data.length > 0) {
-          data.forEach((item) => {
+        if(data.sales && data.sales.length > 0) {
+          data.sales.forEach((item) => {
             const salesHTML = `<tr>
-                <td>${item.order_no}</td>
-                <td>${item.customer_name}</td>
-                <td>${item.product_name}</td>
+                <td>${item.sales_no}</td>
+                <td>${item.first_name} ${item.last_name}</td>
+                <td>${item.description}</td>
                 <td>${item.quantity}</td>
                 <td>${item.address}</td>
-                <td>₱${parseFloat(item.price).toFixed(2)}</td>
-                <td>${item.receipt_control_number}</td>
+                <td>₱${item.amount}</td>
+                <td>${item.receipt_no}</td>
                 <td>${item.purchase_date}</td>
                 <td><button class="action-btn">Edit</button></td>
               </tr>
@@ -243,5 +253,5 @@
       })
   }
 
-  salesData();
+  fetchSalesData();
 </script>

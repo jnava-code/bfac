@@ -1,3 +1,6 @@
+<?php
+include "../auth/session.php"; 
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -35,7 +38,7 @@
           <a href="" style="text-decoration: none; color: inherit;">
             <i class="fa-solid fa-peso-sign"></i>
             <span class="text">
-              <h3>₱905,520</h3>
+              <h3 id="total_expenses"></h3>
               <p> Total Expenses</p>
             </span>
           </a>
@@ -53,7 +56,7 @@
           <select id="expenseCategory" required>
             <option value="">Select Category</option>
             <option value="Feeding">Feeding</option>
-		<option value="Payroll">Payroll</option>
+		        <option value="Payroll">Payroll</option>
             <option value="Others">Others</option>
           </select>
         </div>
@@ -74,7 +77,7 @@
           <input type="number" id="expenseYear" placeholder="e.g. 2025" required>
         </div>
         <div class="form-group">
-          <button type="submit">Submit</button>
+          <button type="submit" id="expenseSubmit">Submit</button>
         </div>
       </div> 
     </div>
@@ -104,75 +107,97 @@
                 <th>Year</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td>Groceries</td>
-                <td>₱1,200</td>
-                <td>2025-04-01</td>
-                <td>Weekly grocery shopping</td>
-                <td>2025</td>
-              </tr>
-              <tr>
-                <td>Utilities</td>
-                <td>₱3,500</td>
-                <td>2025-04-05</td>
-                <td>Electricity and water bills</td>
-                <td>2025</td>
-              </tr>
-            </tbody>
+            <tbody id="expensesTable"></tbody>
           </table>
         </div>
       </div>
     </main>
   </section>
 
- 
-
   <script>
-    // Open modal
-    if(document.getElementById("openExpenseModal")) {
-      document.getElementById("openExpenseModal").addEventListener("click", function () {
-        document.getElementById("expenseModal").classList.add("show");
-      });
-    }
-
-    // Close modal
-    if(document.getElementById("closeExpenseModal")) {
-      document.getElementById("closeExpenseModal").addEventListener("click", function () {
-        document.getElementById("expenseModal").classList.remove("show");
-      });
-    }
-
     // Handle form submission
-    if(document.getElementById("expenseForm")) {
-      document.getElementById("expenseForm").addEventListener("submit", function (e) {
-        e.preventDefault();
-  
-        const category = document.getElementById("expenseCategory").value;
-        const amount = document.getElementById("expenseAmount").value;
-        const date = document.getElementById("expenseDate").value;
-        const description = document.getElementById("expenseDescription").value;
-        const year = document.getElementById("expenseYear").value;
-  
-        // Add to table (you can replace this logic with AJAX/fetch)
-        const tableBody = document.querySelector(".table-data tbody");
-        const newRow = document.createElement("tr");
-        newRow.innerHTML = `
-          <td>${category}</td>
-          <td>₱${parseFloat(amount).toFixed(2)}</td>
-          <td>${date}</td>
-          <td>${description}</td>
-          <td>${year}</td>
-        `;
-        tableBody.appendChild(newRow);
-  
-        // Close modal
-        document.getElementById("expenseModal").classList.remove("show");
-  
-        // Optional: Clear form
-        this.reset();
+    if (document.getElementById("expenseSubmit")) {
+  document.getElementById("expenseSubmit").addEventListener("click", function (e) {
+    e.preventDefault();
+
+    const categoryEl = document.getElementById("expenseCategory");
+    const amountEl = document.getElementById("expenseAmount");
+    const dateEl = document.getElementById("expenseDate");
+    const descriptionEl = document.getElementById("expenseDescription");
+    const yearEl = document.getElementById("expenseYear");
+
+    const category = categoryEl.value;
+    const amount = amountEl.value;
+    const date = dateEl.value;
+    const description = descriptionEl.value;
+    const year = yearEl.value;
+
+    const expenseData = new FormData();
+    expenseData.append("category", category);
+    expenseData.append("amount", amount);
+    expenseData.append("date", date);
+    expenseData.append("description", description);
+    expenseData.append("year", year);
+
+    fetch('../api/post/add_expense.php', {
+      method: 'POST',
+      body: expenseData
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log(data);
+
+        if (data.status === 'success') {
+          // Optional: Close modal if you use Bootstrap or similar
+          // document.getElementById("expenseModal").classList.remove("show");
+
+          // Clear the form inputs properly
+          categoryEl.value = "";
+          amountEl.value = "";
+          dateEl.value = "";
+          descriptionEl.value = "";
+          yearEl.value = "";
+
+          fetchExpensesData();
+        } else {
+          alert('Error adding expense: ' + data.message);
+        }
       });
+  });
+}
+    
+    function fetchExpensesData() {
+      const expensesTable = document.getElementById('expensesTable');
+      fetch('../api/get/read_expenses.php')
+        .then(response => response.json())
+        .then(data => {
+          expensesTable.innerHTML = '';
+          document.getElementById('total_expenses').innerText = '₱' + parseFloat(data.total).toLocaleString('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          });
+
+          if(data.expenses && data.expenses.length > 0) {
+            data.expenses.forEach(expense => {
+              const expensesHTML = `
+              <tr>
+                <td>${expense.category}</td>
+                <td>₱${parseFloat(expense.amount).toFixed(2)}</td>
+                <td>${expense.expense_date}</td>
+                <td>${expense.description}</td>
+                <td>${expense.year}</td>
+              </tr>
+              `;
+              expensesTable.insertAdjacentHTML('beforeend', expensesHTML);
+            });
+          } else {
+            expensesTable.innerHTML = '<tr><td colspan="5">No expenses found.</td></tr>';
+            
+          }
+        })
     }
+
+    fetchExpensesData();
   </script>
 
   <script src="../js/script.js"></script>

@@ -1,3 +1,30 @@
+<?php
+  include "../config/db.php";
+
+  // Calculate total sales amount
+  $total_query = "
+  SELECT SUM(asales.amount) AS total_sales
+  FROM admin_sales AS asales
+  LEFT JOIN user_members um ON um.member_id = asales.member_id
+  WHERE um.is_archived = 0 AND um.is_verified = 1
+  ";
+
+  $total_result = mysqli_query($conn, $total_query);
+  $total_row = mysqli_fetch_assoc($total_result);
+  $total_sales = $total_row['total_sales'] ?? 0;
+
+  $totalQuery = "SELECT SUM(amount) AS total_amount FROM admin_expenses";
+  $totalResult = mysqli_query($conn, $totalQuery);
+  $totalRow = mysqli_fetch_assoc($totalResult);
+
+  $total_expenses = $totalRow['total_amount'] ?? 0;
+
+  $total_share = "SELECT SUM(share_capital) AS share_capital_count FROM admin_shares_list";
+  $total_share_result = mysqli_query($conn, $total_share);
+  $total_share_row = mysqli_fetch_assoc($total_share_result);
+  $total_share_capital = $total_share_row['share_capital_count'] ?? 0;
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -172,13 +199,13 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <tr><td>Gross Income</td><td>₱905,520</td></tr>
-                      <tr><td>Total Expenses</td><td>₱700,000</td></tr>
-                      <tr><td><strong>Net Income</strong></td><td><strong>₱205,520</strong></td></tr>
-                      <tr><td>Statutory Funds (30%)</td><td>₱61,656</td></tr>
-                      <tr><td><strong>Net Surplus (Dividends Available)</strong></td><td><strong>₱143,864</strong></td></tr>
-                      <tr><td>Total Share Capital</td><td>₱600,000</td></tr>
-                      <tr><td>Total Number of Shares</td><td>6,000</td></tr>
+                      <tr><td>Gross Income</td><td>₱<?php echo number_format($total_sales); ?></td></tr>
+                      <tr><td>Total Expenses</td><td>₱<?php echo number_format($total_expenses); ?></td></tr>
+                      <tr><td><strong>Net Income</strong></td><td><strong>₱<?php echo number_format($total_sales - $total_expenses)?></strong></td></tr>
+                      <tr><td>Statutory Funds (30%)</td><td>₱<?php echo number_format(($total_sales - $total_expenses) * 0.30); ?>                      </td></tr>
+                      <tr><td><strong>Net Surplus (Dividends Available)</strong></td><td><strong>₱<?php echo number_format(($total_sales - $total_expenses) / $total_share_capital)?></strong></td></tr>
+                      <tr><td>Total Share Capital</td><td>₱<?php echo number_format($total_share_capital * 100); ?></td></tr>
+                      <tr><td>Total Number of Shares</td><td><?php echo number_format($total_share_capital); ?></td></tr>
                     </tbody>
                   </table>
                 </div>

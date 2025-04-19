@@ -5,7 +5,7 @@
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Sanitize inputs
         $orderNo       = mysqli_real_escape_string($conn, $_POST['orderNo']);
-        $customerNId   = mysqli_real_escape_string($conn, $_POST['customerNId']);
+        $customerId   = mysqli_real_escape_string($conn, $_POST['customerId']);
         $productName   = mysqli_real_escape_string($conn, $_POST['productName']);
         $quantity      = (int)$_POST['quantity'];
         $price         = (float)$_POST['price'];
@@ -14,9 +14,9 @@
 
         // Insert query
         $sql = "INSERT INTO admin_sales 
-                (sales_no, member_id, description, quantity, amount, receipt_no, purchase_date) 
+                (member_id, sales_no, description, quantity, amount, receipt_no, purchase_date) 
                 VALUES 
-                ('$orderNo', '$customerNId', '$productName', $quantity, $price, '$receiptNo', '$purchaseDate')";
+                ('$customerId','$orderNo', '$productName', $quantity, $price, '$receiptNo', '$purchaseDate')";
 
         $result = mysqli_query($conn, $sql);
 
