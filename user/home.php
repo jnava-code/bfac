@@ -13,9 +13,9 @@
 	$sales_row = mysqli_fetch_assoc($sales_result);	
 	$total_sales = $sales_row['total_sales'] ?? 0;
 
-	$expenses_query = "SELECT SUM(amount) AS total_amount FROM admin_expenses";
-	$expenses_query = mysqli_query($conn, $expenses_query);
-	$expenses_row = mysqli_fetch_assoc($expenses_query);
+	$expenses_query = "SELECT SUM(amount) AS total_amount FROM admin_expenses WHERE member_id = '$member_id'";
+	$expenses_result = mysqli_query($conn, $expenses_query);
+	$expenses_row = mysqli_fetch_assoc($expenses_result);
 
 	$total_expenses = $expenses_row['total_amount'] ?? 0;
 
@@ -31,6 +31,21 @@
 	$row_share = mysqli_fetch_assoc($result_share);
 	$total_paid_up_share_capital = $row_share['total_paid_up_share_capital'] ? $row_share['total_paid_up_share_capital'] : 0;
 	$total_share_capital = $row_share['total_share_capital'] ? $row_share['total_share_capital'] : 0;
+
+	$net_income = $total_sales - $total_expenses;
+	$statutory_funds = $net_income * 0.30;
+	$net_surplus = $net_income - $statutory_funds;
+
+	$all_sales_query = "
+		SELECT SUM(quantity) AS total_quantity_sales
+		FROM admin_sales
+	";
+	$all_sales_result = mysqli_query($conn, $all_sales_query);
+	$all_sales_row = mysqli_fetch_assoc($all_sales_result);
+	$total_quantity_sales = $all_sales_row['total_quantity_sales'] ?? 0;
+
+	$dividend_per_share = $net_surplus / $total_quantity_sales;
+	$total_dividend = $dividend_per_share * $total_share_capital;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -53,7 +68,6 @@
 			<div class="head-title">
 				<div class="left">
 					<h1>Welcome back, <?php echo $firstname . ' ' . $lastname; ?>!</h1>
-					<!-- <?php echo number_format($total_sales); ?> -->
 					<ul class="breadcrumb">
 						<li style="font-size: small;">Here's your current share capital and dividend overview</li>
 					</ul>
@@ -70,7 +84,7 @@
 						</button>
 						<div class="amount">
 							<span>₱</span>
-							<h2>245,750.00</h2>
+							<h2><?php echo number_format($total_dividend)?>.00</h2>
 						</div>
 					</div>
 				</a>

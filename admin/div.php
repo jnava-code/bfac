@@ -317,7 +317,7 @@
                   const tbody = document.getElementById('dividend-table-body');
                   tbody.innerHTML = '';
                   
-                  fetch('../api/get/read_share.php')
+                  fetch('../api/get/read_dividend.php')
                     .then(response => response.json())
                     .then(data => {
                       const totalShares = data.reduce((acc, member) => acc + member.total_paid_up_share_capital, 0);
@@ -337,7 +337,7 @@
                           <td>₱${dividendPerMember.toLocaleString()}</td>
                           <td>
                             <button class="btn small" onclick="openModal('${member.first_name} ${member.middle_name} ${member.last_name}', '${dividendPerMember}')">Withdraw</button>
-                            <button class="btn small" onclick="openSendToSharesModal('${member.first_name} ${member.middle_name} ${member.last_name}', '${dividendPerMember}')">Allocate to Shares</button>
+          
                           </td>
                         `;
                         tbody.appendChild(row);
