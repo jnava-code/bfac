@@ -6,14 +6,14 @@
 		SELECT SUM(asales.amount) AS total_sales
 		FROM admin_sales AS asales
 		LEFT JOIN user_members um ON um.member_id = asales.member_id
-		WHERE um.is_archived = 0 AND um.is_verified = 1 AND um.member_id = '$member_id'
+		WHERE um.is_archived = 0 AND um.is_verified = 1
 	";
 
 	$sales_result = mysqli_query($conn, $sales_query);
 	$sales_row = mysqli_fetch_assoc($sales_result);	
 	$total_sales = $sales_row['total_sales'] ?? 0;
 
-	$expenses_query = "SELECT SUM(amount) AS total_amount FROM admin_expenses WHERE member_id = '$member_id'";
+	$expenses_query = "SELECT SUM(amount) AS total_amount FROM admin_expenses";
 	$expenses_result = mysqli_query($conn, $expenses_query);
 	$expenses_row = mysqli_fetch_assoc($expenses_result);
 
@@ -46,6 +46,15 @@
 
 	$dividend_per_share = $net_surplus / $total_shares;
 	$total_dividend = $dividend_per_share * $total_share_capital;
+
+	$sql_dividend = "
+		SELECT SUM(dividend_amount) AS total_dividend
+		FROM admin_dividends
+		WHERE member_id = '$member_id'
+	";
+	$result_dividend = mysqli_query($conn, $sql_dividend);
+	$row_dividend = mysqli_fetch_assoc($result_dividend);
+	$dividend = $row_dividend['total_dividend'] ? $row_dividend['total_dividend'] : 0;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -84,7 +93,7 @@
 						</button>
 						<div class="amount">
 							<span>₱</span>
-							<h2><?php echo number_format($total_dividend)?>.00</h2>
+							<h2><?php echo number_format($total_dividend - $dividend)?>.00</h2>
 						</div>
 					</div>
 				</a>

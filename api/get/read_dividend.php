@@ -13,20 +13,19 @@ $sql_user = "
         COALESCE(share_totals.total_paid_up_share_capital, 0) AS total_paid_up_share_capital,
         COALESCE(share_totals.total_share_capital, 0) AS total_share_capital,
         COALESCE(global_paid_totals.all_total_paid_up_share_capital, 0) AS all_total_paid_up_share_capital,
-        COALESCE(global_totals.all_total_share_capital, 0) AS all_total_share_capital
+        COALESCE(global_totals.all_total_share_capital, 0) AS all_total_share_capital,
+        COALESCE(dividend_totals.total_dividend, 0) AS total_dividend
     FROM user_members um
     LEFT JOIN (
         SELECT member_id, SUM(amount) AS total_sales
         FROM admin_sales
-        GROUP BY member_id
-    ) AS sales_totals ON sales_totals.member_id = um.member_id
+    ) AS sales_totals ON 1=1
     LEFT JOIN (
         SELECT 
             member_id,
             SUM(amount) AS total_expenses 
         FROM admin_expenses
-        GROUP BY member_id
-    ) AS expense_totals ON expense_totals.member_id = um.member_id
+    ) AS expense_totals ON 1=1
     LEFT JOIN (
         SELECT 
             member_id,
@@ -45,6 +44,13 @@ $sql_user = "
             SUM(share_capital) AS all_total_share_capital
         FROM admin_shares_list
     ) AS global_totals ON 1=1
+    LEFT JOIN (
+        SELECT 
+            member_id,
+            SUM(dividend_amount) AS total_dividend
+        FROM admin_dividends
+        GROUP BY member_id
+    ) AS dividend_totals ON dividend_totals.member_id = um.member_id
     WHERE um.is_archived = 0
 ";
 

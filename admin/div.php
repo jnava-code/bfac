@@ -250,6 +250,7 @@
                   <button class="close" onclick="closeModal()">&times;</button>
                   <h2>Withdraw Funds</h2>
                   <form id="withdrawForm">
+                    <input type="hidden" id="modalMemberId" disabled>
                     <div class="form-group">
                       <label for="modalMemberName">Member:</label>
                       <input type="text" id="modalMemberName" disabled>
@@ -323,36 +324,49 @@
                       // const totalShares = data.reduce((acc, member) => acc + member.total_paid_up_share_capital, 0);
                       // const netSurplus = <?php echo ($total_sales - $total_expenses) - (($total_sales - $total_expenses) * 0.30); ?>;
                       // const dividendPerShare = netSurplus / totalShares;
-
-                      data.forEach(member => {
-                        const totalSales = member.total_sales
-                        const totalExpenses = member.total_expenses;
-
-                        const netIncome = totalSales - totalExpenses;
-                        const statutoryFunds = netIncome * 0.30;
-                        
-                        const netSurplus = netIncome - statutoryFunds;
-                        
-                        const perDividend = netSurplus / member.all_total_share_capital;
-                        const total_dividend = perDividend * member.total_share_capital;
-                        
+                      if(data && data.length === 0) {
                         const row = document.createElement('tr');
-                        row.innerHTML = `
-                          <td>${member.first_name} ${member.middle_name} ${member.last_name}</td>
-                          <td>₱${member.total_paid_up_share_capital}</td>
-                          <td>₱${Math.round(total_dividend)}</td>
-                          <td>₱${Math.round(total_dividend)}</td>
-                          <td>
-                            <button class="btn small" onclick="openModal('${member.first_name} ${member.middle_name} ${member.last_name}', '${Math.round(total_dividend)}')">Withdraw</button>
-          
-                          </td>
-                        `;
+                        row.innerHTML = `<td colspan="5" style="text-align: center;">No data available</td>`;
                         tbody.appendChild(row);
-                      });
+                        return;
+                      } else {
+                        data.forEach(member => {
+                          const totalSales = member.total_sales
+                          const totalExpenses = member.total_expenses;
+             
+                          const netIncome = totalSales - totalExpenses;
+                          const statutoryFunds = netIncome * 0.30;
+                          
+                          const netSurplus = netIncome - statutoryFunds;
+                          const perDividend = netSurplus / member.all_total_share_capital;
+                          const total_dividend = perDividend * member.total_share_capital;
+                          const fullName = `${member.first_name} ${member.middle_name} ${member.last_name}`.replace(/'/g, "\\'");
+                          const buttonHtml = `
+                            <button class="btn small" onclick="openModal(
+                              '${fullName}',
+                              '${Math.round(total_dividend)}',
+                              '${member.member_id}'
+                            )">Withdraw</button>
+                          `;
+
+                          const row = document.createElement('tr');
+                          row.innerHTML = `
+                            <td>${member.first_name} ${member.middle_name} ${member.last_name}</td>
+                            <td>₱${member.total_paid_up_share_capital}</td>
+                            <td>₱${Math.round(total_dividend)}</td>
+                            <td>₱${Math.round(total_dividend) - Math.round(member.total_dividend)}</td>
+                            <td>
+                              ${buttonHtml}       
+                            </td>
+                          `;
+                          tbody.appendChild(row);
+                        });
+                      }
                     })
                 }
               
-                function openModal(memberName, amountLeft) {
+                function openModal(memberName, amountLeft, member_id) {
+                  document.getElementById('modalMemberId').value = member_id;
                   document.getElementById('modalMemberName').value = memberName;
                   document.getElementById('totalContribution').value = `₱${amountLeft}`;
                   document.getElementById('withdrawModal').style.display = "flex";
@@ -365,13 +379,31 @@
                 }
               
                 function confirmWithdrawal() {
+                  const memberId = document.getElementById('modalMemberId').value;
                   const amount = document.getElementById('withdrawAmount').value;
                   const receipt = document.getElementById('receiptNumber').value;
               
                   if (amount && receipt) {
-                    alert(`Successfully withdrawn ₱${amount} with receipt number: ${receipt}`);
-                    closeModal();
-                    window.location.href = "transaction_div.html";
+                    const dividendData = new FormData();
+                    dividendData.append('member_id', memberId);
+                    dividendData.append('dividend_amount', amount);
+                    dividendData.append('receipt', receipt);
+
+                    fetch('../api/post/add_dividend.php', {
+                      method: 'POST',
+                      body: dividendData
+                    }).then(response => {
+                        return response.json();
+                    }).then(data => {
+                      if (data.status === 'success') {
+                        closeModal();
+                        updateDividendTable()
+                        document.getElementById('withdrawAmount').value = "";
+                        document.getElementById('receiptNumber').value = "";
+                      } else {
+                        alert(data.message);
+                      }
+                    })
                   } else {
                     alert("Please fill in all the fields.");
                   }

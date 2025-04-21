@@ -5,6 +5,7 @@ header('Content-Type: application/json');
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Sanitize inputs
     $category    = mysqli_real_escape_string($conn, $_POST['category']);
+    $user        = mysqli_real_escape_string($conn, $_POST['user']);
     $amount      = mysqli_real_escape_string($conn, $_POST['amount']);
     $date        = mysqli_real_escape_string($conn, $_POST['date']);
     $description = mysqli_real_escape_string($conn, $_POST['description']);
@@ -12,9 +13,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Insert query (quotes added around all values)
     $sql = "INSERT INTO admin_expenses 
-            (category, amount, expense_date, description, year) 
+            (category, member_id, amount, expense_date, description, year) 
             VALUES 
-            ('$category', '$amount', '$date', '$description', '$year')";
+            ('$category', $user, '$amount', '$date', '$description', '$year')";
 
     $result = mysqli_query($conn, $sql);
 

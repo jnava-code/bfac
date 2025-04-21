@@ -1,4 +1,10 @@
-<?php include "../auth/session.php"; ?>
+<?php 
+	include "../config/db.php";
+	include "../auth/session.php"; 
+
+	$sql = "SELECT * FROM admin_dividends WHERE member_id = '$member_id'";
+	$result = mysqli_query($conn, $sql);
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -25,8 +31,6 @@
 				
 			</div>
 
-			
-
 			<div class="table-data">
 				<div class="order">
 					<div class="head">
@@ -35,14 +39,25 @@
 					<table>
 						<thead>
 							<tr>
-								<th>Member Name</th>
-								<th>Category</th>
 								<th>Amount Withdrawn (₱)</th>
 								<th>Receipt Control Number</th>
 								<th>Date and Time</th>
 						</thead>
 						<tbody>
-                           
+                           <?php
+						   		if(mysqli_num_rows($result) > 0) {
+									while($row = mysqli_fetch_assoc($result)) {
+										$amount = $row['dividend_amount'];
+										$receipt = $row['receipt'];
+										$date = $row['calculation_date'];
+										echo "<tr>
+												<td>$amount</td>
+												<td>$receipt</td>
+												<td>$date</td>
+											</tr>";
+									}
+								}
+						   ?>
 						</tbody>
 					</table>
 				</div>
