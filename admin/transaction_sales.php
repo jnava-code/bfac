@@ -2,22 +2,14 @@
   include "../config/db.php";
   include "../auth/session.php";
 
-  $sql_dividends = "
-    SELECT 
-        um.member_id,
-        um.first_name,
-        um.middle_name,
-        um.last_name,
-        ad.dividend_amount,
-        ad.receipt,
-        ad.calculation_date
-    FROM user_members um
-    LEFT JOIN admin_dividends ad ON ad.member_id = um.member_id
-    WHERE um.is_archived = 0 AND um.is_verified = 1
+  $sql_share = "SELECT 
+    *
+    FROM admin_sales AS asales
+    LEFT JOIN user_members um ON um.member_id = asales.member_id
+    WHERE um.is_archived = 0 AND um.is_verified = 1 AND DATE(asales.purchase_date) < CURDATE()
+    ";
 
-";
-
-	$result_dividends = mysqli_query($conn, $sql_dividends);
+    $result_share = mysqli_query($conn, $sql_share);
 
 ?>
 <!DOCTYPE html>
@@ -41,11 +33,11 @@
   <main>
     <div class="head-title">
       <div class="left">
-        <h1>Dividend Transaction History</h1>
+        <h1>Sales Transaction History</h1>
         <ul class="breadcrumb">
           <li><a href="dashboard.html">Dashboard</a></li>
           <li><i class="bx bx-chevron-right"></i></li>
-          <li><a href="#">Dividend</a></li>
+          <li><a href="#">Shares</a></li>
           <li><i class="bx bx-chevron-right"></i></li>
           <li><a href="#" class="active">Transaction History</a></li>
         </ul>
@@ -73,28 +65,37 @@
         <table>
           <thead>
                 <tr>
-				<th>Member Name</th>
-					<th>Total Contribution (₱)</th>
-					<th>Receipt</th>
-					<th>Date & Time</th>
+                    <th>Order No.</th>
+                    <th>Customer Name</th>
+                    <th>Product Name</th>
+                    <th>Quantity</th>
+                    <th>Address</th>
+                    <th>Price (₱)</th>
+                    <th>Receipt Control Number</th>
+                    <th>Purchase Date</th>
                 </tr>
           </thead>
           <tbody id="archiveTableBody">
             <?php
-              if ($result_dividends && mysqli_num_rows($result_dividends) > 0) {
-                while ($row = mysqli_fetch_assoc($result_dividends)) {
+              if ($result_share && mysqli_num_rows($result_share) > 0) {
+                while ($row = mysqli_fetch_assoc($result_share)) {
+                  $id = $row['id'];
                   $full_name = htmlspecialchars($row['first_name'] . ' ' . $row['middle_name'] . ' ' . $row['last_name']);
             ?>
               <tr id="share_row_<?php echo $id; ?>">
+              <td><?php echo htmlspecialchars($row['sales_no']); ?></td>
                 <td><?php echo $full_name; ?></td>
-                <td>₱<?php echo htmlspecialchars($row['dividend_amount']); ?></td>
-                <td><?php echo htmlspecialchars($row['receipt']); ?></td>
-                <td><?php echo htmlspecialchars($row['calculation_date']); ?></td>
+                <td><?php echo htmlspecialchars($row['description']); ?></td>
+                <td><?php echo htmlspecialchars($row['quantity']); ?></td>
+                <td><?php echo htmlspecialchars($row['address']); ?></td>
+                <td>₱<?php echo htmlspecialchars($row['amount']); ?></td>
+                <td><?php echo htmlspecialchars($row['receipt_no']); ?></td>
+                <td><?php echo htmlspecialchars($row['purchase_date']); ?></td>
               </tr>
               <?php
                 }
               } else {
-                echo "<tr><td colspan='8'>No history dividend found.</td></tr>";
+                echo "<tr><td colspan='8'>No history sales found.</td></tr>";
               }
             ?>
           </tbody>

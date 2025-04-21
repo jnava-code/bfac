@@ -7,7 +7,7 @@ $sql_share = "SELECT
 *
 FROM admin_sales AS asales
 LEFT JOIN user_members um ON um.member_id = asales.member_id
-WHERE um.is_archived = 0 AND um.is_verified = 1
+WHERE um.is_archived = 0 AND um.is_verified = 1 AND DATE(asales.purchase_date) = CURDATE()
 ";
 
 $result_share = mysqli_query($conn, $sql_share);

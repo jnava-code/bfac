@@ -39,7 +39,7 @@
                         <h3>List of Shares</h3>
 
                         <button class="view-btn-add" id="openSharesModal"><i class='bx bx-plus'></i></button>
-                        <button class="view-btn" onclick="window.location.href='transaction_share.html';">Transaction History</button>
+                        <button class="view-btn" onclick="window.location.href='transaction_share.php';">Transaction History</button>
                         <div class="menu-container">
                             <i class="bx bx-dots-vertical" id="kebabMenu"></i>
                             <div class="dropdown-menu" id="dropdownMenu">

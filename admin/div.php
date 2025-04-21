@@ -225,7 +225,7 @@
                         <option value="2020">2020</option>
                       </select>
                     </div>
-                    <button class="view-btn" onclick="window.location.href='transaction_div.html';">Transaction History</button>
+                    <button class="view-btn" onclick="window.location.href='transaction_div.php';">Transaction History</button>
                   </div>
                   <table>
                     <thead>

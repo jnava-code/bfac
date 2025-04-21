@@ -1,138 +1,110 @@
+<?php
+  include "../config/db.php";
+  include "../auth/session.php";
+
+  $sql_share = "
+    SELECT 
+        ashares.id,
+        ashares.member_id,
+        ashares.update_at,
+        ashares.is_archived,
+        SUM(asl.paid_up_share_capital) AS total_paid_up_share_capital,
+        SUM(asl.share_capital) AS total_share_capital,
+        um.first_name,
+        um.middle_name,
+        um.last_name,
+        um.role
+    FROM admin_shares AS ashares
+    LEFT JOIN admin_shares_list asl ON asl.member_id = ashares.member_id
+    LEFT JOIN user_members um ON um.member_id = ashares.member_id
+    WHERE ashares.is_archived = 0 AND DATE(asl.created_at) < CURDATE()
+    GROUP BY 
+        ashares.member_id,
+        ashares.update_at,
+        ashares.is_archived,
+        um.first_name,
+        um.middle_name,
+        um.last_name
+	ORDER BY asl.created_at ASC
+  ";
+
+  $result_share = mysqli_query($conn, $sql_share);
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/modal.css">
-<!-- Notyf CSS -->
-<link rel="stylesheet" href="path/to/notyf.min.css">
-	<link rel="stylesheet" href="shares.css">
-    <title> Transaction History</title>
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Share History</title>
+  <link href="https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="../css/style.css"/>
+  <link rel="stylesheet" href="../css/modal.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
 <body>
 
+<?php include "admin_components/admin_sidebar.php"; ?>
 
-	<!-- SIDEBAR -->
-	<section id="sidebar">
-		<a href="#" class="brand">
-			<img src="img/logo.png" alt="Logo" class="logo">
-			<div class="text">
-				<span class="title">BFAC Hub</span>
-				<span class="subtitle"> Management System</span>
-			</div>
-		</a>
-		
-		<ul class="side-menu top">
-			<li><a href="users.html"><i class="bx bxs-user"></i><span class="text">Users</span></a></li>
-			<li><a href="shares.html"><i class="bx bxs-coin-stack"></i><span class="text">Shares</span></a></li>
-			<li><a href="div.html"><i class="bx bx-line-chart-down"></i><span class="text">Dividends</span></a></li>
-			<li><a href="sales.html"><i class='bx bxs-credit-card-alt'></i><span class="text">Sales </span></a></li>
-			<li><a href="expenses.html"><i class='bx bxs-coin-stack' ></i><span class="text">Expenses </span></a></li>
-			</ul>
-		  <ul class="side-menu">
-			<li><a href="settings.html"><i class="bx bxs-cog"></i><span class="text">Settings</span></a></li>
-			<li><a href="logout.html" class="logout"><i class="bx bxs-log-out-circle"></i><span class="text">Logout</span></a></li>
-		  </ul>
-	</section>
-	<!-- SIDEBAR -->
+<section id="content">
+  <?php include "admin_components/admin_navbar.php"; ?>
 
+  <main>
+    <div class="head-title">
+      <div class="left">
+        <h1>Shares Transaction History</h1>
+        <ul class="breadcrumb">
+          <li><a href="dashboard.html">Dashboard</a></li>
+          <li><i class="bx bx-chevron-right"></i></li>
+          <li><a href="#">User</a></li>
+          <li><i class="bx bx-chevron-right"></i></li>
+          <li><a href="#" class="active">Transaction History</a></li>
+        </ul>
+      </div>
+    </div>
 
+    <div class="table-data">
+      <div class="db">
+        <div class="head">
+          <h3></h3>
+          <button class="view-btn" onclick="window.location.href='shares.php';">
+            <i class='bx bx-left-arrow-alt'></i> Back  
+          </button>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Member Name</th>
+              <th>Paid-up Share Capital</th>
+              <th>Shares</th>
+            </tr>
+          </thead>
+          <tbody id="archiveTableBody">
+            <?php
+              if ($result_share && mysqli_num_rows($result_share) > 0) {
+                while ($row = mysqli_fetch_assoc($result_share)) {
+                  $id = $row['id'];
+                  $full_name = htmlspecialchars($row['first_name'] . ' ' . $row['middle_name'] . ' ' . $row['last_name']);
+            ?>
+              <tr id="share_row_<?php echo $id; ?>">
+                <td><?php echo $full_name; ?></td>
+                <td>₱<?php echo htmlspecialchars($row['total_paid_up_share_capital']); ?></td>
+                <td><?php echo htmlspecialchars($row['total_share_capital']); ?></td>
+              </tr>
+              <?php
+                }
+              } else {
+                echo "<tr><td colspan='4'>No history shares found.</td></tr>";
+              }
+            ?>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</section>
 
-	<!-- CONTENT -->
-	<section id="content">
-		<!-- NAVBAR -->
-        <nav>
-			<i class="bx bx-menu"></i>
-			<form action="#">
-			  <div class="form-input">
-				<input type="search" placeholder="Search..." />
-				<button type="submit" class="search-btn"><i class="bx bx-search"></i></button>
-			  </div>
-			</form>
-			<input type="checkbox" id="switch-mode" hidden />
-			<label for="switch-mode" class="switch-mode"></label>
-			<a href="notif.html" class="notification">
-			  <i class="bx bxs-bell"></i>
-			  <span class="num">8</span>
-			</a>
-			<div class="profile-dropdown">
-			  <a href="#" class="profile"><img src="img/admin.png" alt="Profile" /></a>
-			</div>
-		  </nav>
-		<!-- MAIN -->
-		<main>
-			<div class="head-title">
-			<div class="left">
-				<h1 id="page-title">Transaction History</h1>
-				<ul class="breadcrumb">
-					<li><a href="#">Dashboard</a></li>
-					<li><i class='bx bx-chevron-right'></i></li>
-					<li><a class="active" href="#" id="current-page">Shares</a></li>
-					<li><i class='bx bx-chevron-right'></i></li>
-					<li><a class="active" href="#" id="current-page">Transaction History</a></li>
-				</ul>
-			</div>
-				
-			</div>
+<script src="../js/script.js"></script>
+<script src="../js/dropdown_profile.js"></script>
 
-			
-
-			<!-- insert here -->
-			<div class="table-data">
-				<div class="order">
-					<div class="head">
-						<h3>List of Shares Transaction </h3>
-						<i class="bx bx-search"></i>
-
-						<button  class="view-btn "  onclick="window.location.href='shares.html';"> 
-                            <i class='bx bx-left-arrow-alt'>
-                            </i> Back to Shares 
-                        </button> 
-					</div>
-					<table>
-						<thead>
-							<tr>
-								<th>Member Name</th>
-								<th>Shares Added</th>
-								<th>Purchace Amount (₱)</th>
-								<th>Receipt Control Number</th>
-								<th>Date and Time</th>
-						</thead>
-						<tbody>
-              <!-- <tbody id="transactionTableBody"></tbody> -->
-
-						</tbody>
-					</table>
-				</div>
-			</div>
-		</main>
-	</section>
-<script>
-	function loadTransactionHistory() {
-    const transactions = JSON.parse(localStorage.getItem("transactions")) || [];
-    const tbody = document.getElementById("transactionTableBody");
-
-    transactions.forEach(tx => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-            <td>${tx.memberName}</td>
-            <td>${tx.shares}</td>
-            <td>₱${tx.purchasePrice.toFixed(2)}</td>
-            <td>${tx.receiptNumber}</td>
-            <td>${tx.dateTime}</td>
-        `;
-        tbody.appendChild(row);
-    });
-}
-
-window.onload = loadTransactionHistory;
-
-</script>
-
-	<script src="js/script.js"></script>
-	<script src="js/dropdown_profile.js"></script>
 </body>
 </html>

@@ -56,19 +56,8 @@
         <div class="order">
           <div class="head">
             <h3>List of Sales</h3>
-
-            <div class="filter-year">
-              <label for="year-filter">Filter by Year:</label>
-              <select id="year-filter" class="form-control">
-                <option value="">Select Year</option>
-                <option value="2023">2023</option>
-                <option value="2022">2022</option>
-                <option value="2021">2021</option>
-                <option value="2020">2020</option>
-              </select>
-            </div>
             <button class="view-btn-add" id="openSalesModal"><i class="bx bx-plus"></i></button>
-
+            <button class="view-btn" onclick="window.location.href='transaction_sales.php';">Transaction History</button>
           </div>
           <table>
             <thead>
@@ -80,7 +69,6 @@
                 <th>Address</th>
                 <th>Price (₱)</th>
                 <th>Receipt Control Number</th>
-                <th>Purchase Date</th>
               </tr>
             </thead>
             <tbody id="incomeTableBody"></tbody>
@@ -240,7 +228,6 @@
                 <td>${item.address}</td>
                 <td>₱${item.amount}</td>
                 <td>${item.receipt_no}</td>
-                <td>${item.purchase_date}</td>
               </tr>
             `;
             incomeTableBody.insertAdjacentHTML("beforeend", salesHTML);
