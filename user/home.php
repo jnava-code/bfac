@@ -36,15 +36,15 @@
 	$statutory_funds = $net_income * 0.30;
 	$net_surplus = $net_income - $statutory_funds;
 
-	$all_sales_query = "
-		SELECT SUM(quantity) AS total_quantity_sales
-		FROM admin_sales
+	$all_shares_query = "
+		SELECT SUM(share_capital) AS all_total_shares
+		FROM admin_shares_list
 	";
-	$all_sales_result = mysqli_query($conn, $all_sales_query);
-	$all_sales_row = mysqli_fetch_assoc($all_sales_result);
-	$total_quantity_sales = $all_sales_row['total_quantity_sales'] ?? 0;
+	$all_shares_result = mysqli_query($conn, $all_shares_query);
+	$all_shares_row = mysqli_fetch_assoc($all_shares_result);
+	$total_shares = $all_shares_row['all_total_shares'] ?? 0;
 
-	$dividend_per_share = $net_surplus / $total_quantity_sales;
+	$dividend_per_share = $net_surplus / $total_shares;
 	$total_dividend = $dividend_per_share * $total_share_capital;
 ?>
 <!DOCTYPE html>

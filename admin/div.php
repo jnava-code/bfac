@@ -320,23 +320,30 @@
                   fetch('../api/get/read_dividend.php')
                     .then(response => response.json())
                     .then(data => {
-                      const totalShares = data.reduce((acc, member) => acc + member.total_paid_up_share_capital, 0);
-                      const netSurplus = <?php echo ($total_sales - $total_expenses) - (($total_sales - $total_expenses) * 0.30); ?>;
-                      const dividendPerShare = netSurplus / totalShares;
-              
+                      // const totalShares = data.reduce((acc, member) => acc + member.total_paid_up_share_capital, 0);
+                      // const netSurplus = <?php echo ($total_sales - $total_expenses) - (($total_sales - $total_expenses) * 0.30); ?>;
+                      // const dividendPerShare = netSurplus / totalShares;
+
                       data.forEach(member => {
-                        console.log(member);
+                        const totalSales = member.total_sales
+                        const totalExpenses = member.total_expenses;
+
+                        const netIncome = totalSales - totalExpenses;
+                        const statutoryFunds = netIncome * 0.30;
                         
-                        const dividendPerMember = member.total_paid_up_share_capital * dividendPerShare;
-              
+                        const netSurplus = netIncome - statutoryFunds;
+                        
+                        const perDividend = netSurplus / member.all_total_share_capital;
+                        const total_dividend = perDividend * member.total_share_capital;
+                        
                         const row = document.createElement('tr');
                         row.innerHTML = `
                           <td>${member.first_name} ${member.middle_name} ${member.last_name}</td>
-                          <td>₱${member.total_paid_up_share_capital.toLocaleString()}</td>
-                          <td>₱${dividendPerMember.toLocaleString()}</td>
-                          <td>₱${dividendPerMember.toLocaleString()}</td>
+                          <td>₱${member.total_paid_up_share_capital}</td>
+                          <td>₱${Math.round(total_dividend)}</td>
+                          <td>₱${Math.round(total_dividend)}</td>
                           <td>
-                            <button class="btn small" onclick="openModal('${member.first_name} ${member.middle_name} ${member.last_name}', '${dividendPerMember}')">Withdraw</button>
+                            <button class="btn small" onclick="openModal('${member.first_name} ${member.middle_name} ${member.last_name}', '${Math.round(total_dividend)}')">Withdraw</button>
           
                           </td>
                         `;
