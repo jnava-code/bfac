@@ -81,7 +81,6 @@
                 <th>Price (₱)</th>
                 <th>Receipt Control Number</th>
                 <th>Purchase Date</th>
-                <th>Action</th>
               </tr>
             </thead>
             <tbody id="incomeTableBody"></tbody>
@@ -242,7 +241,6 @@
                 <td>₱${item.amount}</td>
                 <td>${item.receipt_no}</td>
                 <td>${item.purchase_date}</td>
-                <td><button class="action-btn">Edit</button></td>
               </tr>
             `;
             incomeTableBody.insertAdjacentHTML("beforeend", salesHTML);
