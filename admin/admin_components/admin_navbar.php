@@ -13,6 +13,6 @@
         <span class="num">8</span>
     </a>
     <div class="profile-dropdown">
-        <a href="#" class="profile"><img src="../img/admin.png" alt="Profile" /></a>
+        <a href="#" class="profile"><img src="../<?php echo $profile_image; ?>" alt="Profile" /></a>
     </div>
 </nav>
