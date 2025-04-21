@@ -87,13 +87,13 @@
 				<div class="order">
 					<a href="user_div.html">
 					<div class="calcu">
-						<span>Dividend Balancee</span>
+						<span>Dividend Balance</span>
 						<button class="info-btn">
 							<i class='bx bxs-info-circle' ></i>
 						</button>
 						<div class="amount">
 							<span>₱</span>
-							<h2><?php echo number_format($total_dividend - $dividend)?>.00</h2>
+							<h2><?php echo number_format($total_dividend - $dividend).00?></h2>
 						</div>
 					</div>
 				</a>

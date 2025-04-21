@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 19, 2025 at 03:26 AM
+-- Generation Time: Apr 21, 2025 at 10:11 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -39,6 +39,13 @@ CREATE TABLE `admin_accounts` (
   `created_by` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `admin_accounts`
+--
+
+INSERT INTO `admin_accounts` (`user_id`, `full_name`, `username`, `password`, `email`, `role`, `profile_image`, `is_archived`, `created_by`) VALUES
+(1, 'Administrator', 'admin', '$2y$10$g5ArkrZmU72GNXwBecq5R..9qE1Egz6R56880UU.ZOnfr3klV7A1K', '', 'Admin', 'profile_images/default_profile.jpg', 0, NULL);
+
 -- --------------------------------------------------------
 
 --
@@ -47,27 +54,10 @@ CREATE TABLE `admin_accounts` (
 
 CREATE TABLE `admin_dividends` (
   `id` int(11) NOT NULL,
-  `user_id` int(255) NOT NULL,
-  `total_contribution` decimal(10,2) NOT NULL,
+  `member_id` int(11) NOT NULL,
   `dividend_amount` decimal(10,2) NOT NULL,
-  `dividend_left` decimal(10,2) NOT NULL,
-  `year` int(11) NOT NULL,
-  `action` varchar(50) NOT NULL,
-  `period_name` varchar(50) NOT NULL,
-  `period_start` date NOT NULL,
-  `period_end` date NOT NULL,
-  `gross_income` decimal(12,2) NOT NULL,
-  `total_expenses` decimal(12,2) NOT NULL,
-  `net_income` decimal(12,2) NOT NULL,
-  `statutory_percentage` decimal(5,2) DEFAULT 30.00,
-  `statutory_amount` decimal(12,2) NOT NULL,
-  `net_surplus` decimal(12,2) NOT NULL,
-  `total_share_capital` decimal(12,2) NOT NULL,
-  `total_number_of_shares` int(11) NOT NULL,
-  `dividend_per_share` decimal(10,2) NOT NULL,
-  `dividend_per_peso` decimal(10,2) NOT NULL,
-  `calculation_date` date NOT NULL,
-  `last_updated` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `receipt` varchar(150) NOT NULL,
+  `calculation_date` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -78,6 +68,7 @@ CREATE TABLE `admin_dividends` (
 
 CREATE TABLE `admin_expenses` (
   `id` int(11) NOT NULL,
+  `member_id` int(11) NOT NULL,
   `category` varchar(255) NOT NULL,
   `amount` decimal(10,2) NOT NULL,
   `expense_date` date NOT NULL,
@@ -106,11 +97,10 @@ CREATE TABLE `admin_login` (
 
 CREATE TABLE `admin_sales` (
   `id` int(11) NOT NULL,
+  `member_id` int(11) NOT NULL,
   `sales_no` varchar(50) NOT NULL,
-  `customer_name` varchar(100) NOT NULL,
   `description` varchar(100) NOT NULL,
   `quantity` int(11) NOT NULL,
-  `address` text NOT NULL,
   `amount` decimal(10,2) NOT NULL,
   `receipt_no` varchar(50) NOT NULL,
   `purchase_date` date NOT NULL
@@ -124,15 +114,24 @@ CREATE TABLE `admin_sales` (
 
 CREATE TABLE `admin_shares` (
   `id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
+  `member_id` int(11) NOT NULL,
+  `update_at` timestamp NULL DEFAULT NULL,
+  `is_archived` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `admin_shares_list`
+--
+
+CREATE TABLE `admin_shares_list` (
+  `id` int(11) NOT NULL,
+  `member_id` int(11) NOT NULL,
   `paid_up_share_capital` decimal(10,2) NOT NULL,
   `share_capital` decimal(10,2) NOT NULL,
-  `number_of_shares` int(11) NOT NULL,
-  `purchase_amount` decimal(10,2) NOT NULL,
   `receipt_number` varchar(255) NOT NULL,
-  `par_value` decimal(10,2) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -270,13 +269,14 @@ ALTER TABLE `admin_accounts`
 --
 ALTER TABLE `admin_dividends`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `admin_dividends_ibfk_1` (`user_id`);
+  ADD KEY `user_members` (`member_id`);
 
 --
 -- Indexes for table `admin_expenses`
 --
 ALTER TABLE `admin_expenses`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_members` (`member_id`);
 
 --
 -- Indexes for table `admin_login`
@@ -289,14 +289,22 @@ ALTER TABLE `admin_login`
 -- Indexes for table `admin_sales`
 --
 ALTER TABLE `admin_sales`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_members` (`member_id`);
 
 --
 -- Indexes for table `admin_shares`
 --
 ALTER TABLE `admin_shares`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `admin_shares_ibfk_1` (`user_id`);
+  ADD KEY `user_members` (`member_id`);
+
+--
+-- Indexes for table `admin_shares_list`
+--
+ALTER TABLE `admin_shares_list`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `admin_shares` (`member_id`);
 
 --
 -- Indexes for table `admin_users`
@@ -350,7 +358,19 @@ ALTER TABLE `user_profiles`
 -- AUTO_INCREMENT for table `admin_accounts`
 --
 ALTER TABLE `admin_accounts`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `admin_dividends`
+--
+ALTER TABLE `admin_dividends`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `admin_expenses`
+--
+ALTER TABLE `admin_expenses`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `admin_login`
@@ -362,6 +382,18 @@ ALTER TABLE `admin_login`
 -- AUTO_INCREMENT for table `admin_sales`
 --
 ALTER TABLE `admin_sales`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `admin_shares`
+--
+ALTER TABLE `admin_shares`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `admin_shares_list`
+--
+ALTER TABLE `admin_shares_list`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
@@ -397,18 +429,6 @@ ALTER TABLE `user_profiles`
 --
 ALTER TABLE `admin_accounts`
   ADD CONSTRAINT `admin_accounts_ibfk_1` FOREIGN KEY (`created_by`) REFERENCES `admin_users` (`user_id`) ON DELETE SET NULL ON UPDATE CASCADE;
-
---
--- Constraints for table `admin_dividends`
---
-ALTER TABLE `admin_dividends`
-  ADD CONSTRAINT `admin_dividends_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `admin_users` (`user_id`);
-
---
--- Constraints for table `admin_shares`
---
-ALTER TABLE `admin_shares`
-  ADD CONSTRAINT `admin_shares_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `admin_users` (`user_id`);
 
 --
 -- Constraints for table `user_financial_summary`
