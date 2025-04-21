@@ -56,6 +56,23 @@
 												<td>$date</td>
 											</tr>";
 									}
+								} else {
+									echo "<tr>
+											<td colspan='3'>No transaction history available.</td>
+										</tr>";
+								}
+						   		mysqli_close($conn);
+						   ?>
+						   <?php
+						   if (isset($_SESSION['message'])) {
+							   echo "<script>
+								   Swal.fire({
+									   icon: 'success',
+									   title: 'Success',
+									   text: '{$_SESSION['message']}',
+								   });
+							   </script>";
+							   unset($_SESSION['message']);
 								}
 						   ?>
 						</tbody>

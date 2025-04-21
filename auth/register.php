@@ -48,54 +48,53 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit;
     }
 
-    $query = "INSERT INTO user_members (
+    $mail = new PHPMailer(true);
+
+    try {
+        $mail->isSMTP();
+        $mail->Host = 'smtp.gmail.com';
+        $mail->SMTPAuth = true;
+        $mail->Username = 'aiahnava5@gmail.com';
+        $mail->Password = 'ceep fcsw jrxj dvqg';
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port = 587;
+                    
+        $mail->setFrom('no-reply@yourwebsite.com', '');
+        $mail->addAddress($email);
+        $mail->Subject = 'Email verification - BFAC Management System';
+
+        $message = "Hello!
+                <br><a href='http://localhost/bfac/auth/verify-email.php?token=$token_hash'>Click here</a> to verify your email address.
+                <br><br>If you did not create an account, no further action is required.
+                <br><br>Thanks,
+                <br>Your BFACMS-2000 Team
+                ";
+
+        $mail->isHTML(true);
+        $mail->Body = $message;
+
+        if ($mail->send()) { 
+            $query = "INSERT INTO user_members (
                 first_name, middle_name, last_name, username, email, password, phone, rsbsa_number, address, farm_location, role,
                 token, token_expiry
-              ) VALUES (
+                ) VALUES (
                 '$firstName', '$middleName', '$lastName', '$username', '$email', '$hashedPassword', '$phone', '$rsbsaNumber', '$address', '$farmLocation', '$role',
                 '$token_hash', '$token_expiry'
-              )";
-
-    if (mysqli_query($conn, $query)) {
-        $mail = new PHPMailer(true);
-
-        try {
-            $mail->isSMTP();
-            $mail->Host = 'smtp.gmail.com';
-            $mail->SMTPAuth = true;
-            $mail->Username = '';
-            $mail->Password = '';
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-            $mail->Port = 587;
-                        
-            $mail->setFrom('no-reply@yourwebsite.com', '');
-            $mail->addAddress($email);
-            $mail->Subject = 'Email verification - BFAC Management System';
-
-            $message = "Hello!
-                    <br><a href='http://localhost/bfac/auth/verify-email.php?token=$token_hash'>Click here</a> to verify your email address.
-                    <br><br>If you did not create an account, no further action is required.
-                    <br><br>Thanks,
-                    <br>Your BFACMS-2000 Team
-                    ";
-
-            $mail->isHTML(true);
-            $mail->Body = $message;
-
-            if ($mail->send()) { 
+                )";
+            if(mysqli_query($conn, $query)) {
                 echo json_encode([
                     'status' => 'success',
                     'message' => 'Registration successful!'
                 ]);
                 exit;
-            } 
-        } catch (Exception $e) {
-            echo json_encode([
-                'status' => 'error',
-                'message' => 'Mailer Error: ' . $mail->ErrorInfo
-            ]);
-            exit;
-        }
+            }
+        } 
+    } catch (Exception $e) {
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Mailer Error: ' . $mail->ErrorInfo
+        ]);
+        exit;
     }
 }
 ?>

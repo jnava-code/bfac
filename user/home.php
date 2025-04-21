@@ -44,8 +44,14 @@
 	$all_shares_row = mysqli_fetch_assoc($all_shares_result);
 	$total_shares = $all_shares_row['all_total_shares'] ?? 0;
 
-	$dividend_per_share = $net_surplus / $total_shares;
-	$total_dividend = $dividend_per_share * $total_share_capital;
+	if ($total_shares > 0) {
+		$dividend_per_share = $net_surplus / $total_shares;
+		$total_dividend = $dividend_per_share * $total_share_capital;
+	} else {
+		$dividend_per_share = 0;
+		$total_dividend = 0;
+	}
+	
 
 	$sql_dividend = "
 		SELECT SUM(dividend_amount) AS total_dividend
@@ -93,7 +99,7 @@
 						</button>
 						<div class="amount">
 							<span>₱</span>
-							<h2><?php echo number_format($total_dividend - $dividend).00?></h2>
+							<h2><?php echo number_format($total_dividend - $dividend)?></h2>
 						</div>
 					</div>
 				</a>
