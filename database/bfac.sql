@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 21, 2025 at 10:11 AM
+-- Generation Time: Apr 21, 2025 at 02:21 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -227,7 +227,7 @@ CREATE TABLE `user_members` (
   `is_archived` int(11) NOT NULL,
   `is_verified` int(11) NOT NULL,
   `token` varchar(250) DEFAULT NULL,
-  `token_expiry` timestamp NOT NULL DEFAULT current_timestamp(),
+  `token_expiry` varchar(150) DEFAULT NULL,
   `date_registered` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
