@@ -1,163 +1,214 @@
+<?php
+	include "../config/db.php";
+	include "../auth/session.php";
+
+	$sql = "SELECT * FROM user_members 
+  WHERE is_archived = 1 AND status = 'Approved' AND is_verified = 1";
+	$result = mysqli_query($conn, $sql);
+
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Archive Module</title>
-  <link href="https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css" rel="stylesheet"/>
-  <link rel="stylesheet" href="css/style.css"/>
-  <link rel="stylesheet" href="css/modal.css"/>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
+	<link rel="stylesheet" href="../css/style.css">
+	<link rel="stylesheet" href="../css/livestock.css">
+	<style>
+		.buttons_column {
+			padding: 5px;
+		}
+
+		.buttons {
+			display: flex;
+			gap: 5px;
+			justify-content: center;
+			align-items: center;
+		}
+
+		button {
+			background-color: transparent;
+			border: none;
+			cursor: pointer;
+		}
+	</style>
+	<title>Users</title>
+
 </head>
 <body>
 
-<section id="sidebar">
-  <a href="#" class="brand">
-    <img src="img/logo.png" alt="Logo" class="logo" />
-    <div class="text">
-      <span class="title">BFAC Hub</span>
-      <span class="subtitle">Management System</span>
-    </div>
-  </a>
+	<?php include "admin_components/admin_sidebar.php"; ?>
 
-  <ul class="side-menu top">
-    <li><a href="users.html"><i class="bx bxs-user"></i><span class="text">Users</span></a></li>
-    <li><a href="shares.html"><i class="bx bxs-coin-stack"></i><span class="text">Shares</span></a></li>
-    <li><a href="div.html"><i class="bx bx-line-chart-down"></i><span class="text">Dividends</span></a></li>
-    <li><a href="sales.html"><i class='bx bxs-credit-card-alt'></i><span class="text">Sales </span></a></li>
-    <li><a href="expenses.html"><i class='bx bxs-coin-stack' ></i><span class="text">Expenses </span></a></li>
-    </ul>
+	<section id="content">
+		<?php include "admin_components/admin_navbar.php"; ?>
 
-  <ul class="side-menu">
-    <li><a href="logout.html" class="logout"><i class="bx bxs-log-out-circle"></i><span class="text">Logout</span></a></li>
-  </ul>
-</section>
+		<main>
+			<div class="head-title">
+				<div class="left">
+					<h1>Users</h1>
+					<ul class="breadcrumb">
+						<li><a href="#">Dashboard</a></li>
+						<li><i class='bx bx-chevron-right'></i></li>
+						<li><a class="active" href="#">Users</a></li>
+					</ul>
+				</div>
+			</div>
 
-<section id="content">
-  <nav>
-    <i class="bx bx-menu"></i>
-    <form action="#">
-      <div class="form-input">
-        <input type="search" placeholder="Search..." />
-        <button type="submit" class="search-btn"><i class="bx bx-search"></i></button>
-      </div>
-    </form>
-    <input type="checkbox" id="switch-mode" hidden />
-    <label for="switch-mode" class="switch-mode"></label>
-    <a href="notif.html" class="notification">
-      <i class="bx bxs-bell"></i>
-      <span class="num">8</span>
-    </a>
-    <div class="profile-dropdown">
-      <a href="#" class="profile"><img src="img/admin.png" alt="Profile" /></a>
-      <ul class="dropdown-menu">
-        <li><a href="AccountSettings.php">Edit Profile</a></li>
-        <li><a href="add_account.php">Add Account</a></li>
-        <li><a href="logout.php">Logout</a></li>
-      </ul>
-    </div>
-  </nav>
+			<div class="table-data">
+				<div class="order">
+					<div class="head">
+						<h3>List of Users</h3>
+						<button class="view-btn" onclick="window.location.href='sales.php';">
+            <i class='bx bx-left-arrow-alt'></i> Back  
+          </button>
+					</div>
+					<table>
+						<thead>
+							<tr>
+								<th>First Name</th>
+								<th>Middle Name</th>
+								<th>Last Name</th>
+								<th>Email</th>
+								<th>Phone</th>
+								<th>Address</th>
+								<th>Date Registered</th>
+							</tr>
+						</thead>
+						<tbody>
+							<?php 						
+								if($result && mysqli_num_rows($result) > 0) {
+									while($row = mysqli_fetch_assoc($result)) {
+										echo "<tr>";
+										echo "<td>" . $row['first_name'] . "</td>";
+										echo "<td>" . $row['middle_name'] . "</td>";
+										echo "<td>" . $row['last_name'] . "</td>";
+										echo "<td class='email'>" . $row['email'] . "</td>";
+										echo "<td class='phone'>" . $row['phone'] . "</td>";
+										echo "<td>" . $row['address'] . "</td>";
+										echo "<td>" . $row['date_registered'] . "</td>";
+										echo "</tr>";
+									}
+								} else {
+									echo "<tr><td colspan='9'>No archived users found.</td></tr>";
+								}
+							?>
+						</tbody>
+					</table>
+				</div>
+			</div>
+
+		</main>
+	</section>
 
 
-  <main>
-    <div class="head-title">
-      <div class="left">
-        <h1>Archive Module</h1>
-        <ul class="breadcrumb">
-          <li><a href="dashboard.html">Dashboard</a></li>
-          <li><i class="bx bx-chevron-right"></i></li>
-          <li><a href="#">User</a></li>
-          <li><i class="bx bx-chevron-right"></i></li>
-          <li><a href="#" class="active">Archive</a></li>
-        </ul>
-      </div>
-    </div>
 
-    <div class="table-data">
-      <div class="db">
-        <div class="head">
-          <h3>Archived Users</h3>
-          <button  class="view-btn "  onclick="window.location.href='users.html';"> 
-            <i class='bx bx-left-arrow-alt'>
-            </i> Back  
-        </button> 
-        </div>
-        <table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Position on Board</th>
-              <th>Status</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody id="archiveTableBody">
-          </tbody>
-          
-        </table>
-      </div>
-    </div>
-  </main>
-</section>
-
+	<!-- Edit User Status Modal -->
+<div id="editStatusModal" class="modal1">
+	<div class="modal-livestock">
+	  <button class="close" id="closeStatusModal">&times;</button>
+	  <h2>Edit User Status</h2>
+	  <form id="editUserStatusForm">
+		<div class="form-group">
+		  <label>Name</label>
+		  <input type="text" id="modalUserName" readonly>
+		</div>
+		<div class="form-group">
+		  <label>Position on Board</label>
+		  <input type="text" id="modalUserPosition" readonly>
+		</div>
+		<div class="form-group">
+		  <label for="userStatus">Status</label>
+		  <select id="userStatus" required>
+			<option value="active">Active</option>
+			<option value="inactive">Inactive</option>
+		  </select>
+		</div>
+		<div class="form-group" style="grid-column: span 2;">
+		  <button type="submit">Save</button>
+		</div>
+	  </form>
+	</div>
+  </div>
 <script>
-    const archivedUsers = [
-      { name: "Jane Doe", position: "Secretary", status: "Archived" },
-      { name: "Mark Smith", position: "Treasurer", status: "Archived" },
-    ];
-  
-    const tableBody = document.getElementById("archiveTableBody");
-  
-    archivedUsers.forEach(user => {
-      const row = document.createElement("tr");
-      row.innerHTML = `
-        <td>${user.name}</td>
-        <td>${user.position}</td>
-        <td>${user.status}</td>
-        <td>
-          <button class='icon-edit' onclick="restorePost('${user.name}')"><i class='bx bx-refresh'></i></button>
-          <button class='icon-delete' onclick="deletePost('${user.name}')"><i class='bx bxs-trash'></i></button>
-        </td>
-      `;
-      tableBody.appendChild(row);
+	document.addEventListener("DOMContentLoaded", () => {
+  const modal = document.getElementById("editStatusModal");
+  const closeModal = document.getElementById("closeStatusModal");
+  const form = document.getElementById("editUserStatusForm");
+	const emails = document.querySelectorAll(".email");
+	const phones = document.querySelectorAll(".phone");
+	
+	function maskEmail(email) {
+		const [user, domain] = email.split('@');
+		if (user.length <= 2) return email; 
+
+		const first = user[0];
+		const last = user[user.length - 1];
+		const masked = first + '*'.repeat(user.length - 2) + last;
+		return masked + '@' + domain;
+	}
+
+	function maskPhone(phone) {
+		const digits = phone.replace(/\D/g, '');
+		if (digits.length < 7) return phone;
+
+		const start = digits.slice(0, 3);
+		const end = digits.slice(-2);
+		return start + '*****' + end;
+	}
+
+	emails.forEach(el => {
+		el.textContent = maskEmail(el.textContent.trim());
+	});
+
+	phones.forEach(el => {
+		el.textContent = maskPhone(el.textContent.trim());
+	});
+
+  // Open modal on edit icon click
+  document.querySelectorAll(".icon-edit").forEach(icon => {
+    icon.addEventListener("click", function () {
+      const row = this.closest("tr");
+      const name = row.children[0].textContent;
+      const position = row.children[1].textContent;
+      const status = row.children[2].textContent.trim().toLowerCase();
+
+      document.getElementById("modalUserName").value = name;
+      document.getElementById("modalUserPosition").value = position;
+      document.getElementById("userStatus").value = status;
+
+      modal.classList.add("show");
     });
-  </script>
-  
-<script>
-  function restorePost(title) {
-    Swal.fire({
-      title: 'Restore Post?',
-      text: `"${title}" will be moved back to active items.`,
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, restore it!',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        // Simulate restore
-        Swal.fire('Restored!', `"${title}" has been restored.`, 'success');
+  });
+
+  // Close modal
+  closeModal.addEventListener("click", () => modal.classList.remove("show"));
+  window.addEventListener("click", e => {
+    if (e.target === modal) modal.classList.remove("show");
+  });
+
+  // Handle form submission
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    
+    // Optional: update status live in the table
+    const name = document.getElementById("modalUserName").value;
+    const newStatus = document.getElementById("userStatus").value;
+
+    document.querySelectorAll("table tbody tr").forEach(row => {
+      if (row.children[0].textContent === name) {
+        row.children[2].innerHTML = `<span class='status ${newStatus}'>${newStatus.charAt(0).toUpperCase() + newStatus.slice(1)}</span>`;
       }
     });
-  }
 
-  function deletePost(title) {
-    Swal.fire({
-      title: 'Are you sure?',
-      text: `This will permanently delete "${title}" from archive.`,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, delete it!',
-      confirmButtonColor: '#d33'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        // Simulate deletion
-        Swal.fire('Deleted!', `"${title}" has been removed.`, 'success');
-      }
-    });
-  }
-</script>
+    modal.classList.remove("show");
+  });
+});
 
-<script src="js/script.js"></script>
-<script src="js/dropdown_profile.js"></script>
-
+</script>  
+	<script src="../js/kebab.js"></script>
+	<script src="../js/script.js"></script>
+    <script src="../js/dropdown_profile.js"></script>
 </body>
 </html>

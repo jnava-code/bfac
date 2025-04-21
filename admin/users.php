@@ -137,7 +137,7 @@
                             <i class="bx bx-dots-vertical" id="kebabMenu"></i>
                             <div class="dropdown-menu" id="dropdownMenu">
                                 <ul>
-                                    <li><a href="archive_user.html">Archive</a></li>
+                                    <li><a href="archive_user.php">Archive</a></li>
                                 </ul>
                             </div>
                         </div>

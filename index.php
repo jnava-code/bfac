@@ -32,7 +32,7 @@
                 <div class="error-message" id="passwordError">Please enter your password</div>
             </div>
             <div class="input-group">
-                <a href="forgot.html" class="forgot-password">Forgot Password?</a>
+                <a href="forgot-password.php" target="_blank" class="forgot-password">Forgot Password?</a>
             </div>
             <button type="submit" class="btn-login" name="login">
                 <i class="fas fa-sign-in-alt"></i> Sign In

@@ -66,7 +66,7 @@
                 <option value="2020">2020</option>
               </select>
             </div>
-          <button class="view-btn" onclick="window.location.href='sales.php';">
+          <button class="view-btn" onclick="window.location.href='div.php';">
             <i class='bx bx-left-arrow-alt'></i> Back  
           </button>
         </div>

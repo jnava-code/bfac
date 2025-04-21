@@ -1,6 +1,6 @@
 <?php
   include "../config/db.php";
-
+  include "../auth/session.php";
   // Calculate total sales amount
   $total_query = "
   SELECT SUM(asales.amount) AS total_sales
