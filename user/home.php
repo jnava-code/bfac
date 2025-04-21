@@ -145,9 +145,9 @@
 		</main>
 	</section>
 
-	<!-- <script src="../js/kebab.js"></script> -->
+	<script src="../js/kebab.js"></script>
 	<script src="../js/script.js"></script>
-	<!-- <script src="../js/dropdown_profile.js"></script> -->
+	<script src="../js/dropdown_profile.js"></script>
 </body>
 </html>
 

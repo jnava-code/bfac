@@ -51,7 +51,9 @@
 					<ul class="breadcrumb">
 						<li><a href="#">Dashboard</a></li>
 						<li><i class='bx bx-chevron-right'></i></li>
-						<li><a class="active" href="#">Users</a></li>
+						<li><a href="#">Users</a></li>
+						<li><i class='bx bx-chevron-right'></i></li>
+						<li><a class="active" href="#">Archive</a></li>
 					</ul>
 				</div>
 			</div>

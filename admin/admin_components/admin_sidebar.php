@@ -8,6 +8,7 @@
     </a>
 
     <ul class="side-menu top">
+      <li><a href="admin.php"><i class="bx bxs-user"></i><span class="text">Admins</span></a></li>
 			<li><a href="users.php"><i class="bx bxs-user"></i><span class="text">Users</span></a></li>
 			<li><a href="shares.php"><i class="bx bxs-coin-stack"></i><span class="text">Shares</span></a></li>
 			<li><a href="sales.php"><i class='bx bxs-credit-card-alt'></i><span class="text">Sales </span></a></li>

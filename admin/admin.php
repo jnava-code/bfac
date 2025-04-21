@@ -52,7 +52,7 @@
           <ul class="breadcrumb">
             <li><a href="#">Dashboard</a></li>
             <li><i class="bx bx-chevron-right"></i></li>
-            <li><a class="active" href="#">User Management</a></li>
+            <li><a class="active" href="#">Admin</a></li>
           </ul>
         </div>
       </div>
@@ -66,7 +66,7 @@
                 <i class="bx bx-dots-vertical" id="kebabMenu"></i>
                 <div class="dropdown-menu" id="dropdownMenu">
                     <ul>
-                        <li><a href="archive_admin.html">Archive</a></li>
+                        <li><a href="archive_admin.php">Archive</a></li>
                     </ul>
                 </div>
             </div>
@@ -156,19 +156,19 @@
       <input type="hidden" id="editUserId">
       <div class="form-group">
         <label for="editUserFullName">Full Name</label>
-        <input type="text" id="editUserFullName" required>
+        <input type="text" id="editUserFullName">
       </div>
       <div class="form-group">
         <label for="editUserName">Username</label>
-        <input type="text" id="editUserName" required>
+        <input type="text" id="editUserName">
       </div>
       <div class="form-group">
         <label for="editUserEmail">Email</label>
-        <input type="email" id="editUserEmail" required>
+        <input type="email" id="editUserEmail">
       </div>
       <div class="form-group">
         <label for="editUserRole">Role</label>
-        <select id="editUserRole" required>
+        <select id="editUserRole">
           <option value="">Select Role</option>
           <option value="Admin">Admin</option>
           <option value="User">User</option>
