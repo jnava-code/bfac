@@ -156,16 +156,18 @@
 			fetch('../api/get/read_cal_dividend.php')
 				.then(response => response.json())
 				.then(data => {
+					console.log(data);
+					
 					const dateArray = data.dateArray;
 					const amountArray = data.amountArray;
-
+					const baseShareCapital = data.total_share_capital;
 					const { slope, intercept } = linearRegression(dateArray, amountArray);
 					const highest = Math.max(...dateArray);
 					const nextYear = highest + 1;
+					
+					const result = calculateDividend(shareCapital, nextYear, slope, intercept, baseShareCapital);
 
-					const result = calculateDividend(shareCapital, nextYear, slope, intercept);
-
-					dividendResult.textContent = `₱${result.toFixed(2)}`;
+					dividendResult.textContent = `₱${result.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 				})
 				.catch(error => {
 					console.error('Error:', error);
@@ -173,10 +175,10 @@
 				});
 		}
 
-		function calculateDividend(shareCapital, year, slope, intercept) {
+		function calculateDividend(shareCapital, year, slope, intercept, baseShareCapital) {
 			let predictedDividend = slope * year + intercept;
 
-			let dividendPerShare = predictedDividend / 36000;
+			let dividendPerShare = predictedDividend / baseShareCapital;
 			let totalDividend = dividendPerShare * shareCapital;
 
 			return totalDividend;
