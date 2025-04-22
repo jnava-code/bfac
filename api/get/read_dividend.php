@@ -17,12 +17,11 @@ $sql_user = "
         COALESCE(dividend_totals.total_dividend, 0) AS total_dividend
     FROM user_members um
     LEFT JOIN (
-        SELECT member_id, SUM(amount) AS total_sales
+        SELECT SUM(amount) AS total_sales
         FROM admin_sales
     ) AS sales_totals ON 1=1
     LEFT JOIN (
         SELECT 
-            member_id,
             SUM(amount) AS total_expenses 
         FROM admin_expenses
     ) AS expense_totals ON 1=1

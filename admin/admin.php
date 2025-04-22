@@ -266,8 +266,6 @@
     displayAdmin();
 
     function archiveUser(id) {
-      console.log(id);
-      
       const archiveAdmin = new FormData();
       archiveAdmin.append("user_id", id);
 

@@ -1,12 +1,6 @@
 <?php
 	include "../config/db.php";
 	include "../auth/session.php";
-
-	$sql = "SELECT * FROM user_members 
-  WHERE is_archived = 1 AND status = 'Approved' AND is_verified = 1";
-	$result = mysqli_query($conn, $sql);
-
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -16,6 +10,7 @@
 	<link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
 	<link rel="stylesheet" href="../css/style.css">
 	<link rel="stylesheet" href="../css/livestock.css">
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 	<style>
 		.buttons_column {
 			padding: 5px;
@@ -62,7 +57,7 @@
 				<div class="order">
 					<div class="head">
 						<h3>List of Users</h3>
-						<button class="view-btn" onclick="window.location.href='sales.php';">
+						<button class="view-btn" onclick="window.location.href='users.php';">
             <i class='bx bx-left-arrow-alt'></i> Back  
           </button>
 					</div>
@@ -75,27 +70,10 @@
 								<th>Email</th>
 								<th>Phone</th>
 								<th>Address</th>
-								<th>Date Registered</th>
+								<th>Action</th>
 							</tr>
 						</thead>
-						<tbody>
-							<?php 						
-								if($result && mysqli_num_rows($result) > 0) {
-									while($row = mysqli_fetch_assoc($result)) {
-										echo "<tr>";
-										echo "<td>" . $row['first_name'] . "</td>";
-										echo "<td>" . $row['middle_name'] . "</td>";
-										echo "<td>" . $row['last_name'] . "</td>";
-										echo "<td class='email'>" . $row['email'] . "</td>";
-										echo "<td class='phone'>" . $row['phone'] . "</td>";
-										echo "<td>" . $row['address'] . "</td>";
-										echo "<td>" . $row['date_registered'] . "</td>";
-										echo "</tr>";
-									}
-								} else {
-									echo "<tr><td colspan='9'>No archived users found.</td></tr>";
-								}
-							?>
+						<tbody id="userArchiveTable">
 						</tbody>
 					</table>
 				</div>
@@ -105,36 +83,7 @@
 	</section>
 
 
-
-	<!-- Edit User Status Modal -->
-<div id="editStatusModal" class="modal1">
-	<div class="modal-livestock">
-	  <button class="close" id="closeStatusModal">&times;</button>
-	  <h2>Edit User Status</h2>
-	  <form id="editUserStatusForm">
-		<div class="form-group">
-		  <label>Name</label>
-		  <input type="text" id="modalUserName" readonly>
-		</div>
-		<div class="form-group">
-		  <label>Position on Board</label>
-		  <input type="text" id="modalUserPosition" readonly>
-		</div>
-		<div class="form-group">
-		  <label for="userStatus">Status</label>
-		  <select id="userStatus" required>
-			<option value="active">Active</option>
-			<option value="inactive">Inactive</option>
-		  </select>
-		</div>
-		<div class="form-group" style="grid-column: span 2;">
-		  <button type="submit">Save</button>
-		</div>
-	  </form>
-	</div>
-  </div>
 <script>
-	document.addEventListener("DOMContentLoaded", () => {
   const modal = document.getElementById("editStatusModal");
   const closeModal = document.getElementById("closeStatusModal");
   const form = document.getElementById("editUserStatusForm");
@@ -168,48 +117,104 @@
 		el.textContent = maskPhone(el.textContent.trim());
 	});
 
-  // Open modal on edit icon click
-  document.querySelectorAll(".icon-edit").forEach(icon => {
-    icon.addEventListener("click", function () {
-      const row = this.closest("tr");
-      const name = row.children[0].textContent;
-      const position = row.children[1].textContent;
-      const status = row.children[2].textContent.trim().toLowerCase();
 
-      document.getElementById("modalUserName").value = name;
-      document.getElementById("modalUserPosition").value = position;
-      document.getElementById("userStatus").value = status;
+  function restorePost(title, userId) {
+  Swal.fire({
+    title: 'Restore User?',
+    text: `"${title}" will be moved back to active list of users.`,
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, restore it!',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      const restoreData = new FormData();
+      restoreData.append("member_id", userId);
 
-      modal.classList.add("show");
-    });
+      fetch("../api/update/restore_user.php", {
+        method: 'POST',
+        body: restoreData
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === "success") {
+          Swal.fire('Restored!', `"${title}" has been restored.`, 'success');
+          displayArchiveUsers();
+        } else {
+          Swal.fire('Error', data.message || 'Restore failed.', 'error');
+        }
+      });
+    }
   });
+}
 
-  // Close modal
-  closeModal.addEventListener("click", () => modal.classList.remove("show"));
-  window.addEventListener("click", e => {
-    if (e.target === modal) modal.classList.remove("show");
+function deletePost(title, userId) {
+  Swal.fire({
+    title: 'Are you sure?',
+    text: `This will permanently delete "${title}" from archive.`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, delete it!',
+    confirmButtonColor: '#d33'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      const deleteData = new FormData();
+      deleteData.append("member_id", userId);
+      
+      fetch("../api/delete/delete_user.php", {
+        method: 'POST',
+        body: deleteData
+      })
+      .then(response => response.json())
+      .then(data => { 
+        if (data.status === "success") {
+          Swal.fire('Deleted!', `"${title}" has been removed.`, 'success');
+          displayArchiveUsers();
+        } else {
+          Swal.fire('Error', data.message || 'Delete failed.', 'error');
+        }
+      });
+    }
   });
+}
 
-  // Handle form submission
-  form.addEventListener("submit", function (e) {
-    e.preventDefault();
-    
-    // Optional: update status live in the table
-    const name = document.getElementById("modalUserName").value;
-    const newStatus = document.getElementById("userStatus").value;
+function displayArchiveUsers() {
+  const tableBody = document.getElementById("userArchiveTable");
+  tableBody.innerHTML = ""; // Clear existing rows
 
-    document.querySelectorAll("table tbody tr").forEach(row => {
-      if (row.children[0].textContent === name) {
-        row.children[2].innerHTML = `<span class='status ${newStatus}'>${newStatus.charAt(0).toUpperCase() + newStatus.slice(1)}</span>`;
-      }
-    });
+  fetch("../api/get/read_archive_users.php")
+	.then(response => response.json())
+	.then(data => {
+	  if (data.length === 0) {
+		tableBody.innerHTML = "<td colspan='7' style='text-align: center;'>No archived users found.</td>";
+		return;
+	  }
+		
+	  data.forEach(user => {
+		const row = document.createElement("tr");
+		const fullName = `${user.first_name} ${user.middle_name} ${user.last_name}`;
+		row.innerHTML = `
+		  <td>${user.first_name}</td>
+		  <td>${user.middle_name}</td>
+		  <td>${user.last_name}</td>
+		  <td class="email">${user.email}</td>
+		  <td class="phone">${user.phone}</td>
+		  <td>${user.address}</td>
+		  <td>
+			<button class="icon-edit" onclick="restorePost('${fullName}', ${user.member_id})">
+			  <i class='bx bx-refresh'></i>
+			</button>
+			<button class="icon-delete" onclick="deletePost('${fullName}', ${user.member_id})">
+			  <i class='bx bxs-trash'></i>
+			</button>
+		  </td>`;
+		tableBody.appendChild(row);
+	  });
+	})
+}
 
-    modal.classList.remove("show");
-  });
-});
-
+displayArchiveUsers();
 </script>  
-	<script src="../js/kebab.js"></script>
+	<!-- <script src="../js/kebab.js"></script> -->
 	<script src="../js/script.js"></script>
     <script src="../js/dropdown_profile.js"></script>
 </body>

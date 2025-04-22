@@ -5,8 +5,7 @@
   $sql_share = "SELECT 
     *
     FROM admin_sales AS asales
-    LEFT JOIN user_members um ON um.member_id = asales.member_id
-    WHERE um.is_archived = 0 AND um.is_verified = 1 AND DATE(asales.purchase_date) < CURDATE()
+    WHERE DATE(asales.purchase_date) < CURDATE()
     ";
 
     $result_share = mysqli_query($conn, $sql_share);
@@ -66,10 +65,8 @@
           <thead>
                 <tr>
                     <th>Order No.</th>
-                    <th>Customer Name</th>
                     <th>Product Name</th>
                     <th>Quantity</th>
-                    <th>Address</th>
                     <th>Price (₱)</th>
                     <th>Receipt Control Number</th>
                     <th>Purchase Date</th>
@@ -80,14 +77,11 @@
               if ($result_share && mysqli_num_rows($result_share) > 0) {
                 while ($row = mysqli_fetch_assoc($result_share)) {
                   $id = $row['id'];
-                  $full_name = htmlspecialchars($row['first_name'] . ' ' . $row['middle_name'] . ' ' . $row['last_name']);
             ?>
               <tr id="share_row_<?php echo $id; ?>">
               <td><?php echo htmlspecialchars($row['sales_no']); ?></td>
-                <td><?php echo $full_name; ?></td>
                 <td><?php echo htmlspecialchars($row['description']); ?></td>
                 <td><?php echo htmlspecialchars($row['quantity']); ?></td>
-                <td><?php echo htmlspecialchars($row['address']); ?></td>
                 <td>₱<?php echo htmlspecialchars($row['amount']); ?></td>
                 <td><?php echo htmlspecialchars($row['receipt_no']); ?></td>
                 <td><?php echo htmlspecialchars($row['purchase_date']); ?></td>

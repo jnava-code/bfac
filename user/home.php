@@ -5,8 +5,6 @@
 	$sales_query = "
 		SELECT SUM(asales.amount) AS total_sales
 		FROM admin_sales AS asales
-		LEFT JOIN user_members um ON um.member_id = asales.member_id
-		WHERE um.is_archived = 0 AND um.is_verified = 1
 	";
 
 	$sales_result = mysqli_query($conn, $sales_query);

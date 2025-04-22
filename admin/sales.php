@@ -63,10 +63,8 @@
             <thead>
               <tr>
                 <th>Order No.</th>
-                <th>Customer Name</th>
                 <th>Product Name</th>
                 <th>Quantity</th>
-                <th>Address</th>
                 <th>Price (₱)</th>
                 <th>Receipt Control Number</th>
               </tr>
@@ -88,27 +86,6 @@
         <input type="text" id="orderNo" placeholder="e.g. 10001" required />
       </div>
       <div class="form-group">
-        <label for="customerName">Customer Name</label>
-        <!-- <input type="text" id="customerName" placeholder="Enter customer name" required /> -->
-        <select id="customerName" required>
-          <option value="" selected disabled>Select Customer</option>
-          <?php
-            // Fetch customer names from the database
-            $query = "SELECT * FROM user_members WHERE is_archived = 0 AND is_verified = 1";
-            $result = mysqli_query($conn, $query);
-
-            if (mysqli_num_rows($result) > 0) {
-              while ($row = mysqli_fetch_assoc($result)) {
-                $fullname = $row['middle_name'] == "" ? $row['first_name'] . " " . $row['last_name'] : $row['first_name'] . " " . $row['middle_name'] . " " . $row['last_name'];
-                echo "<option value='" . $row['member_id'] . "'>" . $fullname . "</option>";
-              }
-            } else {
-              echo "<option value=''>No customers found</option>";
-            }
-          ?>
-        </select>
-      </div>
-      <div class="form-group">
         <label for="productName">Product Name</label>
         <input type="text" id="productName" placeholder="Enter product name" required />
       </div>
@@ -116,13 +93,17 @@
         <label for="quantity">Quantity</label>
         <input type="number" id="quantity" placeholder="Enter quantity" required />
       </div>
+      <div class="form-group">
+        <label for="Price">Unit Price</label>
+        <input type="number" id="unitprice" placeholder="Enter Unit Price" required />
+      </div>
       <!-- <div class="form-group">
         <label for="address">Address</label>
         <input type="text" id="address" placeholder="Enter address" required />
       </div> -->
       <div class="form-group">
         <label for="price">Price (₱)</label>
-        <input type="number" id="price" placeholder="Enter price" required />
+        <input type="number" id="price" placeholder="Enter price" readonly required />
       </div>
     
       <div class="form-group">
@@ -161,6 +142,12 @@
 </body>
 </html>
 <script>
+
+  fetch(`../api/get/read_sales_no.php`)
+    .then((response) => response.json())
+    .then((data) => {
+      document.getElementById("orderNo").value = data.sales_no;
+    });
   // Open modal
   document.getElementById("openSalesModal").addEventListener("click", function () {
     document.getElementById("salesModal").classList.add("show");
@@ -171,24 +158,41 @@
     document.getElementById("salesModal").classList.remove("show");
   });
 
+  const quantity = document.getElementById("quantity");
+  const unitprice = document.getElementById("unitprice");
+  const price = document.getElementById("price");
+
+  function calculatePrice() {
+    const qty = parseFloat(quantity.value);
+    const unit = parseFloat(unitprice.value);
+
+    if (!isNaN(qty) && !isNaN(unit)) {
+      price.value = (qty * unit).toFixed(2); // 2 decimal places
+    } else {
+      price.value = ''; // Clear if inputs are invalid
+    }
+  }
+
+  quantity.addEventListener("input", calculatePrice);
+  unitprice.addEventListener("input", calculatePrice);
+
   // Handle form submission
   document.getElementById("salesForm").addEventListener("submit", function (e) {
     e.preventDefault();
 
     const orderNo = document.getElementById("orderNo").value;
-    const customerName = document.getElementById("customerName").value;
     const productName = document.getElementById("productName").value;
     const quantity = document.getElementById("quantity").value;
-    // const address = document.getElementById("address").value;
+    const unitprice = document.getElementById("unitprice").value;
     const price = document.getElementById("price").value;
     const receiptNo = document.getElementById("receiptNo").value;
     const purchaseDate = document.getElementById("purchaseDate").value;
 
     const salesData = new FormData();
     salesData.append("orderNo", orderNo);
-    salesData.append("customerId", customerName);
     salesData.append("productName", productName);
     salesData.append("quantity", quantity);
+    salesData.append("unitprice", unitprice);
     salesData.append("price", price);
     salesData.append("receiptNo", receiptNo);
     salesData.append("purchaseDate", purchaseDate);
@@ -202,6 +206,7 @@
         if (data.status == "success") {
           fetchSalesData();
           document.getElementById("salesForm").reset();
+          document.getElementById("salesModal").classList.remove("show");
         }
       })
   });
@@ -222,10 +227,8 @@
           data.sales.forEach((item) => {
             const salesHTML = `<tr>
                 <td>${item.sales_no}</td>
-                <td>${item.first_name} ${item.last_name}</td>
                 <td>${item.description}</td>
                 <td>${item.quantity}</td>
-                <td>${item.address}</td>
                 <td>₱${item.amount}</td>
                 <td>${item.receipt_no}</td>
               </tr>

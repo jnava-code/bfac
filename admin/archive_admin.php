@@ -13,7 +13,7 @@
 	<link href='https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css' rel='stylesheet'>
 	<link rel="stylesheet" href="../css/style.css">
 	<link rel="stylesheet" href="../css/livestock.css">
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 	<style>
 		.buttons_column {
 			padding: 5px;
@@ -74,30 +74,7 @@
                 <th>Actions</th>
 							</tr>
 						</thead>
-						<tbody>
-							<?php 						
-								if($result_user && mysqli_num_rows($result_user) > 0) {
-									while($row = mysqli_fetch_assoc($result_user)) {
-										echo "<tr id='admin_row_" . $row['user_id'] . "'>";
-										echo "<td>" . htmlspecialchars($row['full_name']) . "</td>";
-										echo "<td>" . htmlspecialchars($row['username']) . "</td>";
-										echo "<td class='email'>" . htmlspecialchars($row['email']) . "</td>";
-                    echo "<td>" . htmlspecialchars($row['role']) . "</td>";
-                    echo "<td>
-                    <button class='icon-edit' onclick=\"restorePost('" . addslashes($full_name) . "', " . $row['user_id'] . ")\">
-                        <i class='bx bx-refresh'></i>
-                    </button>
-                    <button class='icon-delete' onclick=\"deletePost('" . addslashes($full_name) . "', " . $row['user_id'] . ")\">
-                        <i class='bx bxs-trash'></i>
-                    </button>
-                </td>";
-                
-										echo "</tr>";
-									}
-								} else {
-									echo "<tr><td colspan='9'>No archived users found.</td></tr>";
-								}
-							?>
+						<tbody id="archiveAdminTable">
 						</tbody>
 					</table>
 				</div>
@@ -156,8 +133,7 @@
       .then(data => {
         if (data.status === "success") {
           Swal.fire('Restored!', `"${title}" has been restored.`, 'success');
-          const row = document.getElementById(`admin_row_${adminId}`);
-          if (row) row.remove();
+          displayArchiveAdmin();
         } else {
           Swal.fire('Error', data.message || 'Restore failed.', 'error');
         }
@@ -187,8 +163,7 @@ function deletePost(title, adminId) {
       .then(data => { 
         if (data.status === "success") {
           Swal.fire('Deleted!', `"${title}" has been removed.`, 'success');
-          const row = document.getElementById(`admin_row_${adminId}`);
-          if (row) row.remove();
+          displayArchiveAdmin();
         } else {
           Swal.fire('Error', data.message || 'Delete failed.', 'error');
         }
@@ -229,7 +204,40 @@ function deletePost(title, adminId) {
 	phones.forEach(el => {
 		el.textContent = maskPhone(el.textContent.trim());
 	});
+	
+	function displayArchiveAdmin() {
+		fetch("../api/get/read_archive_admins.php")
+			.then(response => response.json())
+			.then(data => {
+				const tableBody = document.getElementById("archiveAdminTable");
+				tableBody.innerHTML = ""; // Clear existing rows
 
+				if (data.length > 0) {
+					data.forEach(admin => {
+						const row = document.createElement("tr");
+						row.id = "admin_row_" + admin.user_id;
+						row.innerHTML = `
+							<td>${admin.full_name}</td>
+							<td>${admin.username}</td>
+							<td class="email">${admin.email}</td>
+							<td>${admin.role}</td>
+							<td>
+								<button class='icon-edit' onclick="restorePost('${admin.full_name}', ${admin.user_id})">
+									<i class='bx bx-refresh'></i>
+								</button>
+								<button class='icon-delete' onclick="deletePost('${admin.full_name}', ${admin.user_id})">
+									<i class='bx bxs-trash'></i>
+								</button>
+							</td>`;
+						tableBody.appendChild(row);
+					});
+				} else {
+					tableBody.innerHTML = "<tr><td colspan='5'>No archived admins found.</td></tr>";
+				}
+			});
+	}
+
+	displayArchiveAdmin();
 </script>  
 	<!-- // <script src="../js/kebab.js"></script> -->
 	<script src="../js/script.js"></script>

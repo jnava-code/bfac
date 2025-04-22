@@ -10,6 +10,7 @@
         ashares.is_archived,
         SUM(asl.paid_up_share_capital) AS total_paid_up_share_capital,
         SUM(asl.share_capital) AS total_share_capital,
+        asl.receipt_number,
         um.first_name,
         um.middle_name,
         um.last_name,
@@ -76,6 +77,7 @@
               <th>Member Name</th>
               <th>Paid-up Share Capital</th>
               <th>Shares</th>
+              <th>Receipt Number</th>
             </tr>
           </thead>
           <tbody id="archiveTableBody">
@@ -89,6 +91,7 @@
                 <td><?php echo $full_name; ?></td>
                 <td>₱<?php echo htmlspecialchars($row['total_paid_up_share_capital']); ?></td>
                 <td><?php echo htmlspecialchars($row['total_share_capital']); ?></td>
+                <td><?php echo htmlspecialchars($row['receipt_number']); ?></td>
               </tr>
               <?php
                 }

@@ -25,7 +25,7 @@
 	}
 
 	$result_pending = selectUsers($conn, 'Pending');
-	$result_approved = selectUsers($conn, 'Approved');
+	// $result_approved = selectUsers($conn, 'Approved');
 
 ?>
 <!DOCTYPE html>
@@ -152,26 +152,10 @@
 								<th>Phone</th>
 								<th>Address</th>
 								<th>Date Registered</th>
+								<th>Action</th>
 							</tr>
 						</thead>
-						<tbody>
-							<?php 						
-								if($result_approved && mysqli_num_rows($result_approved) > 0) {
-									while($row = mysqli_fetch_assoc($result_approved)) {
-										echo "<tr>";
-										echo "<td>" . $row['first_name'] . "</td>";
-										echo "<td>" . $row['middle_name'] . "</td>";
-										echo "<td>" . $row['last_name'] . "</td>";
-										echo "<td class='email'>" . $row['email'] . "</td>";
-										echo "<td class='phone'>" . $row['phone'] . "</td>";
-										echo "<td>" . $row['address'] . "</td>";
-										echo "<td>" . $row['date_registered'] . "</td>";
-										echo "</tr>";
-									}
-								} else {
-									echo "<tr><td colspan='9'>No approved users found.</td></tr>";
-								}
-							?>
+						<tbody id="approvedTable">
 						</tbody>
 					</table>
 				</div>
@@ -180,37 +164,8 @@
 		</main>
 	</section>
 
-
-
-	<!-- Edit User Status Modal -->
-<div id="editStatusModal" class="modal1">
-	<div class="modal-livestock">
-	  <button class="close" id="closeStatusModal">&times;</button>
-	  <h2>Edit User Status</h2>
-	  <form id="editUserStatusForm">
-		<div class="form-group">
-		  <label>Name</label>
-		  <input type="text" id="modalUserName" readonly>
-		</div>
-		<div class="form-group">
-		  <label>Position on Board</label>
-		  <input type="text" id="modalUserPosition" readonly>
-		</div>
-		<div class="form-group">
-		  <label for="userStatus">Status</label>
-		  <select id="userStatus" required>
-			<option value="active">Active</option>
-			<option value="inactive">Inactive</option>
-		  </select>
-		</div>
-		<div class="form-group" style="grid-column: span 2;">
-		  <button type="submit">Save</button>
-		</div>
-	  </form>
-	</div>
-  </div>
 <script>
-	document.addEventListener("DOMContentLoaded", () => {
+
   const modal = document.getElementById("editStatusModal");
   const closeModal = document.getElementById("closeStatusModal");
   const form = document.getElementById("editUserStatusForm");
@@ -244,45 +199,60 @@
 		el.textContent = maskPhone(el.textContent.trim());
 	});
 
-  // Open modal on edit icon click
-  document.querySelectorAll(".icon-edit").forEach(icon => {
-    icon.addEventListener("click", function () {
-      const row = this.closest("tr");
-      const name = row.children[0].textContent;
-      const position = row.children[1].textContent;
-      const status = row.children[2].textContent.trim().toLowerCase();
+	function archiveUser(member_id) {
+      const archiveUser = new FormData();
+      archiveUser.append("member_id", member_id);
 
-      document.getElementById("modalUserName").value = name;
-      document.getElementById("modalUserPosition").value = position;
-      document.getElementById("userStatus").value = status;
+      fetch("../api/post/archive_user.php", {
+        method: "POST",
+        body: archiveUser
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === "success") {
+            displayUser();
+          } else {
+            alert("Error archiving user: " + data.message);
+          }
+        });
+    }
 
-      modal.classList.add("show");
-    });
-  });
+	function displayUser() {
+		approvedTable.innerHTML = "";
+		fetch("../api/get/read_users.php")
+			.then(response => response.json())
+			.then(data => {
+				if(data.length === 0) {
+					approvedTable.innerHTML = "<tr><td colspan='8'>No approved users found.</td></tr>";
+					return;
+				}
 
+				data.forEach(user => {
+					const row = document.createElement("tr");
+					row.innerHTML = `
+						<td>${user.first_name}</td>
+						<td>${user.middle_name}</td>
+						<td>${user.last_name}</td>
+						<td class="email">${user.email}</td>
+						<td class="phone">${user.phone}</td>
+						<td>${user.address}</td>
+						<td>${user.date_registered}</td>
+						<td>
+							<button class="bx bxs-archive icon-archive" 
+								onclick="archiveUser(${user.member_id})">
+							</button>
+						</td>`;
+					approvedTable.appendChild(row);
+				});
+			});
+	}
+
+	displayUser();
   // Close modal
-  closeModal.addEventListener("click", () => modal.classList.remove("show"));
-  window.addEventListener("click", e => {
-    if (e.target === modal) modal.classList.remove("show");
-  });
-
-  // Handle form submission
-  form.addEventListener("submit", function (e) {
-    e.preventDefault();
-    
-    // Optional: update status live in the table
-    const name = document.getElementById("modalUserName").value;
-    const newStatus = document.getElementById("userStatus").value;
-
-    document.querySelectorAll("table tbody tr").forEach(row => {
-      if (row.children[0].textContent === name) {
-        row.children[2].innerHTML = `<span class='status ${newStatus}'>${newStatus.charAt(0).toUpperCase() + newStatus.slice(1)}</span>`;
-      }
-    });
-
-    modal.classList.remove("show");
-  });
-});
+//   closeModal.addEventListener("click", () => modal.classList.remove("show"));
+//   window.addEventListener("click", e => {
+//     if (e.target === modal) modal.classList.remove("show");
+//   });
 
 </script>  
 	<script src="../js/kebab.js"></script>

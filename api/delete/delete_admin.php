@@ -2,13 +2,13 @@
 include "../../config/db.php";
 header('Content-Type: application/json');
 
-if (isset($_POST['id'])) {
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $id = mysqli_real_escape_string($conn, $_POST['id']);
 
     $sql = "DELETE FROM admin_accounts WHERE user_id = '$id'";
     $result = mysqli_query($conn, $sql);
 
-    if ($result && $result_list) {
+    if ($result) {
         echo json_encode(['status' => 'success']);
     } else {
         echo json_encode(['status' => 'error', 'message' => mysqli_error($conn)]);

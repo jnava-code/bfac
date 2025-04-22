@@ -62,19 +62,6 @@
           </select>
         </div>
         <div class="form-group">
-          <label for="selectUser">User</label>
-          <select name="user" id="expenseUser" required>
-            <option value="">Select User</option>
-            <?php
-              $sql = "SELECT * FROM user_members WHERE is_archived = 0 AND status = 'Approved'";
-              $result = mysqli_query($conn, $sql);
-              while ($row = mysqli_fetch_assoc($result)) {
-                echo "<option value='{$row['member_id']}'>{$row['first_name']} {$row['last_name']}</option>";
-              }
-            ?>
-          </select>
-        </div>
-        <div class="form-group">
           <label for="expenseAmount">Amount (₱)</label>
           <input type="number" id="expenseAmount" placeholder="Enter amount" required>
         </div>
@@ -135,14 +122,12 @@
     e.preventDefault();
 
     const categoryEl = document.getElementById("expenseCategory");
-    const userEl = document.getElementById("expenseUser");
     const amountEl = document.getElementById("expenseAmount");
     const dateEl = document.getElementById("expenseDate");
     const descriptionEl = document.getElementById("expenseDescription");
     const yearEl = document.getElementById("expenseYear");
 
     const category = categoryEl.value;
-    const user = userEl.value;
     const amount = amountEl.value;
     const date = dateEl.value;
     const description = descriptionEl.value;
@@ -150,7 +135,6 @@
 
     const expenseData = new FormData();
     expenseData.append("category", category);
-    expenseData.append("user", user);
     expenseData.append("amount", amount);
     expenseData.append("date", date);
     expenseData.append("description", description);
@@ -170,7 +154,6 @@
 
           // Clear the form inputs properly
           categoryEl.value = "";
-          userEl.value = "";
           amountEl.value = "";
           dateEl.value = "";
           descriptionEl.value = "";
