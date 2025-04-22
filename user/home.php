@@ -133,7 +133,7 @@
 						<label for="share-amount">Share Capital (₱)</label>
 						<input type="number" id="share-amount" placeholder="Enter your share capital amount">
 					</div>
-					<button class="btn-primary" onclick="calculateDividend()">
+					<button class="btn-primary" onclick="clickCalculateDividend()">
 						<i class="fas fa-chart-pie"></i> Calculate Projection
 					</button>
 					<div class="result">
@@ -146,30 +146,41 @@
 	</section>
 
 	<script>
-		// function calculateDividend() {
+		function clickCalculateDividend() {
+			const shareCapital = parseFloat(document.getElementById("share-amount").value);
+			const dividendResult = document.getElementById("dividend-result");
 
-		// }
+			// Clear any previous result
+			// dividendResult.textContent = "Calculating...";
 
-		fetch('../api/get/read_cal_dividend.php')
-			.then(response => response.json())
-			.then(data => {
-				const dateArray = data.dateArray;
-				const amountArray = data.amountArray;
-				console.log(dateArray);
-				console.log(amountArray);
-				
-				const { slope, intercept } = linearRegression(dateArray, amountArray);
-				console.log("Slope:", slope);
-				console.log("Intercept:", intercept);
-				
-				const highest = Math.max(...dateArray);
-				
-				const nextYear = highest + 1;
-				const forecastedValue = forecast(nextYear, slope, intercept);
-				console.log(`Forecasted value for year ${nextYear}:`, forecastedValue);
+			fetch('../api/get/read_cal_dividend.php')
+				.then(response => response.json())
+				.then(data => {
+					const dateArray = data.dateArray;
+					const amountArray = data.amountArray;
 
+					const { slope, intercept } = linearRegression(dateArray, amountArray);
+					const highest = Math.max(...dateArray);
+					const nextYear = highest + 1;
 
-			})
+					const result = calculateDividend(shareCapital, nextYear, slope, intercept);
+
+					dividendResult.textContent = `₱${result.toFixed(2)}`;
+				})
+				.catch(error => {
+					console.error('Error:', error);
+					dividendResult.textContent = "An error occurred. Please try again.";
+				});
+		}
+
+		function calculateDividend(shareCapital, year, slope, intercept) {
+			let predictedDividend = slope * year + intercept;
+
+			let dividendPerShare = predictedDividend / 36000;
+			let totalDividend = dividendPerShare * shareCapital;
+
+			return totalDividend;
+		}
 
 		function linearRegression(xArray, yArray) {
 			const n = xArray.length;
@@ -196,10 +207,15 @@
 			return { slope, intercept };
 			}
 
-		function forecast(x, slope, intercept) {
-			return slope * x + intercept;
-		}
+		// function forecast(x, slope, intercept) {
+		// 	return slope * x + intercept;
+		// }
 
+		// const highest = Math.max(...dateArray);
+				
+		// 		const nextYear = highest + 1;
+		// 		const forecastedValue = forecast(nextYear, slope, intercept);
+		// 		console.log(`Forecasted value for year ${nextYear}:`, forecastedValue);
 	</script>
 	<!-- <script src="../js/kebab.js"></script> -->
 	<script src="../js/script.js"></script>
