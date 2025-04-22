@@ -50,7 +50,7 @@ $sql_user = "
         FROM admin_dividends
         GROUP BY member_id
     ) AS dividend_totals ON dividend_totals.member_id = um.member_id
-    WHERE um.is_archived = 0
+    WHERE um.is_archived = 0 
 ";
 
 

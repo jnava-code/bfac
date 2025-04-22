@@ -83,7 +83,11 @@
                                 echo '<option value="' . $row['member_id'] . '">' . $row['first_name'] . ' ' . $row['last_name'] . '</option>';
                             }
                             echo '</select>';
-                        } 
+                        } else {
+                            echo '<select id="memberSelect" required>';
+                            echo '<option value="" disabled selected>No members available</option>';
+                            echo '</select>';
+                        }
                     ?>
                 </div>
     
@@ -415,6 +419,8 @@
                     }
                     return response.json();
                 }).then(data => {
+                    console.log(data);
+                    
                     if(data.status == "success") {
                         // Close the modal after the success message
                         modal.style.display = "none";

@@ -347,17 +347,23 @@
                             )">Withdraw</button>
                           `;
 
-                          const row = document.createElement('tr');
-                          row.innerHTML = `
-                            <td>${member.first_name} ${member.middle_name} ${member.last_name}</td>
-                            <td>₱${member.total_paid_up_share_capital}</td>
-                            <td>₱${Math.round(total_dividend)}</td>
-                            <td>₱${Math.round(total_dividend) - Math.round(member.total_dividend)}</td>
-                            <td>
-                              ${buttonHtml}       
-                            </td>
-                          `;
-                          tbody.appendChild(row);
+                          if(member.total_paid_up_share_capital != 0) {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                              <td>${member.first_name} ${member.middle_name} ${member.last_name}</td>
+                              <td>₱${member.total_paid_up_share_capital}</td>
+                              <td>₱${Math.round(total_dividend) || 0}</td>
+                              <td>₱${Math.round(total_dividend || 0 ) - Math.round(member.total_dividend)}</td>
+                              <td>
+                                ${buttonHtml}       
+                              </td>
+                            `;
+                            tbody.appendChild(row);
+                          } else {
+                            const row = document.createElement('tr');
+                        row.innerHTML = `<td colspan="5" style="text-align: center;">No data available</td>`;
+                        tbody.appendChild(row);
+                          }
                         });
                       }
                     })
