@@ -2,9 +2,6 @@
   include "../config/db.php";
   include "../auth/session.php"; 
 
-  $sql_user = "SELECT * FROM admin_accounts WHERE is_archived = 0";
-  $result_user = mysqli_query($conn, $sql_user);
-
   if(isset($_POST['add_admin'])) {
       $full_name = mysqli_real_escape_string($conn, $_POST['full_name']);
       $username = mysqli_real_escape_string($conn, $_POST['username']);
@@ -83,29 +80,7 @@
                 <th>Actions</th>
               </tr>
             </thead>
-            <tbody>
-                <!-- <tr data-id="1">
-                    <td>1</td>
-                <td><img src="img/profile1.jpg" alt="Profile" class="profile-img"></td> -->
-                <?php 
-                  if(mysqli_num_rows($result_user) > 0) {
-                    while($row = mysqli_fetch_assoc($result_user)) {
-                      echo "<td>{$row['full_name']}</td>";
-                      echo "<td>{$row['username']}</td>";
-                      echo "<td class='email'>{$row['email']}</td>";
-                      echo "<td>{$row['role']}</td>";
-                      echo "<td>
-                              <button class='bx bxs-edit icon-edit' onclick=\"openEditModal({$row['user_id']}, '{$row['full_name']}', '{$row['username']}', '{$row['email']}', '{$row['role']}')\"></button>
-                              <button class='bx bxs-archive icon-archive' onclick=\"archiveUser({$row['user_id']})\"></button>
-                            </td>";
-                      echo "</tr>";
-                    }
-                  } else {
-                    echo "<tr><td colspan='6'>No users found.</td></tr>";
-                  }
-                ?>
-              </tr>
-              
+            <tbody id="adminTable">          
             </tbody>
           </table>
         </div>
@@ -169,7 +144,7 @@
       <div class="form-group">
         <label for="editUserRole">Role</label>
         <select id="editUserRole">
-          <option value="">Select Role</option>
+          <option value="" selected disabled>Select Role</option>
           <option value="Admin">Admin</option>
           <option value="User">User</option>
         </select>
@@ -208,36 +183,49 @@
       document.getElementById(id).classList.remove("show");
     }
 
-    // document.getElementById("userForm").addEventListener("submit", function (e) {
-    //   e.preventDefault();
+    function displayAdmin() {
+  const adminTable = document.getElementById("adminTable");
+  adminTable.innerHTML = "";
 
-    //   const name = document.getElementById("userFullName").value;
-    //   const username = document.getElementById("userName").value;
-    //   const email = document.getElementById("userEmail").value;
-    //   const role = document.getElementById("userRole").value;
+  fetch("../api/get/read_admins.php")
+    .then(response => response.json())
+    .then(data => {
+      if (data.length === 0) {
+        adminTable.innerHTML = "<tr><td colspan='5'>No users found.</td></tr>";
+        return;
+      }
 
-    //   if (!role) return alert("Please select a role.");
+      data.forEach((admin) => {
+        const row = document.createElement("tr");
+        row.setAttribute("data-id", admin.id); // Use actual ID if available
 
-    //   userCount++;
-    //   const row = document.createElement("tr");
-    //   row.setAttribute("data-id", userCount);
-    //   row.innerHTML = `
-    //     <td>${userCount}</td>
-    //     <td><img src="img/default-profile.jpg" class="profile-img" alt="Profile"/></td>
-    //     <td>${name}</td>
-    //     <td>${username}</td>
-    //     <td>${email}</td>
-    //     <td>${role}</td>
-    //     <td>
-    //       <button class="bx bxs-edit icon-edit" onclick="openEditModal(${userCount}, '${name}', '${username}', '${email}', '${role}')"></button>
-    //       <button class="bx bxs-archive icon-archive" onclick="archiveUser(${userCount})"></button>
-    //     </td>
-    //   `;
-    //   document.getElementById("userTableBody").appendChild(row);
+        // Escape strings to prevent HTML/JS injection issues
+        const fullName = encodeURIComponent(admin.full_name);
+        const username = encodeURIComponent(admin.username);
+        const email = encodeURIComponent(admin.email);
+        const role = encodeURIComponent(admin.role);
 
-    //   closeModal("userModal");
-    //   this.reset();
-    // });
+        row.innerHTML = `
+          <td>${admin.full_name}</td>
+          <td>${admin.username}</td>
+          <td class="email">${admin.email}</td>
+          <td>${admin.role}</td>
+          <td>
+            <button class="bx bxs-edit icon-edit" 
+              onclick="openEditModal(${admin.id}, decodeURIComponent('${fullName}'), decodeURIComponent('${username}'), decodeURIComponent('${email}'), decodeURIComponent('${role}'))"></button>
+            <button class="bx bxs-archive icon-archive" 
+              onclick="archiveUser(${admin.id})"></button>
+          </td>
+        `;
+        adminTable.appendChild(row);
+      });
+    })
+    .catch(error => {
+      console.error("Error loading admins:", error);
+      adminTable.innerHTML = "<tr><td colspan='5'>Error loading users.</td></tr>";
+    });
+}
+
 
     function openEditModal(id, fullName, username, email, role) {
       document.getElementById("editUserId").value = id;
@@ -251,29 +239,52 @@
     document.getElementById("editUserForm").addEventListener("submit", function (e) {
       e.preventDefault();
 
-      const id = document.getElementById("editUserId").value;
-      const name = document.getElementById("editUserFullName").value;
+      const user_id = document.getElementById("editUserId").value;
+      const full_name = document.getElementById("editUserFullName").value;
       const username = document.getElementById("editUserName").value;
       const email = document.getElementById("editUserEmail").value;
       const role = document.getElementById("editUserRole").value;
 
-      const row = document.querySelector(`tr[data-id='${id}']`);
-      if (row) {
-        row.children[2].textContent = name;
-        row.children[3].textContent = username;
-        row.children[4].textContent = email;
-        row.children[5].textContent = role;
-      }
+      const adminForm = new FormData();
+      adminForm.append("user_id", user_id);
+      adminForm.append("full_name", full_name);
+      adminForm.append("username", username);
+      adminForm.append("email", email);
+      adminForm.append("role", role);
 
-      closeModal("editUserModal");
+      fetch("../api/post/update_admin.php", {
+        method: "POST",
+        body: adminForm
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === "success") {
+            closeModal("editUserModal");
+            displayAdmin();
+          } else {
+            alert("Error updating user: " + data.message);
+          }
+        });
     });
 
+    displayAdmin();
+
     function archiveUser(id) {
-      const row = document.querySelector(`tr[data-id='${id}']`);
-      if (row) {
-        row.remove();
-        alert(`User #${id} has been archived.`);
-      }
+      const archiveAdmin = new FormData();
+      archiveAdmin.append("user_id", id);
+
+      fetch("../api/post/archive_admin.php", {
+        method: "POST",
+        body: archiveAdmin
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === "success") {
+            displayAdmin();
+          } else {
+            alert("Error archiving user: " + data.message);
+          }
+        });
     }
   </script>
   <script src="../js/kebab.js"></script>
