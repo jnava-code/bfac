@@ -6,7 +6,7 @@ header('Content-Type: application/json');
 $sql_share = "SELECT 
 *
 FROM admin_sales AS asales
-WHERE DATE(asales.purchase_date) = CURDATE()
+WHERE DATE(asales.purchase_date) = DATE(CURDATE())
 ";
 
 $result_share = mysqli_query($conn, $sql_share);
@@ -23,6 +23,7 @@ if ($result_share) {
 $total_query = "
     SELECT SUM(asales.amount) AS total_sales
     FROM admin_sales AS asales
+    WHERE DATE(asales.purchase_date) = DATE(CURDATE())
 ";
 
 $total_result = mysqli_query($conn, $total_query);

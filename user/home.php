@@ -161,6 +161,14 @@
 				const { slope, intercept } = linearRegression(dateArray, amountArray);
 				console.log("Slope:", slope);
 				console.log("Intercept:", intercept);
+				
+				const highest = Math.max(...dateArray);
+				
+				const nextYear = highest + 1;
+				const forecastedValue = forecast(nextYear, slope, intercept);
+				console.log(`Forecasted value for year ${nextYear}:`, forecastedValue);
+
+
 			})
 
 		function linearRegression(xArray, yArray) {
@@ -188,13 +196,9 @@
 			return { slope, intercept };
 			}
 
-		// 	function forecast(x, slope, intercept) {
-		// 	return slope * x + intercept;
-		// }
-
-		// const nextYear = 5;
-		// const forecastedValue = forecast(nextYear, slope, intercept);
-		// console.log(`Forecasted value for year ${nextYear}:`, forecastedValue);
+		function forecast(x, slope, intercept) {
+			return slope * x + intercept;
+		}
 
 	</script>
 	<!-- <script src="../js/kebab.js"></script> -->
