@@ -1,7 +1,7 @@
 <?php
 include "../../config/db.php";
 
-$sql_admin = "SELECT full_name, username, email, role, profile_image FROM admin_accounts WHERE is_archived = 0";
+$sql_admin = "SELECT user_id, full_name, username, email, role, profile_image FROM admin_accounts WHERE is_archived = 0";
 $result_admin = mysqli_query($conn, $sql_admin);
 
 $data = [];

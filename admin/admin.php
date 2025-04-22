@@ -197,14 +197,14 @@
 
       data.forEach((admin) => {
         const row = document.createElement("tr");
-        row.setAttribute("data-id", admin.id); // Use actual ID if available
+        row.setAttribute("data-id", admin.user_id); // Use actual ID if available
 
         // Escape strings to prevent HTML/JS injection issues
         const fullName = encodeURIComponent(admin.full_name);
         const username = encodeURIComponent(admin.username);
         const email = encodeURIComponent(admin.email);
         const role = encodeURIComponent(admin.role);
-
+        
         row.innerHTML = `
           <td>${admin.full_name}</td>
           <td>${admin.username}</td>
@@ -212,18 +212,14 @@
           <td>${admin.role}</td>
           <td>
             <button class="bx bxs-edit icon-edit" 
-              onclick="openEditModal(${admin.id}, decodeURIComponent('${fullName}'), decodeURIComponent('${username}'), decodeURIComponent('${email}'), decodeURIComponent('${role}'))"></button>
+              onclick="openEditModal(${admin.user_id}, decodeURIComponent('${fullName}'), decodeURIComponent('${username}'), decodeURIComponent('${email}'), decodeURIComponent('${role}'))"></button>
             <button class="bx bxs-archive icon-archive" 
-              onclick="archiveUser(${admin.id})"></button>
+              onclick="archiveUser(${admin.user_id})"></button>
           </td>
         `;
         adminTable.appendChild(row);
       });
     })
-    .catch(error => {
-      console.error("Error loading admins:", error);
-      adminTable.innerHTML = "<tr><td colspan='5'>Error loading users.</td></tr>";
-    });
 }
 
 
@@ -270,6 +266,8 @@
     displayAdmin();
 
     function archiveUser(id) {
+      console.log(id);
+      
       const archiveAdmin = new FormData();
       archiveAdmin.append("user_id", id);
 
@@ -279,6 +277,8 @@
       })
         .then(response => response.json())
         .then(data => {
+          console.log(data);
+          
           if (data.status === "success") {
             displayAdmin();
           } else {

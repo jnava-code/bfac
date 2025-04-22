@@ -6,7 +6,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
     $result = mysqli_query($conn, $sql);
 
     if ($result) {
-        echo json_encode(['status' => 'success']);
+        echo json_encode(['status' => 'success', 'id' => $user_id]);
     } else {
         echo json_encode(['status' => 'error']);
     }
