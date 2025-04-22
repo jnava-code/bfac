@@ -5,19 +5,20 @@
   $total_query = "
   SELECT SUM(asales.amount) AS total_sales
   FROM admin_sales AS asales
+  WHERE YEAR(asales.purchase_date) = YEAR(CURDATE())
   ";
 
   $total_result = mysqli_query($conn, $total_query);
   $total_row = mysqli_fetch_assoc($total_result);
   $total_sales = $total_row['total_sales'] ?? 0;
 
-  $totalQuery = "SELECT SUM(amount) AS total_amount FROM admin_expenses";
+  $totalQuery = "SELECT SUM(amount) AS total_amount FROM admin_expenses WHERE YEAR(expense_date) = YEAR(CURDATE())";
   $totalResult = mysqli_query($conn, $totalQuery);
   $totalRow = mysqli_fetch_assoc($totalResult);
 
   $total_expenses = $totalRow['total_amount'] ?? 0;
 
-  $total_share = "SELECT SUM(share_capital) AS share_capital_count FROM admin_shares_list";
+  $total_share = "SELECT SUM(share_capital) AS share_capital_count FROM admin_shares_list WHERE YEAR(created_at) = YEAR(CURDATE())";
   $total_share_result = mysqli_query($conn, $total_share);
   $total_share_row = mysqli_fetch_assoc($total_share_result);
   $total_share_capital = $total_share_row['share_capital_count'] ?? 0;
@@ -451,6 +452,7 @@
                   updateDividendTable();
                   calculateSampleDividends();
                 };
+                
               </script>
               
               <script src="../js/script.js"></script>

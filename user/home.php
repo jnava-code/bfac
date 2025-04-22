@@ -5,13 +5,14 @@
 	$sales_query = "
 		SELECT SUM(asales.amount) AS total_sales
 		FROM admin_sales AS asales
+		WHERE DATE(asales.purchase_date) = YEAR(CURDATE())
 	";
 
 	$sales_result = mysqli_query($conn, $sales_query);
 	$sales_row = mysqli_fetch_assoc($sales_result);	
 	$total_sales = $sales_row['total_sales'] ?? 0;
 
-	$expenses_query = "SELECT SUM(amount) AS total_amount FROM admin_expenses";
+	$expenses_query = "SELECT SUM(amount) AS total_amount FROM admin_expenses WHERE YEAR(expense_date) = YEAR(CURDATE())";
 	$expenses_result = mysqli_query($conn, $expenses_query);
 	$expenses_row = mysqli_fetch_assoc($expenses_result);
 
@@ -23,7 +24,7 @@
             SUM(asl.share_capital) AS total_share_capital
         FROM admin_shares AS ashares
         LEFT JOIN admin_shares_list asl ON asl.member_id = ashares.member_id
-		WHERE ashares.member_id = '$member_id'
+		WHERE ashares.member_id = '$member_id' AND YEAR(asl.created_at) = YEAR(CURDATE())
 	";
 	$result_share = mysqli_query($conn, $sql_share);
 	$row_share = mysqli_fetch_assoc($result_share);
@@ -37,6 +38,7 @@
 	$all_shares_query = "
 		SELECT SUM(share_capital) AS all_total_shares
 		FROM admin_shares_list
+		WHERE YEAR(created_at) = YEAR(CURDATE())
 	";
 	$all_shares_result = mysqli_query($conn, $all_shares_query);
 	$all_shares_row = mysqli_fetch_assoc($all_shares_result);
@@ -54,7 +56,7 @@
 	$sql_dividend = "
 		SELECT SUM(dividend_amount) AS total_dividend
 		FROM admin_dividends
-		WHERE member_id = '$member_id'
+		WHERE member_id = '$member_id' AND YEAR(calculation_date) = YEAR(CURDATE())
 	";
 	$result_dividend = mysqli_query($conn, $sql_dividend);
 	$row_dividend = mysqli_fetch_assoc($result_dividend);
@@ -143,7 +145,59 @@
 		</main>
 	</section>
 
-	<script src="../js/kebab.js"></script>
+	<script>
+		// function calculateDividend() {
+
+		// }
+
+		fetch('../api/get/read_cal_dividend.php')
+			.then(response => response.json())
+			.then(data => {
+				const dateArray = data.dateArray;
+				const amountArray = data.amountArray;
+				console.log(dateArray);
+				console.log(amountArray);
+				
+				const { slope, intercept } = linearRegression(dateArray, amountArray);
+				console.log("Slope:", slope);
+				console.log("Intercept:", intercept);
+			})
+
+		function linearRegression(xArray, yArray) {
+			const n = xArray.length;
+
+			if (n !== yArray.length) {
+				throw new Error("x and y arrays must be of equal length.");
+			}
+
+			let sumX = 0;
+			let sumY = 0;
+			let sumXY = 0;
+			let sumX2 = 0;
+
+			for (let i = 0; i < n; i++) {
+				sumX += xArray[i];
+				sumY += yArray[i];
+				sumXY += xArray[i] * yArray[i];
+				sumX2 += xArray[i] * xArray[i];
+			}
+
+			const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+			const intercept = (sumY - slope * sumX) / n;
+
+			return { slope, intercept };
+			}
+
+		// 	function forecast(x, slope, intercept) {
+		// 	return slope * x + intercept;
+		// }
+
+		// const nextYear = 5;
+		// const forecastedValue = forecast(nextYear, slope, intercept);
+		// console.log(`Forecasted value for year ${nextYear}:`, forecastedValue);
+
+	</script>
+	<!-- <script src="../js/kebab.js"></script> -->
 	<script src="../js/script.js"></script>
 	<script src="../js/dropdown_profile.js"></script>
 </body>

@@ -19,35 +19,41 @@ $sql_user = "
     LEFT JOIN (
         SELECT SUM(amount) AS total_sales
         FROM admin_sales
+        WHERE YEAR(purchase_date) = YEAR(CURDATE())
     ) AS sales_totals ON 1=1
     LEFT JOIN (
         SELECT 
             SUM(amount) AS total_expenses 
         FROM admin_expenses
-    ) AS expense_totals ON 1=1
+        WHERE YEAR(expense_date) = YEAR(CURDATE())
+    ) AS expense_totals ON 1=1 
     LEFT JOIN (
         SELECT 
             member_id,
             SUM(paid_up_share_capital) AS total_paid_up_share_capital,
             SUM(share_capital) AS total_share_capital
         FROM admin_shares_list
+        WHERE YEAR(created_at) = YEAR(CURDATE())
         GROUP BY member_id
     ) AS share_totals ON share_totals.member_id = um.member_id
     LEFT JOIN (
         SELECT 
             SUM(paid_up_share_capital) AS all_total_paid_up_share_capital
         FROM admin_shares_list
+        WHERE YEAR(created_at) = YEAR(CURDATE())
     ) AS global_paid_totals ON 1=1
     LEFT JOIN (
         SELECT 
             SUM(share_capital) AS all_total_share_capital
         FROM admin_shares_list
+        WHERE YEAR(created_at) = YEAR(CURDATE())
     ) AS global_totals ON 1=1
     LEFT JOIN (
         SELECT 
             member_id,
             SUM(dividend_amount) AS total_dividend
         FROM admin_dividends
+        WHERE YEAR(calculation_date) = YEAR(CURDATE())
         GROUP BY member_id
     ) AS dividend_totals ON dividend_totals.member_id = um.member_id
     WHERE um.is_archived = 0 
