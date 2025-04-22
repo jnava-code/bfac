@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 21, 2025 at 02:21 PM
+-- Generation Time: Apr 22, 2025 at 07:52 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -68,7 +68,6 @@ CREATE TABLE `admin_dividends` (
 
 CREATE TABLE `admin_expenses` (
   `id` int(11) NOT NULL,
-  `member_id` int(11) NOT NULL,
   `category` varchar(255) NOT NULL,
   `amount` decimal(10,2) NOT NULL,
   `expense_date` date NOT NULL,
@@ -97,10 +96,10 @@ CREATE TABLE `admin_login` (
 
 CREATE TABLE `admin_sales` (
   `id` int(11) NOT NULL,
-  `member_id` int(11) NOT NULL,
   `sales_no` varchar(50) NOT NULL,
   `description` varchar(100) NOT NULL,
   `quantity` int(11) NOT NULL,
+  `unitprice` varchar(50) NOT NULL,
   `amount` decimal(10,2) NOT NULL,
   `receipt_no` varchar(50) NOT NULL,
   `purchase_date` date NOT NULL
@@ -133,6 +132,13 @@ CREATE TABLE `admin_shares_list` (
   `receipt_number` varchar(255) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `admin_shares_list`
+--
+
+INSERT INTO `admin_shares_list` (`id`, `member_id`, `paid_up_share_capital`, `share_capital`, `receipt_number`, `created_at`) VALUES
+(1, 1, 1200.00, 12.00, '598153168', '2025-04-21 12:30:02');
 
 -- --------------------------------------------------------
 
@@ -275,8 +281,7 @@ ALTER TABLE `admin_dividends`
 -- Indexes for table `admin_expenses`
 --
 ALTER TABLE `admin_expenses`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `user_members` (`member_id`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `admin_login`
@@ -289,8 +294,7 @@ ALTER TABLE `admin_login`
 -- Indexes for table `admin_sales`
 --
 ALTER TABLE `admin_sales`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `user_members` (`member_id`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `admin_shares`
@@ -358,7 +362,7 @@ ALTER TABLE `user_profiles`
 -- AUTO_INCREMENT for table `admin_accounts`
 --
 ALTER TABLE `admin_accounts`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `admin_dividends`
@@ -394,7 +398,7 @@ ALTER TABLE `admin_shares`
 -- AUTO_INCREMENT for table `admin_shares_list`
 --
 ALTER TABLE `admin_shares_list`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `admin_users`
