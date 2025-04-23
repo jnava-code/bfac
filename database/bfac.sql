@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 22, 2025 at 07:52 AM
+-- Generation Time: Apr 23, 2025 at 04:06 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -60,6 +60,15 @@ CREATE TABLE `admin_dividends` (
   `calculation_date` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `admin_dividends`
+--
+
+INSERT INTO `admin_dividends` (`id`, `member_id`, `dividend_amount`, `receipt`, `calculation_date`) VALUES
+(1, 1, 30.00, '3616516189', '2023-04-22 20:16:39'),
+(2, 1, 50.00, '651616381', '2023-04-22 20:16:56'),
+(3, 1, 80.00, '646816', '2025-04-22 21:01:58');
+
 -- --------------------------------------------------------
 
 --
@@ -74,6 +83,13 @@ CREATE TABLE `admin_expenses` (
   `description` text DEFAULT NULL,
   `year` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `admin_expenses`
+--
+
+INSERT INTO `admin_expenses` (`id`, `category`, `amount`, `expense_date`, `description`, `year`) VALUES
+(1, 'Others', 200.00, '2024-04-22', 'Payment', 2024);
 
 -- --------------------------------------------------------
 
@@ -105,6 +121,14 @@ CREATE TABLE `admin_sales` (
   `purchase_date` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `admin_sales`
+--
+
+INSERT INTO `admin_sales` (`id`, `sales_no`, `description`, `quantity`, `unitprice`, `amount`, `receipt_no`, `purchase_date`) VALUES
+(1, '1000', 'Product Name', 2, '200', 400.00, '616813205385', '2024-04-22'),
+(2, '1001', 'Example', 2, '100', 200.00, '6516516', '2025-04-23');
+
 -- --------------------------------------------------------
 
 --
@@ -117,6 +141,13 @@ CREATE TABLE `admin_shares` (
   `update_at` timestamp NULL DEFAULT NULL,
   `is_archived` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `admin_shares`
+--
+
+INSERT INTO `admin_shares` (`id`, `member_id`, `update_at`, `is_archived`) VALUES
+(1, 1, NULL, 0);
 
 -- --------------------------------------------------------
 
@@ -138,7 +169,9 @@ CREATE TABLE `admin_shares_list` (
 --
 
 INSERT INTO `admin_shares_list` (`id`, `member_id`, `paid_up_share_capital`, `share_capital`, `receipt_number`, `created_at`) VALUES
-(1, 1, 1200.00, 12.00, '598153168', '2025-04-21 12:30:02');
+(1, 1, 200.00, 2.00, '15643515', '2024-04-22 10:38:56'),
+(2, 1, 200.00, 2.00, '6162626', '2024-04-22 13:37:58'),
+(3, 1, 200.00, 2.00, '61616', '2025-04-22 14:56:07');
 
 -- --------------------------------------------------------
 
@@ -236,6 +269,13 @@ CREATE TABLE `user_members` (
   `token_expiry` varchar(150) DEFAULT NULL,
   `date_registered` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `user_members`
+--
+
+INSERT INTO `user_members` (`member_id`, `first_name`, `middle_name`, `last_name`, `username`, `email`, `password`, `phone`, `rsbsa_number`, `address`, `farm_location`, `role`, `profile_image`, `status`, `is_archived`, `is_verified`, `token`, `token_expiry`, `date_registered`) VALUES
+(1, 'Jeremiah', '', 'Nava', 'jnava', 'aiahnava5@gmail.com', '$2y$10$ZRBfSIMnuxDxuLp9o1Q6xOwiZKbM51NgaFISB6RX8w0rJdBX6t0lS', '09155434721', '', 'taga dito', 'Secret', 'User', 'profile_images/default_profile.jpg', 'Approved', 0, 1, NULL, '2025-04-22 13:29:16', '2025-04-22 10:29:21');
 
 -- --------------------------------------------------------
 
@@ -368,13 +408,13 @@ ALTER TABLE `admin_accounts`
 -- AUTO_INCREMENT for table `admin_dividends`
 --
 ALTER TABLE `admin_dividends`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `admin_expenses`
 --
 ALTER TABLE `admin_expenses`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `admin_login`
@@ -386,19 +426,19 @@ ALTER TABLE `admin_login`
 -- AUTO_INCREMENT for table `admin_sales`
 --
 ALTER TABLE `admin_sales`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `admin_shares`
 --
 ALTER TABLE `admin_shares`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `admin_shares_list`
 --
 ALTER TABLE `admin_shares_list`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `admin_users`
@@ -416,7 +456,7 @@ ALTER TABLE `user_financial_summary`
 -- AUTO_INCREMENT for table `user_members`
 --
 ALTER TABLE `user_members`
-  MODIFY `member_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `member_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `user_profiles`
