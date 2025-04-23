@@ -419,8 +419,6 @@
                     }
                     return response.json();
                 }).then(data => {
-                    console.log(data);
-                    
                     if(data.status == "success") {
                         // Close the modal after the success message
                         modal.style.display = "none";
@@ -433,15 +431,7 @@
 
                         updateTable();
                     }
-                })
-                // // Calculate the contribution based on the purchase price entered
-                // const contribution = shares * sharePrice;
-                // console.log("contribution", contribution);       
-                // // members[memberName].totalContribution += contribution;
-
-                // alert(`${memberName} added ${shares} shares (₱${contribution.toFixed(2)}). Updated successfully.`);
-                // console.log("memberName", memberName);  
-                
+                })                
             } else {
                 alert("Cancelled. No changes were made.");
             }
@@ -459,10 +449,28 @@
                     return response.json();
                 })
                 .then(data => {
-                    if (data && data.length > 0) {
+                    const currentDate = new Date();
+                    const currentYear = currentDate.getFullYear();
+                    const currentMonth = currentDate.getMonth() + 1; 
+                    const currentDay = currentDate.getDate();
+
+                    const currentDateString = `${currentYear}-${currentMonth.toString().padStart(2, '0')}-${currentDay.toString().padStart(2, '0')}`;
+                    
+                    const filteredData = data.filter(item => {
+                        const shareDate = new Date(item.created_at);
+                        const shareYear = shareDate.getFullYear();
+                        const shareMonth = shareDate.getMonth() + 1; 
+                        const shareDay = shareDate.getDate();
+
+                        const shareDateString = `${shareYear}-${shareMonth.toString().padStart(2, '0')}-${shareDay.toString().padStart(2, '0')}`;
+                        
+                        return shareDateString === currentDateString;
+                    });
+                    
+                    if (filteredData && filteredData.length > 0) {
                         let shareHTML = '';
 
-                        data.forEach(share => {
+                        filteredData.forEach(share => {
                             const fullName = share.middle_name === ""
                                 ? `${share.first_name} ${share.last_name}`
                                 : `${share.first_name} ${share.middle_name} ${share.last_name}`;

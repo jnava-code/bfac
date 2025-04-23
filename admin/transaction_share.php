@@ -67,6 +67,19 @@
       <div class="db">
         <div class="head">
           <h3></h3>
+          <div class="filter-year">
+                <label for="year-filter">Filter by Year:</label>
+                <select id="year-filter" class="form-control">
+                    <option value="" disabled>Select Year</option>
+                    <?php
+                    $currentYear = date('Y');
+                    for ($year = $currentYear; $year >= 2023; $year--) {
+                        $selected = ($year == $currentYear) ? 'selected' : '';
+                        echo "<option value=\"$year\" $selected>$year</option>";
+                    }
+                    ?>
+                </select>
+            </div>
           <button class="view-btn" onclick="window.location.href='shares.php';">
             <i class='bx bx-left-arrow-alt'></i> Back  
           </button>
@@ -77,28 +90,10 @@
               <th>Member Name</th>
               <th>Paid-up Share Capital</th>
               <th>Shares</th>
-              <th>Receipt Number</th>
+              <th>Date & Time</th>
             </tr>
           </thead>
-          <tbody id="archiveTableBody">
-            <?php
-              if ($result_share && mysqli_num_rows($result_share) > 0) {
-                while ($row = mysqli_fetch_assoc($result_share)) {
-                  $id = $row['id'];
-                  $full_name = htmlspecialchars($row['first_name'] . ' ' . $row['middle_name'] . ' ' . $row['last_name']);
-            ?>
-              <tr id="share_row_<?php echo $id; ?>">
-                <td><?php echo $full_name; ?></td>
-                <td>₱<?php echo htmlspecialchars($row['total_paid_up_share_capital']); ?></td>
-                <td><?php echo htmlspecialchars($row['total_share_capital']); ?></td>
-                <td><?php echo htmlspecialchars($row['receipt_number']); ?></td>
-              </tr>
-              <?php
-                }
-              } else {
-                echo "<tr><td colspan='4'>No history shares found.</td></tr>";
-              }
-            ?>
+          <tbody id="sharesTransactionHistory">
           </tbody>
         </table>
       </div>
@@ -106,6 +101,54 @@
   </main>
 </section>
 
+<script>
+    const sharesTransactionHistory = document.getElementById('sharesTransactionHistory');
+    const yearFilter = document.getElementById('year-filter');
+
+    const currentYear = new Date().getFullYear();
+    yearFilter.value = currentYear;
+
+    const renderShares = (shares, filterYear) => {
+        sharesTransactionHistory.innerHTML = "";
+        const filteredShares = filterYear
+            ? shares.filter(sale => {           
+                const saleYear = new Date(sale.created_at).getFullYear();         
+                return saleYear == filterYear;
+            })
+            : shares;
+            
+        if (filteredShares.length === 0) {
+            const row = document.createElement('tr');
+            row.innerHTML = `<td colspan="5" style="text-align: center;">No shares found.</td>`;
+            sharesTransactionHistory.appendChild(row);
+            return;
+        }
+
+        filteredShares.forEach(sale => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${sale.first_name} ${sale.middle_name} ${sale.last_name}</td>
+                <td>${sale.total_paid_up_share_capital}</td>
+                <td>${sale.total_share_capital}</td>
+                <td>${sale.created_at}</td>
+            `;
+            sharesTransactionHistory.appendChild(row);
+        });
+    };
+
+    fetch('../api/get/read_share.php')
+        .then(response => response.json())
+        .then(data => {
+            const shares = data;        
+            renderShares(shares, currentYear);
+
+            yearFilter.addEventListener("change", (e) => {
+                const selectedYear = e.target.value;
+                renderShares(shares, selectedYear);
+            });
+        });
+
+</script>
 <script src="../js/script.js"></script>
 <script src="../js/dropdown_profile.js"></script>
 

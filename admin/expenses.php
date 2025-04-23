@@ -166,7 +166,6 @@
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
           });
-          console.log(data);
           
           const currentDate = new Date();
           const currentYear = currentDate.getFullYear();

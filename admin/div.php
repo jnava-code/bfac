@@ -295,15 +295,7 @@
               
               <!-- JavaScript -->
               <script>
-                // const netSurplus = 143864;
-                // const totalShares = 120;
-                // const dividendPerShare = netSurplus / totalShares;
-              
-                // const members = [
-                //   { name: 'Pedro Ramirez', contribution: 50000, memberShares: 12 },
-                //   { name: 'Juan Dela Cruz', contribution: 100000, memberShares: 10 },
-                // ];
-              
+
                 function updateDividendTable() {
                   const tbody = document.getElementById('dividend-table-body');
                   tbody.innerHTML = '';
@@ -311,9 +303,6 @@
                   fetch('../api/get/read_dividend.php')
                     .then(response => response.json())
                     .then(data => {
-                      // const totalShares = data.reduce((acc, member) => acc + member.total_paid_up_share_capital, 0);
-                      // const netSurplus = <?php echo ($total_sales - $total_expenses) - (($total_sales - $total_expenses) * 0.30); ?>;
-                      // const dividendPerShare = netSurplus / totalShares;
                       if(data && data.length === 0) {
                         const row = document.createElement('tr');
                         row.innerHTML = `<td colspan="5" style="text-align: center;">No data available</td>`;
@@ -337,15 +326,15 @@
                               '${Math.round(total_dividend)}',
                               '${member.member_id}'
                             )">Withdraw</button>
-                          `;
-
+                          `;  
+                          
                           if(member.total_paid_up_share_capital != 0) {
                             const row = document.createElement('tr');
                             row.innerHTML = `
                               <td>${member.first_name} ${member.middle_name} ${member.last_name}</td>
                               <td>₱${member.total_paid_up_share_capital}</td>
-                              <td>₱${Math.round(total_dividend) || 0}</td>
-                              <td>₱${Math.round(total_dividend || 0 ) - Math.round(member.total_dividend)}</td>
+                              <td>₱${Math.round(total_dividend)}</td>
+                              <td>₱${Math.round(total_dividend) - Math.round(member.total_dividend)}</td>
                               <td>
                                 ${buttonHtml}       
                               </td>
@@ -353,7 +342,7 @@
                             tbody.appendChild(row);
                           } else {
                             const row = document.createElement('tr');
-                        row.innerHTML = `<td colspan="5" style="text-align: center;">No data available</td>`;
+                        row.innerHTML = '';
                         tbody.appendChild(row);
                           }
                         });
