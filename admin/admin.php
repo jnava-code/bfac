@@ -71,8 +71,8 @@
           <table>
             <thead>
               <tr>
-                <!-- <th>ID</th>
-                <th>Profile</th> -->
+                <!-- <th>ID</th> -->
+                <th>Profile</th>
                 <th>Full Name</th>
                 <th>Username</th>
                 <th>Email</th>
@@ -129,6 +129,12 @@
     <form id="editUserForm">
       <h2>Edit User</h2>
       <input type="hidden" id="editUserId">
+      <div class="form-group">
+          <label for="editProfile">Profile</label>
+          <input type="file" id="editProfile" name="profile" accept=".jpg, .jpeg, .png">
+      </div>
+      <div class="form-group">
+      </div>
       <div class="form-group">
         <label for="editUserFullName">Full Name</label>
         <input type="text" id="editUserFullName">
@@ -206,6 +212,7 @@
         const role = encodeURIComponent(admin.role);
         
         row.innerHTML = `
+          <td><img src="../${admin.profile_image}" alt="Profile Picture">  </td>
           <td>${admin.full_name}</td>
           <td>${admin.username}</td>
           <td class="email">${admin.email}</td>

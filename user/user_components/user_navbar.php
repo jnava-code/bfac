@@ -17,5 +17,5 @@
 <nav>
     <i class="bx bx-menu"></i>
     <h4 style="color: var(--green);"><?php echo $title; ?></h4>
-    <a href="#" class="profile"><img src="../<?php echo $profile_image ?>" alt="Profile" /></a>
+    <a href="#" class="profile"><img src="../<?php echo $profile_image; ?>" alt="Profile" /></a>
 </nav>

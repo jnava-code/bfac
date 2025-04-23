@@ -313,22 +313,6 @@
     </style>
 </head>
 <body>
-    <!-- <section id="sidebar">
-        <a href="#" class="brand">
-            <img src="../img/logo.png" alt="Logo" class="logo">
-            <div class="text">
-                <span class="title">BFAC Hub</span>
-                <span class="subtitle">Management System</span>
-            </div>
-        </a>
-        <ul class="side-menu top">
-            <li><a href="home.html"><i class='bx bxs-home'></i><span class="text"> Home</span></a></li>
-            <li class="active"><a href="profile.html"><i class="bx bxs-user"></i><span class="text">Your Profile</span></a></li>
-        </ul>
-        <ul class="side-menu">
-            <li><a href="logout.php" class="logout"><i class="bx bxs-log-out-circle"></i><span class="text">Logout</span></a></li>
-        </ul>
-    </section> -->
 
     <?php include "user_components/user_sidebar.php"; ?>
     <section id="content">
@@ -400,6 +384,14 @@
                     <form id="profileForm" method="POST">
                         <div class="form-grid">
                             <input type="hidden" id="memberId" name="firstName" value="<?php echo $member_id; ?>" >
+                            <div class="input-group">
+                                <label for="editProfile">Profile</label>
+                                <input type="file" id="editProfile" name="profile" accept=".jpg, .jpeg, .png">
+                            </div>
+
+                            <div class="input-group">
+                            </div>
+
                             <div class="input-group">
                                 <label for="editFirstName">First Name</label>
                                 <input type="text" id="editFirstName" name="firstName" value="<?php echo $firstname; ?>" required>
@@ -475,6 +467,7 @@
         }
         
         const memberId = document.getElementById('memberId');
+        const editProfile = document.getElementById("editProfile");
         const editFirstName = document.getElementById("editFirstName");
         const editMiddleName = document.getElementById("editMiddleName");
         const editLastName = document.getElementById("editLastName");
@@ -486,7 +479,7 @@
         
         document.getElementById('profileForm').addEventListener('submit', function(e) {
             e.preventDefault();
-
+            
             const submitBtn = this.querySelector('button[type="submit"]');
             const originalText = submitBtn.innerHTML;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
@@ -494,6 +487,7 @@
 
             const profileData = new FormData();
             profileData.append('memberId', memberId.value);
+            profileData.append('profile', editProfile.files[0]);
             profileData.append('firstName', editFirstName.value);
             profileData.append('middleName', editMiddleName.value);
             profileData.append('lastName', editLastName.value);

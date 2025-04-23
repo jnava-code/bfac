@@ -3,9 +3,9 @@
 	include "../auth/session.php"; 
 
 	$sales_query = "
-		SELECT SUM(asales.amount) AS total_sales
-		FROM admin_sales AS asales
-		WHERE DATE(asales.purchase_date) = YEAR(CURDATE())
+		SELECT SUM(amount) AS total_sales
+		FROM admin_sales
+		WHERE YEAR(purchase_date) = YEAR(CURDATE())
 	";
 
 	$sales_result = mysqli_query($conn, $sales_query);
@@ -38,7 +38,7 @@
 	$all_shares_query = "
 		SELECT SUM(share_capital) AS all_total_shares
 		FROM admin_shares_list
-		WHERE YEAR(created_at) = YEAR(CURDATE())
+		WHERE YEAR(created_at) = YEAR(CURDATE()) AND member_id = '$member_id'
 	";
 	$all_shares_result = mysqli_query($conn, $all_shares_query);
 	$all_shares_row = mysqli_fetch_assoc($all_shares_result);
@@ -78,7 +78,6 @@
 
 	<section id="content">
 		<?php include "user_components/user_navbar.php"; ?>
-
 		<main>
 			<div class="head-title">
 				<div class="left">
@@ -156,8 +155,6 @@
 			fetch('../api/get/read_cal_dividend.php')
 				.then(response => response.json())
 				.then(data => {
-					console.log(data);
-					
 					const dateArray = data.dateArray;
 					const amountArray = data.amountArray;
 					const baseShareCapital = data.total_share_capital;
@@ -166,6 +163,11 @@
 					const nextYear = highest + 1;
 					
 					const result = calculateDividend(shareCapital, nextYear, slope, intercept, baseShareCapital);
+
+					if(result != NaN) {
+						dividendResult.textContent = `Can't Compute`;
+						return;
+					}
 
 					dividendResult.textContent = `₱${result.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 				})

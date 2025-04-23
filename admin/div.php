@@ -312,7 +312,7 @@
                         data.forEach(member => {
                           const totalSales = member.total_sales
                           const totalExpenses = member.total_expenses;
-             
+                          
                           const netIncome = totalSales - totalExpenses;
                           const statutoryFunds = netIncome * 0.30;
                           
@@ -342,8 +342,8 @@
                             tbody.appendChild(row);
                           } else {
                             const row = document.createElement('tr');
-                        row.innerHTML = '';
-                        tbody.appendChild(row);
+                            row.innerHTML = '';
+                            tbody.appendChild(row);
                           }
                         });
                       }
