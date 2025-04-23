@@ -126,6 +126,7 @@
                         <div class="requirement" id="reqSpecial"><i class="fas fa-circle"></i> At least 1 special character</div>
                     </div>
                     <div class="error-message" id="passwordError">Please enter a valid password</div>
+                    <div class="error-message" id="passwordError">Please enter a valid password</div>
                 </div>
 
                 <div class="input-group password-container">
@@ -135,7 +136,7 @@
                     <div class="error-message" id="confirmPasswordError">Passwords do not match</div>
                 </div>
             </div>
-
+            <div class="success-message" id="success-registration"></div>
             <div class="form-actions">
                 <button type="button" class="btn-secondary" onclick="window.location.href='../index.php'">
                     <i class="fas fa-arrow-left"></i> Back to Login
@@ -312,6 +313,7 @@
                             })
                             .then(data => { 
                                 if (data.status == "success") {
+                                    
                                     submitBtn.innerHTML = originalText;
                                     submitBtn.disabled = false;
                                     document.querySelectorAll('.requirement').forEach(req => {
@@ -320,6 +322,11 @@
                                     document.getElementById('passwordStrength').style.width = '0%';
                                     document.getElementById('passwordStrength').style.backgroundColor = 'red';
                                     form.reset();
+                                    document.getElementById("success-registration").innerHTML = data.message;
+
+                                    setTimeout(() => {
+                                        document.getElementById("success-registration").innerHTML = '';
+                                    }, 2500);
                                     return;
                                 } else {
                                     submitBtn.innerHTML = originalText;

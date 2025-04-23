@@ -270,6 +270,7 @@
                   <button class="close" onclick="closeSendToSharesModal()">&times;</button>
                   <h2>Allocate to Share Capital</h2>
                   <form id="sendToSharesForm">
+                  <input type="hidden" id="shareMemberId" disabled>
                     <div class="form-group">
                       <label for="shareMemberName">Member:</label>
                       <input type="text" id="shareMemberName" disabled>
@@ -279,15 +280,15 @@
                       <input type="text" id="availableDividend" disabled>
                     </div>
                     <div class="form-group">
-                      <label for="allocateAmount">Amount to Allocate (₱):</label>
-                      <input type="number" id="allocateAmount" placeholder="Enter amount to allocate" required>
+                      <label for="allocateAmountShares">Amount to Allocate (₱):</label>
+                      <input type="number" id="allocateAmountShares" placeholder="Enter amount to allocate" required>
                     </div>
                     <div class="form-group">
                       <label for="receiptNumberShares">Receipt Control Number:</label>
                       <input type="text" id="receiptNumberShares" placeholder="Enter control number" required>
                     </div>
                     <div class="form-group">
-                      <button type="submit">Allocate to Share Capital</button>
+                      <button type="submit" onclick="confirmShareCapital()">Allocate to Share Capital</button>
                     </div>
                   </form>
                 </div>
@@ -319,16 +320,23 @@
                           const netSurplus = netIncome - statutoryFunds;
                           const perDividend = netSurplus / member.all_total_share_capital;
                           const total_dividend = perDividend * member.total_share_capital;
-                          const fullName = `${member.first_name} ${member.middle_name} ${member.last_name}`.replace(/'/g, "\\'");
-                          const buttonHtml = `
-                            <button class="btn small" onclick="openModal(
-                              '${fullName}',
-                              '${Math.round(total_dividend)}',
-                              '${member.member_id}'
-                            )">Withdraw</button>
-                          `;  
-                          
+
                           if(member.total_paid_up_share_capital != 0) {
+                            const fullName = `${member.first_name} ${member.middle_name} ${member.last_name}`.replace(/'/g, "\\'");
+                            const withdrawBtnHTML = `
+                              <button class="btn small" onclick="openModal(
+                                '${fullName}',
+                                '${Math.round(total_dividend)}',
+                                '${member.member_id}'
+                              )">Withdraw</button>
+                            `;  
+                            const sendShareHTML = `
+                              <button class="btn small" onclick="openSendToSharesModal(
+                                '${fullName}',
+                                '${Math.round(total_dividend) - Math.round(member.total_dividend)}',
+                                '${member.member_id}'
+                              )">Send Share Capital</button>
+                            `;  
                             const row = document.createElement('tr');
                             row.innerHTML = `
                               <td>${member.first_name} ${member.middle_name} ${member.last_name}</td>
@@ -336,7 +344,8 @@
                               <td>₱${Math.round(total_dividend)}</td>
                               <td>₱${Math.round(total_dividend) - Math.round(member.total_dividend)}</td>
                               <td>
-                                ${buttonHtml}       
+                                ${withdrawBtnHTML}   
+                                ${sendShareHTML}    
                               </td>
                             `;
                             tbody.appendChild(row);
@@ -349,7 +358,7 @@
                       }
                     })
                 }
-              
+
                 function openModal(memberName, amountLeft, member_id) {
                   document.getElementById('modalMemberId').value = member_id;
                   document.getElementById('modalMemberName').value = memberName;
@@ -394,7 +403,8 @@
                   }
                 }
               
-                function openSendToSharesModal(name, dividend) {
+                function openSendToSharesModal(name, dividend, member_id) {
+                  document.getElementById('shareMemberId').value = member_id;
                   document.getElementById("shareMemberName").value = name;
                   document.getElementById("availableDividend").value = `₱${dividend}`;
                   document.getElementById("sendToSharesModal").style.display = "flex";
@@ -404,34 +414,41 @@
                 function closeSendToSharesModal() {
                   document.getElementById("sendToSharesModal").classList.remove("show");
                   setTimeout(() => document.getElementById("sendToSharesModal").style.display = "none", 300);
-                }
-              
-                const intercept = 20;
-                const slope = 0.1;
-              
-                function calculateDividend() {
-                  const capital = parseFloat(document.getElementById('capital').value);
-                  if (isNaN(capital) || capital < 0) {
-                    document.getElementById('result').textContent = "Please enter a valid share capital amount.";
-                    return;
+                } 
+
+                function confirmShareCapital() {
+                  const memberId = document.getElementById('shareMemberId').value;
+                  const allocateAmount = document.getElementById('allocateAmountShares').value;
+                  const receipt = document.getElementById('receiptNumberShares').value;
+                  console.log(allocateAmount && receipt);
+                  
+                  if (allocateAmount && receipt) {
+                    const dividendData = new FormData();
+                    dividendData.append('member_id', memberId);
+                    dividendData.append('dividend_amount', allocateAmount);
+                    dividendData.append('receipt', receipt);
+
+                    fetch('../api/post/allocate_share.php', {
+                      method: 'POST',
+                      body: dividendData
+                    }).then(response => {
+                        return response.json();
+                    }).then(data => {
+                      if (data.status === 'success') {
+                        closeSendToSharesModal();
+                        updateDividendTable();
+                        document.getElementById('allocateAmountShares').value = "";
+                        document.getElementById('receiptNumberShares').value = "";
+                      } else {
+                        alert(data.message);
+                      }
+                    })
+                  } else {
+                    alert("Please fill in all the fields.");
                   }
-                  const dividend = intercept + (slope * capital);
-                  document.getElementById('result').textContent = `Predicted Dividend: ₱${dividend.toFixed(2)}`;
+                  
                 }
-              
-                function calculateSampleDividends() {
-                  const samples = [500, 1000, 2000];
-                  samples.forEach((capital, index) => {
-                    const dividend = intercept + (slope * capital);
-                    const el = document.getElementById(`sample${index + 1}`);
-                    if (el) el.textContent = `₱${dividend.toFixed(2)}`;
-                  });
-                }
-              
-                window.onload = function () {
-                  updateDividendTable();
-                  calculateSampleDividends();
-                };
+                updateDividendTable();
                 
               </script>
               

@@ -247,9 +247,11 @@
       const username = document.getElementById("editUserName").value;
       const email = document.getElementById("editUserEmail").value;
       const role = document.getElementById("editUserRole").value;
+      const editProfile = document.getElementById("editProfile");
 
       const adminForm = new FormData();
       adminForm.append("user_id", user_id);
+      adminForm.append("profile", editProfile.files[0])
       adminForm.append("full_name", full_name);
       adminForm.append("username", username);
       adminForm.append("email", email);
