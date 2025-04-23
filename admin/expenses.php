@@ -166,6 +166,8 @@
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
           });
+          console.log(data);
+          
           const currentDate = new Date();
           const currentYear = currentDate.getFullYear();
           const currentMonth = currentDate.getMonth() + 1; 
@@ -177,9 +179,8 @@
             return item.expense_date === currentDateString;
           });
 
-
-          if(filteredData.expenses && filteredData.expenses.length > 0) {
-            filteredData.expenses.forEach(expense => {
+          if(filteredData && filteredData.length > 0) {
+            filteredData.forEach(expense => {
               const expensesHTML = `
               <tr>
                 <td>${expense.category}</td>
