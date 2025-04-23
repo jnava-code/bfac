@@ -7,9 +7,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sales History</title>
+  <title>Expenses History</title>
   <link href="https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css" rel="stylesheet"/>
   <link rel="stylesheet" href="../css/style.css"/>
+  <link rel="stylesheet" href="../css/shares.css">
   <link rel="stylesheet" href="../css/modal.css"/>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
@@ -23,11 +24,11 @@
   <main>
     <div class="head-title">
       <div class="left">
-        <h1>Sales Transaction History</h1>
+        <h1>Expenses Transaction History</h1>
         <ul class="breadcrumb">
           <li><a href="dashboard.html">Dashboard</a></li>
           <li><i class="bx bx-chevron-right"></i></li>
-          <li><a href="#">Shares</a></li>
+          <li><a href="#">Expenses</a></li>
           <li><i class="bx bx-chevron-right"></i></li>
           <li><a href="#" class="active">Transaction History</a></li>
         </ul>
@@ -37,8 +38,8 @@
     <div class="table-data">
       <div class="db">
         <div class="head">
-          <h3></h3>
-          <div class="filter-year">
+            <h3></h3>
+            <div class="filter-year">
                 <label for="year-filter">Filter by Year:</label>
                 <select id="year-filter" class="form-control">
                     <option value="" disabled>Select Year</option>
@@ -51,21 +52,19 @@
                     ?>
                 </select>
             </div>
-          <button class="view-btn" onclick="window.location.href='sales.php';">
+          <button class="view-btn" onclick="window.location.href='expenses.php';">
             <i class='bx bx-left-arrow-alt'></i> Back  
           </button>
         </div>
         <table>
           <thead>
-                <tr>
-                  <th>Order No.</th>
-                  <th>Product Name</th>
-                  <th>Quantity</th>
-                  <th>Price (₱)</th>
-                  <th>Receipt Control Number</th>
-                </tr>
+                <th>Category</th>
+                <th>Amount (₱)</th>
+                <th>Date</th>
+                <th>Description</th>
+                <th>Year</th>
           </thead>
-          <tbody id="salesTransactionHistory">
+          <tbody id="expensesTransactionHistory">
           </tbody>
         </table>
       </div>
@@ -74,58 +73,55 @@
 </section>
 
 <script>
-    const salesTransactionHistory = document.getElementById('salesTransactionHistory');
+    const expensesTransactionHistory = document.getElementById('expensesTransactionHistory');
     const yearFilter = document.getElementById('year-filter');
 
     const currentYear = new Date().getFullYear();
     yearFilter.value = currentYear;
 
-    const renderSales = (sales, filterYear) => {
-        salesTransactionHistory.innerHTML = "";
-        const filteredSales = filterYear
-            ? sales.filter(sale => {
-                const saleYear = new Date(sale.purchase_date).getFullYear();
+    const renderExpenses = (expenses, filterYear) => {
+        expensesTransactionHistory.innerHTML = "";
+
+        const filteredExpenses = filterYear
+            ? expenses.filter(expense => {
+                const saleYear = new Date(expense.expense_date).getFullYear();
                 return saleYear == filterYear;
             })
-            : sales;
-        
-        if (filteredSales.length === 0) {
+            : expenses;
+        if (filteredExpenses.length === 0) {
             const row = document.createElement('tr');
-            row.innerHTML = `<td colspan="5" style="text-align: center;">No sales found.</td>`;
-            salesTransactionHistory.appendChild(row);
+            row.innerHTML = `<td colspan="5" style="text-align: center;">No expenses found.</td>`;
+            expensesTransactionHistory.appendChild(row);
             return;
         }
 
-        filteredSales.forEach(sale => {
+        filteredExpenses.forEach(expense => {
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${sale.sales_no}</td>
-                <td>${sale.amount}</td>
-                <td>${sale.quantity}</td>
-                <td>${sale.description}</td>
-                <td>${sale.receipt_no}</td>
+                <td>${expense.category}</td>
+                <td>${expense.amount}</td>
+                <td>${expense.expense_date}</td>
+                <td>${expense.description}</td>
+                <td>${expense.year}</td>
             `;
-            salesTransactionHistory.appendChild(row);
+            expensesTransactionHistory.appendChild(row);
         });
     };
 
-    fetch('../api/get/read_sales.php')
+    fetch('../api/get/read_expenses.php')
         .then(response => response.json())
         .then(data => {
-          console.log(data);
-          
-            const sales = data.sales;
-            renderSales(sales, currentYear);
+            const expenses = data.expenses;
+            renderExpenses(expenses, currentYear);
 
             yearFilter.addEventListener("change", (e) => {
                 const selectedYear = e.target.value;
-                console.log("selectedYear", selectedYear);
-                
-                renderSales(sales, selectedYear);
+                renderExpenses(expenses, selectedYear);
             });
         });
 
 </script>
+
 <script src="../js/script.js"></script>
 <script src="../js/dropdown_profile.js"></script>
 

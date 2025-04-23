@@ -87,16 +87,7 @@
         <div class="order">
           <div class="head">
             <h3>List of Expenses</h3>
-            <div class="filter-year">
-              <label for="year-filter">Filter by Year:</label>
-              <select id="year-filter" class="form-control">
-                <option value="">Select Year</option>
-                <option value="2023">2023</option>
-                <option value="2022">2022</option>
-                <option value="2021">2021</option>
-                <option value="2020">2020</option>
-              </select>
-            </div>
+            <button class="view-btn" onclick="window.location.href='transaction_expenses.php';">Transaction History</button>
           </div>
           <table>
             <thead>
@@ -146,8 +137,6 @@
     })
       .then(response => response.json())
       .then(data => {
-        console.log(data);
-
         if (data.status === 'success') {
           // Optional: Close modal if you use Bootstrap or similar
           // document.getElementById("expenseModal").classList.remove("show");
@@ -177,9 +166,20 @@
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
           });
+          const currentDate = new Date();
+          const currentYear = currentDate.getFullYear();
+          const currentMonth = currentDate.getMonth() + 1; 
+          const currentDay = currentDate.getDate();
 
-          if(data.expenses && data.expenses.length > 0) {
-            data.expenses.forEach(expense => {
+          const currentDateString = `${currentYear}-${currentMonth.toString().padStart(2, '0')}-${currentDay.toString().padStart(2, '0')}`;
+          
+          const filteredData = data.expenses.filter(item => {
+            return item.expense_date === currentDateString;
+          });
+
+
+          if(filteredData.expenses && filteredData.expenses.length > 0) {
+            filteredData.expenses.forEach(expense => {
               const expensesHTML = `
               <tr>
                 <td>${expense.category}</td>

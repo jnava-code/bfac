@@ -217,14 +217,25 @@
     fetch(`../api/get/read_sales.php`)
       .then((response) => response.json())
       .then((data) => {
-        incomeTableBody.innerHTML = ""; // Clear existing rows
+        incomeTableBody.innerHTML = "";
         document.getElementById('total_sales').innerText = '₱' + parseFloat(data.total_sales).toLocaleString('en-US', {
           minimumFractionDigits: 2,
           maximumFractionDigits: 2
         });
 
-        if(data.sales && data.sales.length > 0) {
-          data.sales.forEach((item) => {
+        const currentDate = new Date();
+        const currentYear = currentDate.getFullYear();
+        const currentMonth = currentDate.getMonth() + 1; 
+        const currentDay = currentDate.getDate();
+
+        const currentDateString = `${currentYear}-${currentMonth.toString().padStart(2, '0')}-${currentDay.toString().padStart(2, '0')}`;
+        
+        const filteredData = data.sales.filter(item => {
+          return item.purchase_date === currentDateString;
+        });
+
+        if(filteredData && filteredData.length > 0) {
+          filteredData.forEach((item) => {
             const salesHTML = `<tr>
                 <td>${item.sales_no}</td>
                 <td>${item.description}</td>
