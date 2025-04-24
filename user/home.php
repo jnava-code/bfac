@@ -2,11 +2,7 @@
 	include "../config/db.php";
 	include "../auth/session.php"; 
 
-	$sales_query = "
-		SELECT SUM(amount) AS total_sales
-		FROM admin_sales
-		WHERE YEAR(purchase_date) = YEAR(CURDATE())
-	";
+	$sales_query = "SELECT SUM(amount) AS total_sales FROM admin_sales WHERE YEAR(purchase_date) = YEAR(CURDATE())";
 
 	$sales_result = mysqli_query($conn, $sales_query);
 	$sales_row = mysqli_fetch_assoc($sales_result);	
@@ -29,7 +25,17 @@
 	$result_share = mysqli_query($conn, $sql_share);
 	$row_share = mysqli_fetch_assoc($result_share);
 	$total_paid_up_share_capital = $row_share['total_paid_up_share_capital'] ? $row_share['total_paid_up_share_capital'] : 0;
-	$total_share_capital = $row_share['total_share_capital'] ? $row_share['total_share_capital'] : 0;
+
+	$sql_share_capital = "
+        SELECT 
+            SUM(asl.share_capital) AS total_share_capital
+        FROM admin_shares AS ashares
+        LEFT JOIN admin_shares_list asl ON asl.member_id = ashares.member_id
+		WHERE YEAR(asl.created_at) = YEAR(CURDATE())
+	";
+	$result_share_capital = mysqli_query($conn, $sql_share_capital);
+	$row_share_capital = mysqli_fetch_assoc($result_share_capital);
+	$total_share_capital = $row_share_capital['total_share_capital'] ? $row_share_capital['total_share_capital'] : 0;
 
 	$net_income = $total_sales - $total_expenses;
 	$statutory_funds = $net_income * 0.30;
@@ -45,8 +51,8 @@
 	$total_shares = $all_shares_row['all_total_shares'] ?? 0;
 
 	if ($total_shares > 0) {
-		$dividend_per_share = $net_surplus / $total_shares;
-		$total_dividend = $dividend_per_share * $total_share_capital;
+		$dividend_per_share = $net_surplus / $total_share_capital;
+		$total_dividend = $dividend_per_share * $total_shares;
 	} else {
 		$dividend_per_share = 0;
 		$total_dividend = 0;

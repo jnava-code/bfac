@@ -292,7 +292,7 @@
                       <input type="text" id="receiptNumberShares" placeholder="Enter control number" required>
                     </div>
                     <div class="form-group">
-                      <button type="submit" onclick="confirmShareCapital()">Allocate to Share Capital</button>
+                      <button type="button" onclick="confirmShareCapital()">Allocate to Share Capital</button>
                     </div>
                   </form>
                 </div>
@@ -304,8 +304,8 @@
                   const value = e.target.value;
                   const amount = value * 100;
                   document.getElementById("allocateAmountShares").value = amount;
-                  
-                })
+                });
+
                 function updateDividendTable() {
                   const tbody = document.getElementById('dividend-table-body');
                   tbody.innerHTML = '';
@@ -327,9 +327,10 @@
                           const statutoryFunds = netIncome * 0.30;
                           
                           const netSurplus = netIncome - statutoryFunds;
+                          
                           const perDividend = netSurplus / member.all_total_share_capital;
                           const total_dividend = perDividend * member.total_share_capital;
-
+                          
                           if(member.total_paid_up_share_capital != 0) {
                             const fullName = `${member.first_name} ${member.middle_name} ${member.last_name}`.replace(/'/g, "\\'");
                             const withdrawBtnHTML = `
