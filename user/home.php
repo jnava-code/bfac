@@ -119,7 +119,7 @@
 						</div>
 						<div class="detail-item">
 							<span>Share</span>
-							<strong><?php echo number_format($total_share_capital); ?></strong>
+							<strong><?php echo number_format($total_shares); ?></strong>
 						</div>
 					</div>
 				</a>
