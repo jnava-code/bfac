@@ -478,7 +478,7 @@
                             shareHTML += `
                                 <tr>
                                     <td>${fullName}</td>
-                                    <td>₱${share.total_paid_up_share_capital}</td>
+                                    <td>${formatCurrencyPHP(share.total_paid_up_share_capital)}</td>
                                     <td>${share.total_share_capital}</td>
                                     <td><button class="bx bxs-archive icon-archive" id="archive_share_${share.id}"></button></td>
                                 </tr>`;
@@ -494,6 +494,13 @@
                 });
         }
 
+        function formatCurrencyPHP(amount) {
+            return new Intl.NumberFormat('en-PH', {
+                style: 'currency',
+                currency: 'PHP',
+                minimumFractionDigits: 2
+            }).format(amount);
+        }
 
         function archiveShares() {
             const archiveButtons = document.querySelectorAll("[id^='archive_share_']");

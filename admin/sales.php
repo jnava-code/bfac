@@ -58,6 +58,14 @@
             <h3>List of Sales</h3>
             <button class="view-btn-add" id="openSalesModal"><i class="bx bx-plus"></i></button>
             <button class="view-btn" onclick="window.location.href='transaction_sales.php';">Transaction History</button>
+            <div class="menu-container">
+              <i class="bx bx-dots-vertical" id="kebabMenu"></i>
+              <div class="dropdown-menu" id="dropdownMenu">
+                  <ul>
+                      <li><a href="archive_sale.php">Archive</a></li>
+                  </ul>
+              </div>
+          </div>
           </div>
           <table>
             <thead>
@@ -67,6 +75,7 @@
                 <th>Quantity</th>
                 <th>Price (₱)</th>
                 <th>Receipt Control Number</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody id="incomeTableBody"></tbody>
@@ -230,21 +239,25 @@
 
         const currentDateString = `${currentYear}-${currentMonth.toString().padStart(2, '0')}-${currentDay.toString().padStart(2, '0')}`;
         
-        const filteredData = data.sales.filter(item => {
-          return item.purchase_date === currentDateString;
+        const filteredData = data.sales.filter(sale => {
+          return sale.purchase_date === currentDateString;
         });
 
         if(filteredData && filteredData.length > 0) {
-          filteredData.forEach((item) => {
+          filteredData.forEach((sale) => {
+            
             const salesHTML = `<tr>
-                <td>${item.sales_no}</td>
-                <td>${item.description}</td>
-                <td>${item.quantity}</td>
-                <td>₱${item.amount}</td>
-                <td>${item.receipt_no}</td>
+                <td>${sale.sales_no}</td>
+                <td>${sale.description}</td>
+                <td>${sale.quantity}</td>
+                <td>${formatCurrencyPHP(sale.amount)}</td>
+                <td>${sale.receipt_no}</td>
+                <td><button class="bx bxs-archive icon-archive" id="archive_sale_${sale.id}"></button></td>
               </tr>
             `;
             incomeTableBody.insertAdjacentHTML("beforeend", salesHTML);
+
+            archiveSales();
           });
         } else {
           incomeTableBody.innerHTML = "<tr><td colspan='9'>No sales data available</td></tr>";
@@ -252,5 +265,53 @@
       })
   }
 
+  function formatCurrencyPHP(amount) {
+        return new Intl.NumberFormat('en-PH', {
+            style: 'currency',
+            currency: 'PHP',
+            minimumFractionDigits: 2
+        }).format(amount);
+    }
+
+  function archiveSales() {
+    const archiveButtons = document.querySelectorAll("[id^='archive_sale_']");
+
+    archiveButtons.forEach(button => {
+        if (!button.classList.contains("listener-added")) {
+            button.classList.add("listener-added");
+
+            button.addEventListener("click", function (e) {
+                e.preventDefault();
+                const saleId = this.id.split("_")[2];
+
+                const confirmArchive = confirm("Are you sure you want to archive this sale?");
+                if (confirmArchive) {
+                    const archiveData = new FormData();
+                    archiveData.append("id", saleId);
+                    fetch("../api/post/archive_sale.php", {
+                        method: 'POST',
+                        body: archiveData
+                    }).then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    }).then(data => {
+                        if (data.status == "success") {
+                            fetchSalesData();
+                            return;
+                        }
+                    })
+                }
+            });
+        }
+    });
+}
+
+
   fetchSalesData();
 </script>
+
+<script src="../js/kebab.js"></script>
+    <!-- <script src="../js/script.js"></script> -->
+    <script src="../js/dropdown_profile.js"></script>

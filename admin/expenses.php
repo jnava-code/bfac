@@ -88,6 +88,14 @@
           <div class="head">
             <h3>List of Expenses</h3>
             <button class="view-btn" onclick="window.location.href='transaction_expenses.php';">Transaction History</button>
+            <div class="menu-container">
+              <i class="bx bx-dots-vertical" id="kebabMenu"></i>
+              <div class="dropdown-menu" id="dropdownMenu">
+                  <ul>
+                      <li><a href="archive_expense.php">Archive</a></li>
+                  </ul>
+              </div>
+          </div>
           </div>
           <table>
             <thead>
@@ -97,6 +105,7 @@
                 <th>Date</th>
                 <th>Description</th>
                 <th>Year</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody id="expensesTable"></tbody>
@@ -180,27 +189,75 @@
 
           if(filteredData && filteredData.length > 0) {
             filteredData.forEach(expense => {
+
               const expensesHTML = `
               <tr>
                 <td>${expense.category}</td>
-                <td>₱${parseFloat(expense.amount).toFixed(2)}</td>
+                <td>${formatCurrencyPHP(expense.amount)}</td>
                 <td>${expense.expense_date}</td>
                 <td>${expense.description}</td>
                 <td>${expense.year}</td>
+                <td><button class="bx bxs-archive icon-archive" id="archive_expense_${expense.id}"></button></td>
               </tr>
               `;
               expensesTable.insertAdjacentHTML('beforeend', expensesHTML);
+
+              archiveExpenses();
             });
           } else {
-            expensesTable.innerHTML = '<tr><td colspan="5">No expenses found.</td></tr>';
+            expensesTable.innerHTML = '<tr><td colspan="6">No expenses found.</td></tr>';
             
           }
         })
     }
 
+    function formatCurrencyPHP(amount) {
+        return new Intl.NumberFormat('en-PH', {
+            style: 'currency',
+            currency: 'PHP',
+            minimumFractionDigits: 2
+        }).format(amount);
+    }
+
+    function archiveExpenses() {
+      const archiveButtons = document.querySelectorAll("[id^='archive_expense_']");
+
+      archiveButtons.forEach(button => {
+          if (!button.classList.contains("listener-added")) {
+              button.classList.add("listener-added");
+
+              button.addEventListener("click", function (e) {
+                  e.preventDefault();
+                  const expenseId = this.id.split("_")[2];
+
+                  const confirmArchive = confirm("Are you sure you want to archive this expense?");
+                  if (confirmArchive) {
+                      const archiveData = new FormData();
+                      archiveData.append("id", expenseId);
+
+                      fetch("../api/post/archive_expense.php", {
+                          method: 'POST',
+                          body: archiveData
+                      }).then(response => {
+                          if (!response.ok) {
+                              throw new Error('Network response was not ok');
+                          }
+                          return response.json();
+                      }).then(data => {
+                          if (data.status === "success") {
+                              fetchExpensesData();
+                          }
+                      })
+                  }
+              });
+          }
+      });
+  }
+
+
     fetchExpensesData();
   </script>
-
+<script src="../js/kebab.js"></script>
   <script src="../js/script.js"></script>
   <script src="../js/dropdown_profile.js"></script>
 

@@ -100,14 +100,22 @@
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${sale.sales_no}</td>
-                <td>${sale.amount}</td>
-                <td>${sale.quantity}</td>
                 <td>${sale.description}</td>
+                <td>${sale.quantity}</td>
+                <td>${formatCurrencyPHP(sale.amount)}</td>
                 <td>${sale.receipt_no}</td>
             `;
             salesTransactionHistory.appendChild(row);
         });
     };
+
+    function formatCurrencyPHP(amount) {
+        return new Intl.NumberFormat('en-PH', {
+            style: 'currency',
+            currency: 'PHP',
+            minimumFractionDigits: 2
+        }).format(amount);
+    }
 
     fetch('../api/get/read_sales.php')
         .then(response => response.json())

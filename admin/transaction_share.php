@@ -128,13 +128,21 @@
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${sale.first_name} ${sale.middle_name} ${sale.last_name}</td>
-                <td>${sale.total_paid_up_share_capital}</td>
+                <td>${formatCurrencyPHP(sale.total_paid_up_share_capital)}</td>
                 <td>${sale.total_share_capital}</td>
                 <td>${sale.created_at}</td>
             `;
             sharesTransactionHistory.appendChild(row);
         });
     };
+
+    function formatCurrencyPHP(amount) {
+        return new Intl.NumberFormat('en-PH', {
+            style: 'currency',
+            currency: 'PHP',
+            minimumFractionDigits: 2
+        }).format(amount);
+    }
 
     fetch('../api/get/read_share.php')
         .then(response => response.json())

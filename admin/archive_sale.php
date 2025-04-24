@@ -2,32 +2,11 @@
   include "../config/db.php";
   include "../auth/session.php";
 
-  $sql_share = "
-    SELECT 
-        ashares.id,
-        ashares.member_id,
-        ashares.update_at,
-        ashares.is_archived,
-        SUM(asl.paid_up_share_capital) AS total_paid_up_share_capital,
-        SUM(asl.share_capital) AS total_share_capital,
-        um.first_name,
-        um.middle_name,
-        um.last_name,
-        um.role
-    FROM admin_shares AS ashares
-    LEFT JOIN admin_shares_list asl ON asl.member_id = ashares.member_id
-    LEFT JOIN user_members um ON um.member_id = ashares.member_id
-    WHERE ashares.is_archived = 1
-    GROUP BY 
-        ashares.member_id,
-        ashares.update_at,
-        ashares.is_archived,
-        um.first_name,
-        um.middle_name,
-        um.last_name
+  $sql_sale = "
+    SELECT * FROM admin_sales WHERE is_archived = 1
   ";
 
-  $result_share = mysqli_query($conn, $sql_share);
+  $result_sale = mysqli_query($conn, $sql_sale);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -54,7 +33,7 @@
         <ul class="breadcrumb">
           <li><a href="dashboard.html">Dashboard</a></li>
           <li><i class="bx bx-chevron-right"></i></li>
-          <li><a href="#">Shares</a></li>
+          <li><a href="#">Sales</a></li>
           <li><i class="bx bx-chevron-right"></i></li>
           <li><a href="#" class="active">Archive</a></li>
         </ul>
@@ -65,35 +44,38 @@
       <div class="db">
         <div class="head">
           <h3>Archived Shares</h3>
-          <button class="view-btn" onclick="window.location.href='shares.php';">
+          <button class="view-btn" onclick="window.location.href='sales.php';">
             <i class='bx bx-left-arrow-alt'></i> Back  
           </button>
         </div>
         <table>
           <thead>
             <tr>
-              <th>Member Name</th>
-              <th>Paid-up Share Capital</th>
-              <th>Shares</th>
+                <th>Order No.</th>
+                <th>Product Name</th>
+                <th>Quantity</th>
+                <th>Price (₱)</th>
+                <th>Receipt Control Number</th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody id="archiveTableBody">
             <?php
-              if ($result_share && mysqli_num_rows($result_share) > 0) {
-                while ($row = mysqli_fetch_assoc($result_share)) {
-                  $id = $row['id'];
-                  $full_name = htmlspecialchars($row['first_name'] . ' ' . $row['middle_name'] . ' ' . $row['last_name']);
+              if ($result_sale && mysqli_num_rows($result_sale) > 0) {
+                while ($row = mysqli_fetch_assoc($result_sale)) {
+                    $id = $row['id'];
             ?>
-              <tr id="share_row_<?php echo $id; ?>">
-                <td><?php echo $full_name; ?></td>
-                <td>₱<?php echo number_format(htmlspecialchars($row['total_paid_up_share_capital'])); ?></td>
-                <td><?php echo htmlspecialchars($row['total_share_capital']); ?></td>
+              <tr id="sale_row_<?php echo $id; ?>">
+                <td><?php echo htmlspecialchars($row['sales_no']); ?></td>
+                <td><?php echo htmlspecialchars($row['description']); ?></td>
+                <td><?php echo htmlspecialchars($row['quantity']); ?></td>
+                <td>₱<?php echo number_format(htmlspecialchars($row['amount'])); ?></td>
+                <td><?php echo htmlspecialchars($row['receipt_no']); ?></td>
                 <td>
-                  <button class='icon-edit' onclick="restorePost('<?php echo addslashes($full_name); ?>', <?php echo $id; ?>)">
+                  <button class='icon-edit' onclick="restorePost('<?php echo addslashes($row['description']); ?>', <?php echo $id; ?>)">
                     <i class='bx bx-refresh'></i>
                   </button>
-                  <button class='icon-delete' onclick="deletePost('<?php echo addslashes($full_name); ?>', <?php echo $id; ?>, <?php echo $row['member_id']; ?>)">
+                  <button class='icon-delete' onclick="deletePost('<?php echo addslashes($row['description']); ?>', <?php echo $id; ?>)">
                     <i class='bx bxs-trash'></i>
                   </button>
                 </td>
@@ -101,7 +83,7 @@
               <?php
                 }
               } else {
-                echo "<tr><td colspan='4'>No archived shares found.</td></tr>";
+                echo "<tr><td colspan='6'>No archived shares found.</td></tr>";
               }
             ?>
           </tbody>
@@ -124,7 +106,7 @@ function restorePost(title, shareId) {
       const restoreData = new FormData();
       restoreData.append("id", shareId);
 
-      fetch("../api/update/restore_share.php", {
+      fetch("../api/update/restore_sale.php", {
         method: 'POST',
         body: restoreData
       })
@@ -132,7 +114,7 @@ function restorePost(title, shareId) {
       .then(data => {
         if (data.status === "success") {
           Swal.fire('Restored!', `"${title}" has been restored.`, 'success');
-          const row = document.getElementById(`share_row_${shareId}`);
+          const row = document.getElementById(`sale_row_${shareId}`);
           if (row) row.remove();
         } else {
           Swal.fire('Error', data.message || 'Restore failed.', 'error');
@@ -142,7 +124,7 @@ function restorePost(title, shareId) {
   });
 }
 
-function deletePost(title, shareId, memberId) {
+function deletePost(title, shareId) {
   Swal.fire({
     title: 'Are you sure?',
     text: `This will permanently delete "${title}" from archive.`,
@@ -154,9 +136,8 @@ function deletePost(title, shareId, memberId) {
     if (result.isConfirmed) {
       const deleteData = new FormData();
       deleteData.append("id", shareId);
-      deleteData.append("member_id", memberId);
       
-      fetch("../api/delete/delete_share.php", {
+      fetch("../api/delete/delete_sale.php", {
         method: 'POST',
         body: deleteData
       })
@@ -164,7 +145,7 @@ function deletePost(title, shareId, memberId) {
       .then(data => {
         if (data.status === "success") {
           Swal.fire('Deleted!', `"${title}" has been removed.`, 'success');
-          const row = document.getElementById(`share_row_${shareId}`);
+          const row = document.getElementById(`sale_row_${shareId}`);
           if (row) row.remove();
         } else {
           Swal.fire('Error', data.message || 'Delete failed.', 'error');

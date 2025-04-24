@@ -280,8 +280,12 @@
                       <input type="text" id="availableDividend" disabled>
                     </div>
                     <div class="form-group">
+                      <label for="shareCapitalShares">Share Capital:</label>
+                      <input type="number" id="shareCapitalShares" placeholder="Enter share capital" required>
+                    </div>
+                    <div class="form-group">
                       <label for="allocateAmountShares">Amount to Allocate (₱):</label>
-                      <input type="number" id="allocateAmountShares" placeholder="Enter amount to allocate" required>
+                      <input type="number" id="allocateAmountShares" placeholder="Enter amount to allocate" readonly>
                     </div>
                     <div class="form-group">
                       <label for="receiptNumberShares">Receipt Control Number:</label>
@@ -296,7 +300,12 @@
               
               <!-- JavaScript -->
               <script>
-
+                document.getElementById("shareCapitalShares").addEventListener('input', (e) => {
+                  const value = e.target.value;
+                  const amount = value * 100;
+                  document.getElementById("allocateAmountShares").value = amount;
+                  
+                })
                 function updateDividendTable() {
                   const tbody = document.getElementById('dividend-table-body');
                   tbody.innerHTML = '';
@@ -340,9 +349,9 @@
                             const row = document.createElement('tr');
                             row.innerHTML = `
                               <td>${member.first_name} ${member.middle_name} ${member.last_name}</td>
-                              <td>₱${member.total_paid_up_share_capital}</td>
-                              <td>₱${Math.round(total_dividend)}</td>
-                              <td>₱${Math.round(total_dividend) - Math.round(member.total_dividend)}</td>
+                              <td>${formatCurrencyPHP(member.total_paid_up_share_capital)}</td>
+                              <td>${formatCurrencyPHP(Math.round(total_dividend))}</td>
+                              <td>${formatCurrencyPHP(Math.round(total_dividend) - Math.round(member.total_dividend))}</td>
                               <td>
                                 ${withdrawBtnHTML}   
                                 ${sendShareHTML}    
@@ -357,6 +366,14 @@
                         });
                       }
                     })
+                }
+
+                function formatCurrencyPHP(amount) {
+                    return new Intl.NumberFormat('en-PH', {
+                        style: 'currency',
+                        currency: 'PHP',
+                        minimumFractionDigits: 2
+                    }).format(amount);
                 }
 
                 function openModal(memberName, amountLeft, member_id) {
@@ -418,13 +435,14 @@
 
                 function confirmShareCapital() {
                   const memberId = document.getElementById('shareMemberId').value;
+                  const shareCapitalShares = document.getElementById("shareCapitalShares").value;
                   const allocateAmount = document.getElementById('allocateAmountShares').value;
                   const receipt = document.getElementById('receiptNumberShares').value;
-                  console.log(allocateAmount && receipt);
                   
                   if (allocateAmount && receipt) {
                     const dividendData = new FormData();
                     dividendData.append('member_id', memberId);
+                    dividendData.append('shares', shareCapitalShares);
                     dividendData.append('dividend_amount', allocateAmount);
                     dividendData.append('receipt', receipt);
 

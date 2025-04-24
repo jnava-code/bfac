@@ -99,7 +99,7 @@
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${expense.category}</td>
-                <td>${expense.amount}</td>
+                <td>${formatCurrencyPHP(expense.amount)}</td>
                 <td>${expense.expense_date}</td>
                 <td>${expense.description}</td>
                 <td>${expense.year}</td>
@@ -107,6 +107,14 @@
             expensesTransactionHistory.appendChild(row);
         });
     };
+
+    function formatCurrencyPHP(amount) {
+        return new Intl.NumberFormat('en-PH', {
+            style: 'currency',
+            currency: 'PHP',
+            minimumFractionDigits: 2
+        }).format(amount);
+    }
 
     fetch('../api/get/read_expenses.php')
         .then(response => response.json())

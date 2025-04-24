@@ -5,7 +5,8 @@ header('Content-Type: application/json');
 // Fetch sales with member info
 $sql_share = "SELECT 
 *
-FROM admin_sales AS asales
+FROM admin_sales
+WHERE is_archived = 0
 -- WHERE DATE(asales.purchase_date) = DATE(CURDATE())
 ";
 
@@ -23,7 +24,7 @@ if ($result_share) {
 $total_query = "
     SELECT SUM(asales.amount) AS total_sales
     FROM admin_sales AS asales
-    WHERE DATE(asales.purchase_date) = DATE(CURDATE())
+    WHERE DATE(asales.purchase_date) = DATE(CURDATE()) AND asales.is_archived = 0
 ";
 
 $total_result = mysqli_query($conn, $total_query);
