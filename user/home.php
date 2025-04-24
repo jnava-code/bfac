@@ -26,13 +26,7 @@
 	$row_share = mysqli_fetch_assoc($result_share);
 	$total_paid_up_share_capital = $row_share['total_paid_up_share_capital'] ? $row_share['total_paid_up_share_capital'] : 0;
 
-	$sql_share_capital = "
-        SELECT 
-            SUM(asl.share_capital) AS total_share_capital
-        FROM admin_shares AS ashares
-        LEFT JOIN admin_shares_list asl ON asl.member_id = ashares.member_id
-		WHERE YEAR(asl.created_at) = YEAR(CURDATE())
-	";
+	$sql_share_capital = "SELECT SUM(share_capital) AS total_share_capital FROM admin_shares_list WHERE YEAR(created_at) = YEAR(CURDATE())";
 	$result_share_capital = mysqli_query($conn, $sql_share_capital);
 	$row_share_capital = mysqli_fetch_assoc($result_share_capital);
 	$total_share_capital = $row_share_capital['total_share_capital'] ? $row_share_capital['total_share_capital'] : 0;

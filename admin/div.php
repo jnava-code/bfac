@@ -320,6 +320,7 @@
                         return;
                       } else {
                         data.forEach(member => {
+                          
                           const totalSales = member.total_sales
                           const totalExpenses = member.total_expenses;
                           
@@ -330,7 +331,7 @@
                           
                           const perDividend = netSurplus / member.all_total_share_capital;
                           const total_dividend = perDividend * member.total_share_capital;
-                          
+
                           if(member.total_paid_up_share_capital != 0) {
                             const fullName = `${member.first_name} ${member.middle_name} ${member.last_name}`.replace(/'/g, "\\'");
                             const withdrawBtnHTML = `
