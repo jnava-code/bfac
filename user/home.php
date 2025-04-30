@@ -158,16 +158,19 @@
 					const dateArray = data.dateArray;
 					const amountArray = data.amountArray;
 					const baseShareCapital = data.total_share_capital;
-					const { slope, intercept } = linearRegression(dateArray, amountArray);
+					// const { slope, intercept } = linearRegression(dateArray, amountArray);
+					// console.log("slope", slope);
+					
 					const highest = Math.max(...dateArray);
 					const nextYear = highest + 1;
 					
-					const result = calculateDividend(shareCapital, nextYear, slope, intercept, baseShareCapital);
-
-					if(result != NaN) {
+					const result = predictDividend(dateArray, amountArray, shareCapital);
+					
+					if (isNaN(result)) {
 						dividendResult.textContent = `Can't Compute`;
 						return;
 					}
+
 
 					dividendResult.textContent = `₱${result.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 				})
@@ -177,39 +180,60 @@
 				});
 		}
 
-		function calculateDividend(shareCapital, year, slope, intercept, baseShareCapital) {
-			let predictedDividend = slope * year + intercept;
+		function predictDividend(dateArray, amountArray, shareCapital) {
+			const { m, b } = linearRegression(dateArray, amountArray);
 
-			let dividendPerShare = predictedDividend / baseShareCapital;
-			let totalDividend = dividendPerShare * shareCapital;
+			const predictedDividend = m * shareCapital + b;
 
-			return totalDividend;
+			return predictedDividend;
 		}
 
-		function linearRegression(xArray, yArray) {
-			const n = xArray.length;
 
-			if (n !== yArray.length) {
-				throw new Error("x and y arrays must be of equal length.");
-			}
+		function linearRegression(x, y) {
+            const n = x.length;
+            const xSum = x.reduce((acc, val) => acc + val, 0);
+            const ySum = y.reduce((acc, val) => acc + val, 0);
+            const xySum = x.reduce((acc, val, idx) => acc + val * y[idx], 0);
+            const xSquaredSum = x.reduce((acc, val) => acc + val * val, 0);
 
-			let sumX = 0;
-			let sumY = 0;
-			let sumXY = 0;
-			let sumX2 = 0;
+            const m = (n * xySum - xSum * ySum) / (n * xSquaredSum - xSum * xSum); // slope
+            const b = (ySum - m * xSum) / n; // intercept
+            return { m, b };
+        }
 
-			for (let i = 0; i < n; i++) {
-				sumX += xArray[i];
-				sumY += yArray[i];
-				sumXY += xArray[i] * yArray[i];
-				sumX2 += xArray[i] * xArray[i];
-			}
+				// function calculateDividend(shareCapital, year, slope, intercept, baseShareCapital) {
+		// 	let predictedDividend = slope * year + intercept;
 
-			const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
-			const intercept = (sumY - slope * sumX) / n;
+		// 	let dividendPerShare = predictedDividend / baseShareCapital;
+		// 	let totalDividend = dividendPerShare * shareCapital;
 
-			return { slope, intercept };
-			}
+		// 	return totalDividend;
+		// }
+
+		// function linearRegression(xArray, yArray) {
+		// 	const n = xArray.length;
+
+		// 	if (n !== yArray.length) {
+		// 		throw new Error("x and y arrays must be of equal length.");
+		// 	}
+
+		// 	let sumX = 0;
+		// 	let sumY = 0;
+		// 	let sumXY = 0;
+		// 	let sumX2 = 0;
+
+		// 	for (let i = 0; i < n; i++) {
+		// 		sumX += xArray[i];
+		// 		sumY += yArray[i];
+		// 		sumXY += xArray[i] * yArray[i];
+		// 		sumX2 += xArray[i] * xArray[i];
+		// 	}
+
+		// 	const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+		// 	const intercept = (sumY - slope * sumX) / n;
+
+		// 	return { slope, intercept };
+		// }
 
 		// function forecast(x, slope, intercept) {
 		// 	return slope * x + intercept;
