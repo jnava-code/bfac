@@ -19,7 +19,7 @@
 	}
 
 	function selectUsers($conn, $status) {
-		$sql = "SELECT * FROM user_members WHERE is_archived = 0 AND status = '$status' AND is_verified = 1";
+		$sql = "SELECT * FROM user_members WHERE is_archived = 0 AND status = '$status' AND is_verified = 1 AND is_deleted = 0";
 		$result = mysqli_query($conn, $sql);
 		return $result;
 	}

@@ -441,46 +441,48 @@
             const tbody = document.getElementById("membersTableBody");
             if (tbody) tbody.innerHTML = "";
 
-            fetch("../api/get/read_share.php")
+            fetch("../api/get/read_share_list.php")
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
                     }
                     return response.json();
                 })
-                .then(data => {
-                    const currentDate = new Date();
-                    const currentYear = currentDate.getFullYear();
-                    const currentMonth = currentDate.getMonth() + 1; 
-                    const currentDay = currentDate.getDate();
-
-                    const currentDateString = `${currentYear}-${currentMonth.toString().padStart(2, '0')}-${currentDay.toString().padStart(2, '0')}`;
-                    
-                    const filteredData = data.filter(item => {
-                        const shareDate = new Date(item.created_at);
-                        const shareYear = shareDate.getFullYear();
-                        const shareMonth = shareDate.getMonth() + 1; 
-                        const shareDay = shareDate.getDate();
-
-                        const shareDateString = `${shareYear}-${shareMonth.toString().padStart(2, '0')}-${shareDay.toString().padStart(2, '0')}`;
-                        
-                        return shareDateString === currentDateString;
-                    });
-                    
-                    if (filteredData && filteredData.length > 0) {
+                .then(data => {        
+                    if (data && data.length > 0) {
                         let shareHTML = '';
 
-                        filteredData.forEach(share => {
+                        data.forEach(share => {
                             const fullName = share.middle_name === ""
                                 ? `${share.first_name} ${share.last_name}`
                                 : `${share.first_name} ${share.middle_name} ${share.last_name}`;
 
+                            let totalPaidUp = 0;
+                            let totalShareCap = 0;
+
+                            if (share.shares && share.shares.length > 0) {
+                                const currentDate = new Date();
+                                const currentYear = currentDate.getFullYear();
+                                
+                                const filteredData = share.shares.filter(item => {
+                                    const shareDate = new Date(item.created_at);
+                                    const shareYear = shareDate.getFullYear();
+                                    
+                                    return shareYear === currentYear;
+                                });
+                                
+                                if(filteredData.length === 0) return;
+                                
+                                totalPaidUp = filteredData.reduce((sum, s) => sum + parseFloat(s.paid_up_share_capital), 0);
+                                totalShareCap = filteredData.reduce((sum, s) => sum + parseFloat(s.share_capital), 0);
+                            }
+                            
                             shareHTML += `
                                 <tr>
                                     <td>${fullName}</td>
-                                    <td>${formatCurrencyPHP(share.total_paid_up_share_capital)}</td>
-                                    <td>${share.total_share_capital}</td>
-                                    <td><button class="bx bxs-archive icon-archive" id="archive_share_${share.id}"></button></td>
+                                    <td>${formatCurrencyPHP(totalPaidUp)}</td>
+                                    <td>${totalShareCap}</td>
+                                    <td><button class="bx bxs-archive icon-archive" id="archive_share_${share.member_id}"></button></td>
                                 </tr>`;
                         });
 

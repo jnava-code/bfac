@@ -1,35 +1,6 @@
 <?php
   include "../config/db.php";
   include "../auth/session.php";
-
-  $sql_share = "
-    SELECT 
-        ashares.id,
-        ashares.member_id,
-        ashares.update_at,
-        ashares.is_archived,
-        SUM(asl.paid_up_share_capital) AS total_paid_up_share_capital,
-        SUM(asl.share_capital) AS total_share_capital,
-        asl.receipt_number,
-        um.first_name,
-        um.middle_name,
-        um.last_name,
-        um.role
-    FROM admin_shares AS ashares
-    LEFT JOIN admin_shares_list asl ON asl.member_id = ashares.member_id
-    LEFT JOIN user_members um ON um.member_id = ashares.member_id
-    WHERE ashares.is_archived = 0 AND DATE(asl.created_at) < CURDATE()
-    GROUP BY 
-        ashares.member_id,
-        ashares.update_at,
-        ashares.is_archived,
-        um.first_name,
-        um.middle_name,
-        um.last_name
-	ORDER BY asl.created_at ASC
-  ";
-
-  $result_share = mysqli_query($conn, $sql_share);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -90,7 +61,6 @@
               <th>Member Name</th>
               <th>Paid-up Share Capital</th>
               <th>Shares</th>
-              <th>Date & Time</th>
             </tr>
           </thead>
           <tbody id="sharesTransactionHistory">
@@ -108,31 +78,42 @@
     const currentYear = new Date().getFullYear();
     yearFilter.value = currentYear;
 
-    const renderShares = (shares, filterYear) => {
-        sharesTransactionHistory.innerHTML = "";
-        const filteredShares = filterYear
-            ? shares.filter(sale => {           
-                const saleYear = new Date(sale.created_at).getFullYear();         
-                return saleYear == filterYear;
-            })
-            : shares;
+    const renderShares = (share, filterYear) => {
+        sharesTransactionHistory.innerHTML = "";      
             
-        if (filteredShares.length === 0) {
+        if (share.length === 0) {
             const row = document.createElement('tr');
             row.innerHTML = `<td colspan="5" style="text-align: center;">No shares found.</td>`;
             sharesTransactionHistory.appendChild(row);
             return;
         }
+        
+        share.forEach(shar => {
+          const filteredShares = filterYear
+          ? shar.shares.filter(sh => {
+                const shareDate = new Date(sh.created_at);
+                const shareYear = shareDate.getFullYear();
+                return shareYear == filterYear;
+              })
+          : share.shares;
 
-        filteredShares.forEach(sale => {
+          if (filteredShares.length === 0) return;
+          
+          let totalPaidUp = 0;
+          let totalShareCap = 0;
+
+          totalPaidUp = filteredShares.reduce((sum, s) => sum + parseFloat(s.paid_up_share_capital), 0);
+          totalShareCap = filteredShares.reduce((sum, s) => sum + parseFloat(s.share_capital), 0);
+          
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${sale.first_name} ${sale.middle_name} ${sale.last_name}</td>
-                <td>${formatCurrencyPHP(sale.total_paid_up_share_capital)}</td>
-                <td>${sale.total_share_capital}</td>
-                <td>${sale.created_at}</td>
+                <td>${shar.first_name} ${shar.middle_name} ${shar.last_name}</td>
+                ${(() => {
+                  return `<td>${formatCurrencyPHP(totalPaidUp)}</td>
+                        <td>${totalShareCap}</td>`;
+                })()}
             `;
-            sharesTransactionHistory.appendChild(row);
+            sharesTransactionHistory.appendChild(row);    
         });
     };
 
@@ -144,10 +125,10 @@
         }).format(amount);
     }
 
-    fetch('../api/get/read_share.php')
+    fetch('../api/get/read_share_list.php')
         .then(response => response.json())
         .then(data => {
-            const shares = data;        
+            const shares = data;    
             renderShares(shares, currentYear);
 
             yearFilter.addEventListener("change", (e) => {
