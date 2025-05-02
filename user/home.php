@@ -175,8 +175,7 @@
 					dividendResult.textContent = `₱${result.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 				})
 				.catch(error => {
-					console.error('Error:', error);
-					dividendResult.textContent = "An error occurred. Please try again.";
+					dividendResult.textContent = "Not Enough Past Data.";
 				});
 		}
 
