@@ -18,7 +18,7 @@ $dateArray = [];
 $amountArray = [];
 
 if ($result && mysqli_num_rows($result) > 0) {
-    $i = 1;
+    $i = 0;
     while ($row = mysqli_fetch_assoc($result)) {
         $dateArray[] = $i++; 
         $amountArray[] = (float)$row['total_amount'];

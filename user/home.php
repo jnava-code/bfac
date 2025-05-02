@@ -108,7 +108,7 @@
 							<span>Shares Capital</span>
 							<div class="share-capital">
 								<span style="font-size: 28px;">₱</span>
-								<strong><?php echo $total_paid_up_share_capital; ?></strong>
+								<strong><?php echo number_format($total_paid_up_share_capital); ?></strong>
 							</div>
 						</div>
 						<div class="detail-item">
@@ -148,9 +148,8 @@
 		function clickCalculateDividend() {
 			const shareCapital = parseFloat(document.getElementById("share-amount").value);
 			const dividendResult = document.getElementById("dividend-result");
-
-			// Clear any previous result
-			// dividendResult.textContent = "Calculating...";
+			const xmy = [];
+			const xSquaredArray = [];
 
 			fetch('../api/get/read_cal_dividend.php')
 				.then(response => response.json())
@@ -158,21 +157,27 @@
 					const dateArray = data.dateArray;
 					const amountArray = data.amountArray;
 					const baseShareCapital = data.total_share_capital;
-					// const { slope, intercept } = linearRegression(dateArray, amountArray);
-					// console.log("slope", slope);
-					
-					const highest = Math.max(...dateArray);
-					const nextYear = highest + 1;
-					
-					const result = predictDividend(dateArray, amountArray, shareCapital);
-					
-					if (isNaN(result)) {
-						dividendResult.textContent = `Can't Compute`;
-						return;
+					const n = data.dateArray.length;
+					const xSum = dateArray.reduce((acc, val) => acc + val, 0);
+					const ySum = amountArray.reduce((acc, val) => acc + val, 0);
+
+
+					if(dateArray && dateArray.length > 0) {
+						dateArray.forEach((date, index) => {
+							const xy = date * amountArray[index];	
+							const xSquared = date * date;
+							xmy.push(xy);		
+							xSquaredArray.push(xSquared);	
+						})
 					}
 
-
-					dividendResult.textContent = `₱${result.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+					const xySum = xmy.reduce((acc, val) => acc + val, 0);
+					const xSquaredSum = xSquaredArray.reduce((acc, val) => acc + val, 0);
+					const b = (n * xySum - xSum * ySum) / (n * xSquaredSum - xSum * xSum);
+					const a = (ySum / n) - b * (xSum / n);
+					const y = (b * xSum) + a;
+					const calculated = shareCapital * y;
+					dividendResult.textContent = `₱${calculated.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 				})
 				.catch(error => {
 					dividendResult.textContent = "Not Enough Past Data.";
