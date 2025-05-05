@@ -24,7 +24,7 @@ if ($result_share) {
 $total_query = "
     SELECT SUM(asales.amount) AS total_sales
     FROM admin_sales AS asales
-    WHERE DATE(asales.purchase_date) = DATE(CURDATE()) AND asales.is_archived = 0
+    WHERE YEAR(asales.purchase_date) = YEAR(CURDATE()) AND asales.is_archived = 0
 ";
 
 $total_result = mysqli_query($conn, $total_query);

@@ -53,13 +53,8 @@
           </div> 
 
 		   <div class="form-group">
-          <label for="expenseCategory">Category</label>
-          <select id="expenseCategory" required>
-            <option value="">Select Category</option>
-            <option value="Feeding">Feeding</option>
-		        <option value="Payroll">Payroll</option>
-            <option value="Others">Others</option>
-          </select>
+          <label for="expenseCategory">Product Name</label>
+          <input type="text" id="expenseCategory" placeholder="Enter Product Name" required>
         </div>
         <div class="form-group">
           <label for="expenseAmount">Amount (₱)</label>
@@ -71,11 +66,7 @@
         </div>
         <div class="form-group">
           <label for="expenseDescription">Description</label>
-          <textarea id="expenseDescription" placeholder="Enter description" required></textarea>
-        </div>
-        <div class="form-group">
-          <label for="expenseYear">Year</label>
-          <input type="number" id="expenseYear" placeholder="e.g. 2025" required>
+          <input id="expenseDescription" placeholder="Enter description" required/>
         </div>
         <div class="form-group">
           <button type="submit" id="expenseSubmit">Submit</button>
@@ -100,11 +91,10 @@
           <table>
             <thead>
               <tr>
-                <th>Category</th>
+                <th>Product Name</th>
                 <th>Amount (₱)</th>
                 <th>Date</th>
                 <th>Description</th>
-                <th>Year</th>
                 <th>Action</th>
               </tr>
             </thead>
@@ -125,20 +115,17 @@
     const amountEl = document.getElementById("expenseAmount");
     const dateEl = document.getElementById("expenseDate");
     const descriptionEl = document.getElementById("expenseDescription");
-    const yearEl = document.getElementById("expenseYear");
 
     const category = categoryEl.value;
     const amount = amountEl.value;
     const date = dateEl.value;
     const description = descriptionEl.value;
-    const year = yearEl.value;
 
     const expenseData = new FormData();
     expenseData.append("category", category);
     expenseData.append("amount", amount);
     expenseData.append("date", date);
     expenseData.append("description", description);
-    expenseData.append("year", year);
 
     fetch('../api/post/add_expense.php', {
       method: 'POST',
@@ -155,7 +142,6 @@
           amountEl.value = "";
           dateEl.value = "";
           descriptionEl.value = "";
-          yearEl.value = "";
 
           fetchExpensesData();
         } else {
@@ -196,7 +182,6 @@
                 <td>${formatCurrencyPHP(expense.amount)}</td>
                 <td>${expense.expense_date}</td>
                 <td>${expense.description}</td>
-                <td>${expense.year}</td>
                 <td><button class="bx bxs-archive icon-archive" id="archive_expense_${expense.id}"></button></td>
               </tr>
               `;

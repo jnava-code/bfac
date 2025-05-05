@@ -8,13 +8,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $amount      = mysqli_real_escape_string($conn, $_POST['amount']);
     $date        = mysqli_real_escape_string($conn, $_POST['date']);
     $description = mysqli_real_escape_string($conn, $_POST['description']);
-    $year        = mysqli_real_escape_string($conn, $_POST['year']);
 
     // Insert query (quotes added around all values)
     $sql = "INSERT INTO admin_expenses 
-            (category, amount, expense_date, description, year) 
+            (category, amount, expense_date, description) 
             VALUES 
-            ('$category', '$amount', '$date', '$description', '$year')";
+            ('$category', '$amount', '$date', '$description')";
 
     $result = mysqli_query($conn, $sql);
 

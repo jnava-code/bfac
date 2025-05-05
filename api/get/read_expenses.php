@@ -3,7 +3,7 @@ include "../../config/db.php";
 header('Content-Type: application/json');
 
 // Fetch all expenses
-$expensesQuery = "SELECT id, category, amount, expense_date, description, year 
+$expensesQuery = "SELECT id, category, amount, expense_date, description 
                     FROM admin_expenses 
                     WHERE is_archived = 0
                     -- WHERE DATE(expense_date) = DATE(CURDATE())

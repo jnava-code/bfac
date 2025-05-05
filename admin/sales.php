@@ -1,13 +1,6 @@
 <?php 
     include "../config/db.php"; 
     include "../auth/session.php";
-
-    $sql = "SELECT SUM(amount) AS total_gross FROM admin_sales";
-    $result = mysqli_query($conn, $sql);
-    $row = mysqli_fetch_assoc($result);
-    $total_gross = $row['total_gross'] ? $row['total_gross'] : 0;
-    $total_gross = number_format($total_gross, 2, '.', ',');
-    $total_gross = "₱" . $total_gross;
 ?>
 
 <!DOCTYPE html>
@@ -91,10 +84,6 @@
     <h2>Add Sale</h2>
     <form id="salesForm">
       <div class="form-group">
-        <label for="orderNo">Order No.</label>
-        <input type="text" id="orderNo" placeholder="e.g. 10001" required />
-      </div>
-      <div class="form-group">
         <label for="productName">Product Name</label>
         <input type="text" id="productName" placeholder="Enter product name" required />
       </div>
@@ -152,11 +141,6 @@
 </html>
 <script>
 
-  fetch(`../api/get/read_sales_no.php`)
-    .then((response) => response.json())
-    .then((data) => {
-      document.getElementById("orderNo").value = data.sales_no;
-    });
   // Open modal
   document.getElementById("openSalesModal").addEventListener("click", function () {
     document.getElementById("salesModal").classList.add("show");
@@ -189,7 +173,6 @@
   document.getElementById("salesForm").addEventListener("submit", function (e) {
     e.preventDefault();
 
-    const orderNo = document.getElementById("orderNo").value;
     const productName = document.getElementById("productName").value;
     const quantity = document.getElementById("quantity").value;
     const unitprice = document.getElementById("unitprice").value;
@@ -198,7 +181,6 @@
     const purchaseDate = document.getElementById("purchaseDate").value;
 
     const salesData = new FormData();
-    salesData.append("orderNo", orderNo);
     salesData.append("productName", productName);
     salesData.append("quantity", quantity);
     salesData.append("unitprice", unitprice);
@@ -234,13 +216,12 @@
 
         const currentDate = new Date();
         const currentYear = currentDate.getFullYear();
-        const currentMonth = currentDate.getMonth() + 1; 
-        const currentDay = currentDate.getDate();
-
-        const currentDateString = `${currentYear}-${currentMonth.toString().padStart(2, '0')}-${currentDay.toString().padStart(2, '0')}`;
         
         const filteredData = data.sales.filter(sale => {
-          return sale.purchase_date === currentDateString;
+          const salesDate = new Date(sale.purchase_date);
+          const salesYear = salesDate.getFullYear();
+
+          return salesYear === currentYear;
         });
 
         if(filteredData && filteredData.length > 0) {
