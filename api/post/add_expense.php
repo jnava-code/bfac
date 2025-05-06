@@ -3,13 +3,11 @@ include "../../config/db.php";
 header('Content-Type: application/json');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Sanitize inputs
     $category    = mysqli_real_escape_string($conn, $_POST['category']);
     $amount      = mysqli_real_escape_string($conn, $_POST['amount']);
     $date        = mysqli_real_escape_string($conn, $_POST['date']);
     $description = mysqli_real_escape_string($conn, $_POST['description']);
 
-    // Insert query (quotes added around all values)
     $sql = "INSERT INTO admin_expenses 
             (category, amount, expense_date, description) 
             VALUES 

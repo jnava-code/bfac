@@ -198,6 +198,8 @@
           fetchSalesData();
           document.getElementById("salesForm").reset();
           document.getElementById("salesModal").classList.remove("show");
+        } else {
+          alert(data.message);
         }
       })
   });

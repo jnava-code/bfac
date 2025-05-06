@@ -430,6 +430,8 @@
                         // document.getElementById("contractAmount").value = "";
 
                         updateTable();
+                    } else {
+                        alert(data.message);
                     }
                 })                
             } else {

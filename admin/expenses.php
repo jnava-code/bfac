@@ -145,7 +145,7 @@
 
           fetchExpensesData();
         } else {
-          alert('Error adding expense: ' + data.message);
+          alert(data.message);
         }
       });
   });
